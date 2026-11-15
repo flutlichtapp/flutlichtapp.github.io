@@ -7723,8 +7723,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.116'; // v1.2.116: Belastung – Trainer erinnern die Gruppe
-const APP_VERSION_LABEL='1.2.116';
+const APP_VERSION='1.2.117'; // v1.2.117: Belastung nachfragen – nach Spielen am nächsten Morgen
+const APP_VERSION_LABEL='1.2.117';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -21135,7 +21135,7 @@ const TPUSH_KINDS=[
   ['msg','💬','Nachrichten','von anderen Trainern hier in der App',true],
   ['att','✍️','Anwesenheit fehlt','am Morgen nach Training oder Spiel, wenn noch Spieler ohne Eintrag sind',true],
   ['abw','📅','Abwesenheiten','wenn ein Spieler meldet, dass er länger nicht da ist',true],
-  ['rpeask','💪','Belastung nachfragen','eine Stunde nach Training oder Spiel, wenn weniger als die Hälfte bewertet hat – mit Text für die WhatsApp-Gruppe',true],
+  ['rpeask','💪','Belastung nachfragen','eine Stunde nach dem Training, nach Spielen am nächsten Morgen um 10 Uhr – wenn weniger als die Hälfte bewertet hat, mit Text für die WhatsApp-Gruppe',true],
   ['late','⚠️','Kurzfristige Absagen','wenn ein Spieler in den 24 Std. vor Beginn absagt',false],
   ['lineup','📋','Stand vor dem Termin','3 Std. vor Beginn: wie viele dabei, abgesagt, offen',false],
   ['tech','🛠','Technik','wenn die tägliche Sicherung oder die Erinnerungen nicht laufen',true]];

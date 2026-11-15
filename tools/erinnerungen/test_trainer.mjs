@@ -199,10 +199,22 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   c = await run(db, at(22, 21, 7));
   ok(R(c).map(x => x.to).join() === 'artem' && R(c)[0].p.title === 'Belastung: 1 von 3 bewertet', 'Probetraining counts, N and E do not, Jimmy switched it off: ' + R(c).map(x => x.to + ' ' + x.p.title).join());
   ({ db } = world(W => { const i = W.sess.findIndex(s => s.date === 'So 25.10'); W.players.forEach(p => { p.s[i] = 1; }); }));
-  c = await run(db, at(25, 15, 22));
-  ok(!R(c).length, 'match: not before 15:30 (13:00 + 90 + 60)');
   c = await run(db, at(25, 15, 37));
-  ok(R(c).length === 2 && R(c)[0].p.title === 'Belastung: 0 von 7 bewertet' && /^Spiel gegen SV Brackel heute 13:00 – /.test(R(c)[0].p.body), 'match: ' + (R(c)[0] || { p: {} }).p.body);
+  ok(!R(c).length, 'match: nothing right after the game (15:37) – the next morning instead');
+  c = await run(db, at(25, 21, 7));
+  ok(!R(c).length, 'match: nothing in the evening either');
+  c = await run(db, at(26, 9, 52));
+  ok(!R(c).length, 'match: not before 10:00 the next day');
+  c = await run(db, at(26, 10, 7));
+  ok(R(c).length === 2 && R(c)[0].p.title === 'Belastung: 0 von 7 bewertet' && /^Spiel gegen SV Brackel gestern 13:00 – Erinnerung in die WhatsApp-Gruppe schicken\?/.test(R(c)[0].p.body), 'match: Mo 10:07: ' + (R(c)[0] || { p: {} }).p.body);
+  c = await run(db, at(26, 10, 22));
+  ok(!R(c).length, 'match: once');
+  ({ db } = world(W => { const i = W.sess.findIndex(s => s.date === 'So 25.10'); W.players.forEach(p => { p.s[i] = 1; }); W.players[0].rpe = []; W.players[0].rpe[i] = 7; W.players[1].rpe = []; W.players[1].rpe[i] = 8; W.players[2].rpe = []; W.players[2].rpe[i] = 6; W.players[3].rpe = []; W.players[3].rpe[i] = 7; }));
+  c = await run(db, at(26, 10, 7));
+  ok(!R(c).length, 'match: 4 of 7 rated by Monday morning – nothing');
+  ({ db } = world(W => { const i = W.sess.findIndex(s => s.date === 'So 25.10'); W.players.forEach(p => { p.s[i] = 1; }); W.sess.splice(i + 1, 0, { date: 'Mo 26.10', type: 'training', time: '09:30', duration: 60 }); W.players.forEach(p => { p.s.splice(i + 1, 0, 3); }); }));
+  c = await run(db, at(26, 10, 7));
+  ok(!R(c).length, 'match: a session on Monday 09:30 closed the rating – nothing to ask');
 }
 // ── messages between trainers ──
 {

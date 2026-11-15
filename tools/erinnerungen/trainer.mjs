@@ -17,6 +17,7 @@ export const LATE_MIN = 24 * 60;     // a cancellation in the last 24 h before t
 export const LINEUP_MIN = 3 * 60;    // the state of answers 3 h before the start
 export const RPE_ASK_AFTER = 60;     // Belastung: one look an hour after the planned end,
 export const RPE_ASK_WIN = 45;       // within 45 min of that (a late round after a pause asks nothing)
+export const RPE_ASK_MATCH = 10 * 60; // after a match: the next morning at 10:00 (15.11.)
 export const SAFE_STALE = 50 * 3600e3;   // the daily copy is overdue
 export const GAP_MIN = 150;              // rounds paused this long in the day
 
@@ -159,20 +160,38 @@ export function lineup(b, now) {
   });
   return out;
 }
-// Belastung (13.11.): an hour after the planned end, if fewer than half of
+// Belastung (13.11.): an hour after the planned end (matches: the next morning), if fewer than half of
 // those who were there have rated — most players get no reminder of their own
 // (no push), so the trainers are asked to remind the group. One look per
 // session; nothing if a trainer already sent the group reminder (s.rpeGrp).
 // Counted like the app's overview (_rpeSessGroups): everybody in the team at
 // that session (Probetraining too), not F/E/N, not "war nicht dabei".
 const rpeEnd = s => { const sm = startMin(s); return sm == null ? null : sm + (s.duration > 0 ? s.duration : RPE_DEFAULT_MIN); };
-// today's sessions whose hour after the end has come
+// When to look: trainings an hour after the end; matches the next morning —
+// right after a match (a 2:7 on 15.11., but a win too) the group is the wrong
+// place for it (Artem 15.11.). The players' own reminder (rpe) is unchanged.
+function rpeAskAt(s, season) {
+  const k = sortKey(s.date, season), end = rpeEnd(s);
+  if (k == null || end == null) return null;
+  return s.type === 'match' ? { day: addDays(k, 1), min: RPE_ASK_MATCH, when: 'gestern' } : { day: k, min: end + RPE_ASK_AFTER, when: 'heute' };
+}
+// the rating closes at the start of the next session: then there is nothing to ask
+function rpeStillOpen(b, s, now) {
+  const k = sortKey(s.date, b.season), sm = startMin(s);
+  return !(b.sessions || []).some(x => {
+    if (!real(x) || x === s) return false;
+    const xk = sortKey(x.date, b.season), xm = startMin(x);
+    if (xk == null || xm == null || xk < k || (xk === k && xm <= sm)) return false;   // not after s
+    return xk < now.day || (xk === now.day && xm <= now.min);                          // already begun
+  });
+}
+// sessions whose moment to look has come (within RPE_ASK_WIN)
 export function rpeAskDue(b, now) {
   const out = [];
   (b.sessions || []).forEach((s, si) => {
-    if (!real(s) || sortKey(s.date, b.season) !== now.day) return;
-    const end = rpeEnd(s);
-    if (end != null && now.min >= end + RPE_ASK_AFTER && now.min < end + RPE_ASK_AFTER + RPE_ASK_WIN) out.push(si);
+    if (!real(s)) return;
+    const a = rpeAskAt(s, b.season);
+    if (a && a.day === now.day && now.min >= a.min && now.min < a.min + RPE_ASK_WIN && rpeStillOpen(b, s, now)) out.push(si);
   });
   return out;
 }
@@ -180,9 +199,8 @@ export function rpeAsk(b, now, only) {
   const out = [];
   (b.sessions || []).forEach((s, si) => {
     if (only != null && si !== only) return;
-    if (!real(s) || sortKey(s.date, b.season) !== now.day) return;
-    const end = rpeEnd(s);
-    if (end == null || now.min < end + RPE_ASK_AFTER || now.min >= end + RPE_ASK_AFTER + RPE_ASK_WIN || (s.rpeGrp && s.rpeGrp.t)) return;
+    if (!real(s) || (s.rpeGrp && s.rpeGrp.t) || !rpeAskDue(b, now).includes(si)) return;
+    const a = rpeAskAt(s, b.season);
     const mk = metaKey(s);
     let n = 0, r = 0;
     (b.players || []).forEach(p => {
@@ -194,7 +212,7 @@ export function rpeAsk(b, now, only) {
     });
     if (!n || r * 2 >= n) return;
     out.push({ key: mk, title: 'Belastung: ' + r + ' von ' + n + ' bewertet',
-      body: what(s) + ' heute ' + s.time + ' – Erinnerung in die WhatsApp-Gruppe schicken? Der Text ist fertig.',
+      body: what(s) + ' ' + a.when + ' ' + s.time + ' – Erinnerung in die WhatsApp-Gruppe schicken? Der Text ist fertig.',
       url: go('rpe&gi=' + si, b), ttl: ttlToMidnight(now) });
   });
   return out;
