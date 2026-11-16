@@ -4,7 +4,7 @@
 
 Anwesenheit, Aufstellungen, Trainingsplanung, Statistik und die Verbindung zu den Spielern in einer Anwendung – im Browser und als installierbare App.
 
-🔗 **Live**: [fc-frohlinde.github.io](https://fc-frohlinde.github.io)
+🔗 **Live**: [flutlichtapp.de](https://flutlichtapp.de)
 
 ## Für Trainer
 

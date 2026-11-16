@@ -13,7 +13,7 @@ import crypto from 'node:crypto';
 import { decode, pathKey, sortKey, addDays } from './lib.mjs';
 
 const CLUB = 'FC Frohlinde';
-const SITE = 'https://fc-frohlinde.github.io/';
+const SITE = 'https://flutlichtapp.de/';
 const BACK_DAYS = 30;
 
 // The season a Berlin day belongs to: July to June

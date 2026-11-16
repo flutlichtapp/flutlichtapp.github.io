@@ -59,7 +59,7 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
 <meta property="og:locale" content="de_DE">
 <meta property="og:title" content="Flutlicht – die Team-App">
 <meta property="og:description" content="Termine, Zu- und Absagen, Belastung und Spieler des Spiels.">
-<meta property="og:image" content="https://fc-frohlinde.github.io/icons/flutlicht-vorschau.jpg?v=1">
+<meta property="og:image" content="https://flutlichtapp.de/icons/flutlicht-vorschau.jpg?v=1">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -7723,8 +7723,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.120'; // v1.2.120: Wochenbericht – Thema der Woche über die ganze Breite
-const APP_VERSION_LABEL='1.2.120';
+const APP_VERSION='1.2.121'; // v1.2.121: neue Adresse flutlichtapp.de
+const APP_VERSION_LABEL='1.2.121';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -7748,6 +7748,7 @@ const FL_MARK='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F
 function _clubSlug(){return (_clubName()||'Flutlicht').replace(/[^A-Za-z0-9ÄÖÜäöüß]+/g,'-').replace(/^-|-$/g,'')||'Flutlicht';}
 function _clubInfo(){const c=(G&&G.club&&typeof G.club==='object')?G.club:{};return {name:_clubName(),resp:String(c.resp||''),addr:String(c.addr||''),mail:String(c.mail||''),dsb:String(c.dsb||'')};}
 const APP_NEWS=[
+  {id:'20261116-1',d:'16.11.',t:'Neue Adresse: flutlichtapp.de',x:'Flutlicht ist umgezogen. Alte Links führen automatisch hierher. Einmal neu anmelden, Benachrichtigungen unter Einstellungen → Benachrichtigungen neu einschalten und den Kalender, falls abonniert, neu abonnieren.',go:['Zu den Benachrichtigungen',"hxGo('settings')"]},
   {id:'20261112-2',d:'12.11.',t:'Spieler des Monats',x:'In der Statistik wählt ihr jeden Monat einen Spieler des Monats. Flutlicht schlägt vor, wer im Training am häufigsten da war, danach zählen ▲ und Spieler des Spiels; die Spieler sehen ihn zwei Wochen lang in ihrer App, mit eurem Satz und ohne Zahlen.',go:['Zur Statistik',"hxGo('stats')"]},
   {id:'20261112-1',d:'12.11.',t:'Im Profil und im Termin blättern',x:'Oben im Spielerprofil, im Termin und im Trainerprofil stehen jetzt ‹ ›: Sie gehen durch die Liste, aus der du es geöffnet hast – etwa alle „Offen“ eines Termins, Im Blick oder die Tabelle; über die Mitte springst du direkt zu jemand anderem. Am Computer gehen auch die Pfeiltasten ← →.'},
   {id:'20261111-1',d:'11.11.',t:'Spieler: Abwesenheit melden und Foto erlauben',x:'Spieler können sich in der App für mehrere Termine auf einmal abmelden – du bestätigst es unter „Im Blick behalten“ mit einem Tipp: entschuldigt oder, bei längerer Zeit, als Pause. Außerdem fragt die App sie, ob ihr Spielerfoto hier zu sehen sein darf; bis dahin sehen es nur die Trainer, die Antwort steht im Profil.'},
@@ -15948,7 +15949,7 @@ function copyPlayerLink(token){
 // where players authenticate with name + birthdate (no per-player token in URL).
 // Production host used when the trainer is testing locally via file:// — links
 // shared externally need a real URL the player can open. Change this if hosting moves.
-const _SHARE_FALLBACK_HOST='https://fc-frohlinde.github.io';
+const _SHARE_FALLBACK_HOST='https://flutlichtapp.de';
 function buildTeamLink(team){
   const t=team||UI.currentTeam||'';
   // The team's secret makes it a link only the group has (1.2.36)

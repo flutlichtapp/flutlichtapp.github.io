@@ -2,7 +2,7 @@
 // Pure functions: no network, no clock of their own. send.mjs feeds them.
 import crypto from 'node:crypto';
 
-export const SITE = 'https://fc-frohlinde.github.io/';
+export const SITE = 'https://flutlichtapp.de/';
 export const QUIET_FROM = 22 * 60 + 30;   // no reminders from 22:30 …
 export const QUIET_TO = 8 * 60;           // … until 8:00
 export const RPE_AFTER = 20;              // minutes after the planned end

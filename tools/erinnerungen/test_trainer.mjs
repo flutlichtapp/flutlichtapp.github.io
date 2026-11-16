@@ -79,7 +79,7 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   ok(B(c).map(x => x.to).sort().join(',') === 'artem,jimmy', 'evening before: both trainers of the team, nobody else: ' + B(c).map(x => x.to).sort().join(','));
   const p = B(c)[0].p;
   ok(p.title === 'Morgen Geburtstag 🎂' && p.body === 'Ali Kaya wird 18. Morgen Training um 18:30.', 'text: ' + p.title + ' / ' + p.body);
-  ok(p.url === 'https://fc-frohlinde.github.io/?go=player&gi=1&gt=U19&gs=2026%2F27', 'link opens his profile: ' + p.url);
+  ok(p.url === 'https://flutlichtapp.de/?go=player&gi=1&gt=U19&gs=2026%2F27', 'link opens his profile: ' + p.url);
   c = await run(db, at(21, 18, 22));
   ok(!B(c).length, 'once');
   c = await run(db, at(22, 7, 52));
@@ -181,7 +181,7 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   ok(r.map(x => x.to).sort().join() === 'artem,jimmy', 'Belastung: both trainers: ' + r.map(x => x.to).join());
   ok(r[0] && r[0].p.title === 'Belastung: 1 von 5 bewertet' && r[0].p.body === 'Training heute 18:30 – Erinnerung in die WhatsApp-Gruppe schicken? Der Text ist fertig.',
     'Belastung text: ' + (r[0] || { p: {} }).p.title + ' / ' + (r[0] || { p: {} }).p.body);
-  ok(r[0] && r[0].p.url === 'https://fc-frohlinde.github.io/?go=rpe&gi=' + si('Do 22.10') + '&gt=U19&gs=2026%2F27', 'Belastung link opens the overview: ' + (r[0] || { p: {} }).p.url);
+  ok(r[0] && r[0].p.url === 'https://flutlichtapp.de/?go=rpe&gi=' + si('Do 22.10') + '&gt=U19&gs=2026%2F27', 'Belastung link opens the overview: ' + (r[0] || { p: {} }).p.url);
   c = await run(db, at(22, 21, 22));
   ok(!R(c).length, 'Belastung: once');
   ({ db } = setup((W, i) => { W.players[1].rpe = []; W.players[1].rpe[i] = 4; W.players[2].rpe = []; W.players[2].rpe[i] = 6; }));
@@ -227,7 +227,7 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   let c = await run(db, at(21, 12, 7));
   const m = T(c).filter(x => /^msg/.test(x.p.tag)).map(x => x.to + ':' + x.p.title + ':' + x.p.body).sort();
   ok(m.join(' | ') === 'artem:Nachricht von Jimmy:Halle ist morgen zu. | artem:Nachricht von Udo:Hast du Hütchen? | jimmy:Nachricht von Artem:Ok', 'messages: to all / to one, not your own, not old: ' + m.join(' | '));
-  ok(T(c).find(x => x.p.tag === 'msg-msg_1').p.url === 'https://fc-frohlinde.github.io/?go=msg&gid=msg_1', 'link opens the message');
+  ok(T(c).find(x => x.p.tag === 'msg-msg_1').p.url === 'https://flutlichtapp.de/?go=msg&gid=msg_1', 'link opens the message');
   c = await run(db, at(21, 12, 22));
   ok(!T(c).filter(x => /^msg/.test(x.p.tag)).length, 'once');
   c = await run(db, at(22, 8, 7));
@@ -240,7 +240,7 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   const t = T(c).filter(x => /^tech/.test(x.p.tag)).map(x => x.to + ':' + x.p.title).sort();
   ok(t.join(' | ') === 'artem:Erinnerungen hatten Pause | artem:Sicherung läuft nicht | jimmy:Erinnerungen hatten Pause | jimmy:Sicherung läuft nicht', 'backup 3 days old, rounds paused 3 h: ' + t.join(' | '));
   ok(T(c).find(x => x.p.tag === 'tech-safe').p.body === 'Die letzte geschützte Tageskopie ist 3 Tage alt. Auf GitHub unter Actions → Sicherung nachsehen.', 'backup text');
-  ok(T(c).find(x => x.p.tag === 'tech-safe').p.url === 'https://fc-frohlinde.github.io/?go=backup', 'link opens the backups');
+  ok(T(c).find(x => x.p.tag === 'tech-safe').p.url === 'https://flutlichtapp.de/?go=backup', 'link opens the backups');
   const c2 = await run(db, at(21, 13, 37));
   ok(!T(c2).filter(x => /^tech/.test(x.p.tag)).length, 'once a day');
 }

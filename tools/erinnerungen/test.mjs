@@ -87,7 +87,7 @@ function world() {
   ok(to === 'max-phone,max-tablet', 'rating reminder only to Max (both devices): ' + to);
   const c = push.calls[0];
   ok(c && c.p.title === 'Wie anstrengend war’s heute?' && /^Training 18:30 – tipp kurz/.test(c.p.body), 'text: ' + (c && c.p.body));
-  ok(c && c.p.url === 'https://fc-frohlinde.github.io/?p=tok0&do=rpe&s=' + si, 'link opens his rating: ' + (c && c.p.url));
+  ok(c && c.p.url === 'https://flutlichtapp.de/?p=tok0&do=rpe&s=' + si, 'link opens his rating: ' + (c && c.p.url));
   ok(c && c.opt.TTL === (24 * 60 - (20 * 60 + 25)) * 60, 'expires at midnight: ' + (c && c.opt.TTL));
   ok(!(await db.get('fcf_push/subs/' + ownerOf('tok3'))), 'dead device removed (410)');
   ok((await db.get('fcf_data/db/U19__2026__SL__27/players/v/3/push')) === null, 'his bell cleared');
@@ -303,7 +303,7 @@ function world() {
   ok(Object.keys(got).sort().join() === 'tok0,tok1,tok4,tok6', 'squad: in (Max, Luca) and confirmed-out (Ali, Noah); not Tom (no answer), not Jonas (declined): ' + Object.keys(got).sort().join());
   ok(got.tok0 && got.tok0.title === 'Du bist im Kader für Sonntag' && got.tok0.body === 'Treffpunkt 11:45, Parkplatz Sportplatz. Anstoß 13:00 gegen SV Brackel.', 'squad: in text: ' + JSON.stringify(got.tok0));
   ok(got.tok1 && got.tok1.title === 'Kader für Sonntag steht' && got.tok1.body === 'Diesmal bist du nicht dabei. Nächstes Training Di 27.10, 18:30.', 'squad: out text: ' + JSON.stringify(got.tok1));
-  ok(got.tok0 && got.tok0.url === 'https://fc-frohlinde.github.io/?p=tok0&do=week' && got.tok0.tag === 'squad-k1025-1300m', 'squad: link and tag');
+  ok(got.tok0 && got.tok0.url === 'https://flutlichtapp.de/?p=tok0&do=week' && got.tok0.tag === 'squad-k1025-1300m', 'squad: link and tag');
   const ttl0 = push.calls.find(c => by(c) === 'tok0').opt.TTL;
   ok(ttl0 === ((2 * 1440 + 13 * 60) - (20 * 60 + 12)) * 60, 'squad: valid until kick-off: ' + ttl0);
   const told = await db.get('fcf_push/sq/U19__2026__SL__27/k1025-1300m');
@@ -395,7 +395,7 @@ function world() {
   const unf = ics.replace(/\r\n /g, '');
   ok(unf.includes('SUMMARY:Training · Umschalten') && unf.includes('DTSTART;TZID=Europe/Berlin:20261020T183000') && unf.includes('DTEND;TZID=Europe/Berlin:20261020T200000') && unf.includes('LOCATION:Kunstrasen'), 'calendar: a training');
   ok(unf.includes('SUMMARY:Spiel gegen SV Brackel') && unf.includes('DTSTART;TZID=Europe/Berlin:20261025T130000') && unf.includes('DTEND;TZID=Europe/Berlin:20261025T144500')
-    && unf.includes('DESCRIPTION:Auswärtsspiel\\nAnstoß 13:00\\nTreffpunkt 11:30\\, Parkplatz\\, Frohlinde\\nFlutlicht: https://fc-frohlinde.github.io/'), 'calendar: a match with the meeting point, escaped: ' + (unf.match(/DESCRIPTION:Auswärts[^\r]*/) || [''])[0]);
+    && unf.includes('DESCRIPTION:Auswärtsspiel\\nAnstoß 13:00\\nTreffpunkt 11:30\\, Parkplatz\\, Frohlinde\\nFlutlicht: https://flutlichtapp.de/'), 'calendar: a match with the meeting point, escaped: ' + (unf.match(/DESCRIPTION:Auswärts[^\r]*/) || [''])[0]);
   ok(unf.includes('DTSTART;VALUE=DATE:20261029') && unf.includes('DTEND;VALUE=DATE:20261030'), 'calendar: no time → all day');
   ok(unf.includes('SUMMARY:Mannschaftsabend') && unf.includes('DTSTART;TZID=Europe/Berlin:20261030T190000') && unf.includes('UID:ev-cev_1-U19@fc-frohlinde.github.io'), 'calendar: the team\'s other dates');
   ok(!/Max Müller/.test(ics), 'calendar: no player names');

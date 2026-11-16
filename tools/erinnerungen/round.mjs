@@ -38,7 +38,7 @@ export async function round({ db, push, ts = Date.now(), log = console.log, dry 
       log('Neue VAPID-Schlüssel angelegt');
     }
     if (await db.get('fcf_push/pub') !== keys.publicKey) await db.set('fcf_push/pub', keys.publicKey);
-    push.setVapidDetails('https://fc-frohlinde.github.io', keys.publicKey, keys.privateKey);
+    push.setVapidDetails('https://flutlichtapp.de', keys.publicKey, keys.privateKey);
 
     const subs = (await db.get('fcf_push/subs')) || {};
     nDev = Object.values(subs).reduce((a, o) => a + Object.keys(o || {}).length, 0);
@@ -85,7 +85,7 @@ export async function round({ db, push, ts = Date.now(), log = console.log, dry 
       for (const [id, d] of Object.entries(devs || {})) {
         if (!d || !d.test || (d.testSent && d.testSent >= d.test)) continue;
         const n = await deliver(owner, { title: 'Test: Erinnerungen funktionieren ✓',
-          body: 'So kommen die Erinnerungen bei den Spielern an.', url: 'https://fc-frohlinde.github.io/', tag: 'test' }, 3600, id);
+          body: 'So kommen die Erinnerungen bei den Spielern an.', url: 'https://flutlichtapp.de/', tag: 'test' }, 3600, id);
         if (n) { if (!dry) await db.set(`fcf_push/subs/${owner}/${id}/testSent`, ts); sent += n; log('Test an', d.trainer || owner.slice(0, 9)); }
       }
     }
