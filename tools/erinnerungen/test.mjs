@@ -449,7 +449,7 @@ function world() {
   const sessions = [{ date: 'Fr 13.11', type: 'training', time: '18:30', duration: 90 }];
   const pl = (s, x) => Object.assign({ name: 'P' + Math.random(), s: [s] }, x || {});
   const c = lastSession({ sessions, season: '2026/27', now: berlin(Date.UTC(2026, 10, 13, 19, 22)),
-    players: [pl(1), pl(1), pl(0), pl(2), pl(1, { trial: '2026-11-01' }), pl(0, { trial: '2026-11-01' })] });
-  ok(c && c.n === 4 && c.a === 2 && c.f === 1 && c.e === 1 && c.pa === 1, 'last event: team 4 (2 there, 1 F, 1 E) + 1 Probetraining there: ' + JSON.stringify(c && { n: c.n, a: c.a, f: c.f, e: c.e, pa: c.pa }));
+    players: [pl(1), pl(1), pl(0), pl(2), pl(5), pl(3), pl(1, { trial: '2026-11-01' }), pl(0, { trial: '2026-11-01' })] });
+  ok(c && c.n === 6 && c.a === 2 && c.f === 1 && c.e === 1 && c.nk === 1 && c.open === 1 && c.pa === 1, 'last event: team 6 (2 there, 1 F, 1 E, 1 N, 1 open) + 1 Probetraining there: ' + JSON.stringify(c && { n: c.n, a: c.a, f: c.f, e: c.e, nk: c.nk, open: c.open, pa: c.pa }));
 }
 console.log(fails ? fails + ' FAILED' : 'all passed');

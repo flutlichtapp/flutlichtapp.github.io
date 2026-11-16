@@ -307,7 +307,7 @@ export function lastSession({ sessions, players, season, now }) {
   });
   if (si < 0) return null;
   const s = sessions[si], c = { si, date: s.date, time: s.time || '', match: s.type === 'match',
-    n: 0, a: 0, f: 0, e: 0, open: 0, rated: 0, self: 0, coach: 0, nd: 0, push: 0, seen: 0, pa: 0 };
+    n: 0, a: 0, f: 0, e: 0, nk: 0, open: 0, rated: 0, self: 0, coach: 0, nd: 0, push: 0, seen: 0, pa: 0 };
   const y = Math.floor(bk / 10000), mo = Math.floor(bk / 100) % 100 - 1, d = bk % 100;
   const off = (berlin(Date.UTC(y, mo, d, 12)).min - 720) * 60e3;          // Berlin's offset that day
   const mk = metaKey(s), start = Date.UTC(y, mo, d) + Math.max(0, bm) * 60e3 - off;
@@ -316,7 +316,7 @@ export function lastSession({ sessions, players, season, now }) {
     if (p.trial) { if (st(p, si) === 1) c.pa++; return; }   // Probetraining: shown apart (13.11.)
     c.n++;
     const v = st(p, si);
-    if (v === 1) c.a++; else if (v === 0) c.f++; else if (v === 2) c.e++; else c.open++;
+    if (v === 1) c.a++; else if (v === 0) c.f++; else if (v === 2) c.e++; else if (v === 5) c.nk++; else c.open++;   // 5 = N, nicht im Kader (16.11.)
     const m = mk && p.rpeMeta && p.rpeMeta[mk];
     if (rated(p, si)) { c.rated++; if (m && m.s === 't') c.coach++; else c.self++; }
     else if (m && m.nd) c.nd++;
