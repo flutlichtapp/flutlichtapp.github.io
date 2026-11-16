@@ -772,7 +772,9 @@ function renderPlayerStats(d){
   const local=getParam('local');
   if(local){
     let d=null;
-    try{d=JSON.parse(sessionStorage.getItem('fcf_live_'+local)||'null');}catch(e){}
+    // Demo (1.2.122): the hub of the demo hands it over under its own name
+    if(getParam('demo'))try{d=JSON.parse(localStorage.getItem('fldemo:fcf_live_'+local)||'null');}catch(e){}
+    if(!d)try{d=JSON.parse(sessionStorage.getItem('fcf_live_'+local)||'null');}catch(e){}
     if(!d)try{d=JSON.parse(localStorage.getItem('fcf_live_'+local)||'null');}catch(e){} // trainer preview
     if(!d){
       showError('\u26a0\ufe0f','Nicht verf\u00fcgbar','Bitte \u00fcber dein Spieler-Men\u00fc erneut \u00f6ffnen.');
