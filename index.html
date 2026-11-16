@@ -7723,8 +7723,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.118'; // v1.2.118: Belastung – Fenster bei Spielen mit Kader richtig
-const APP_VERSION_LABEL='1.2.118';
+const APP_VERSION='1.2.119'; // v1.2.119: Spieler des Spiels nur vom letzten Spiel
+const APP_VERSION_LABEL='1.2.119';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -22476,9 +22476,16 @@ function renderHub(){
   const res=_resHubPick(D);
   let last='';
   {
-    let best=null;
+    let best=null,latest=null;
+    (D.sessions||[]).forEach(sx=>{
+      if(!sx||sx.type!=='match')return;
+      const st=_rpeStartMs(sx);if(st==null||st>Date.now())return;
+      if(typeof sessTookPlace==='function'&&!sessTookPlace(sx,UI.currentSeason))return;
+      if(latest==null||st>latest)latest=st;
+    });
     (D.sessions||[]).forEach((sx,six)=>{
       if(!sx||sx.type!=='match')return;
+      const st=_rpeStartMs(sx);if(latest!=null&&st!=null&&st<latest)return;
       const w=_mvpSpan(sx);if(!w||Date.now()<=w.end||Date.now()>w.end+MVP_SHOW_DAYS*86400000)return;
       // Players never get the counts: player mode keeps only the winner(s)
       const wn=Array.isArray(sx.mvpWin)?sx.mvpWin:null;if(!wn||!wn.length)return;
