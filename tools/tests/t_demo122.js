@@ -1,4 +1,4 @@
-// 1.2.122: Demo (?demo). node tools/tests/t_demo122.js [index.html] [shotdir]
+// 1.2.122/1.2.123: Demo (?demo). node tools/tests/t_demo122.js [index.html] [shotdir]
 // Eigener kleiner Webserver (Demo braucht http: report.html, neue Tabs).
 // Geprüft: echte Daten auf dem Gerät bleiben unberührt, keine Verbindung zu
 // Firebase, Übersicht/Statistik/Profil, Spieleransicht in der Demo, „Meine
@@ -30,6 +30,15 @@ srv.listen(0,async()=>{const B='http://localhost:'+srv.address().port;
  ok(!/Neu in Flutlicht/.test(t),'keine Neuigkeiten-Karte (die handeln von unseren Änderungen)');
  ok(await p.evaluate(()=>{const D=cd(),n=Date.now();const k=s=>{const x=_rpeStartMs(s);return x;};return D.sessions.some(s=>k(s)<n)&&D.sessions.some(s=>k(s)>n&&k(s)-n<8*864e5);}),'Termine um das heutige Datum (vorbei und in den nächsten Tagen)');
  if(out)await p.screenshot({path:out+'/demo_trainer.png'});
+ ok(await p.evaluate(()=>!isAdmin()&&canEdit()&&canTeamSet()),'1.2.123: Trainer mit allen Rechten der Mannschaft, nicht Admin');
+ await p.evaluate(()=>{hxGo('settings');});await p.waitForTimeout(800);
+ const leak=await p.evaluate(()=>{const t=document.body.innerText+' '+[...document.querySelectorAll('input,textarea')].map(i=>i.value).join(' ');
+   return ['firebasedatabase','firebaseio','fc-frohlinde-ea23f','AIza','Verantwortlich für die Daten'].filter(x=>t.includes(x));});
+ ok(!leak.length,'1.2.123: Einstellungen ohne Verbindungsdaten und ohne Admin-Bereiche'+(leak.length?' ('+leak.join(', ')+')':''));
+ ok(await p.evaluate(()=>{const u=document.getElementById('ud-admin');return !u||u.style.display==='none';}),'1.2.123: kein Menüpunkt „Administration“');
+ const fbForm=await p.evaluate(()=>{openM('moAdmin');switchAdminTab('firebase');const v=['fb-dbUrl','fb-apiKey','fb-projectId'].map(i=>(document.getElementById(i)||{}).value||'').join('');closeM('moAdmin');return v;});
+ ok(fbForm==='','1.2.123: Verbindungsformular bleibt leer, selbst wenn man es öffnet'+(fbForm?' ('+fbForm.slice(0,30)+'…)':''));
+ await p.evaluate(()=>{hxGo('home');});await p.waitForTimeout(400);
  await p.evaluate(()=>{hxGo('stats');});await p.waitForTimeout(700);
  ok(/Saison bisher/.test(await p.evaluate(()=>document.body.innerText)),'Statistik');
  await p.evaluate(()=>{openPlayerStats(4);});await p.waitForTimeout(500);

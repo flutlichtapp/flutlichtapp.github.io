@@ -7744,8 +7744,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.122'; // v1.2.122: Demo (?demo)
-const APP_VERSION_LABEL='1.2.122';
+const APP_VERSION='1.2.123'; // v1.2.123: Demo als Trainer, nicht als Admin
+const APP_VERSION_LABEL='1.2.123';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -10470,6 +10470,7 @@ function disconnectFb(){
 }
 
 function loadFbConfigFields(){
+  if(window.FL_DEMO)return;
   const cfg=loadFbConfig()||DEFAULT_FB_CONFIG;
   if(!cfg)return;
   const f=v=>document.getElementById(v);
@@ -35986,6 +35987,7 @@ function updateInlinePresence(){
 // only leak. The first admin session after this release removes them, once,
 // together with the tokens and the log that pointed at them.
 async function _pubCleanup(){
+  if(window.FL_DEMO)return true;
   if(!CU||CU.role!=='admin'||!fbDb||!G||G.__sanitized||G.pubCleanedAt)return true;
   let keys=[];
   try{
@@ -41854,7 +41856,7 @@ function _demoData(){
     const st=[gk,...field.slice(0,10)].filter(Boolean),bench=field.slice(10);
     const f=Math.floor(_demoRnd(si,1)*4),a=Math.floor(_demoRnd(si,2)*3);
     const sub=bench.slice(0,2).map((b,i)=>({m:60+i*15,i:b.name,o:st[st.length-1-i].name}));
-    s.rep={f,a,st:st.map(p=>p.name),sub,ban:{},t:start[si]+3*36e5,by:'Admin'};
+    s.rep={f,a,st:st.map(p=>p.name),sub,ban:{},t:start[si]+3*36e5,by:'Demo-Trainer'};
     for(let g=0;g<f;g++){const sc=field[Math.floor(_demoRnd(si,10+g)*Math.min(field.length,10))];if(sc)sc.goals[si]=(sc.goals[si]||0)+1;
       const as=field[Math.floor(_demoRnd(si,20+g)*Math.min(field.length,10))];if(as&&as!==sc)as.assists[si]=(as.assists[si]||0)+1;}
     const top=field[Math.floor(_demoRnd(si,30)*Math.min(field.length,10))];
@@ -41864,25 +41866,25 @@ function _demoData(){
   const nm=sessions.findIndex((s,si)=>s.type==='match'&&start[si]>nowMs);
   if(nm>=0&&start[nm]-nowMs<4*864e5){
     const s=sessions[nm];
-    s.squad={p:players.filter(p=>!p.trial).slice(0,15).map(p=>p.name),out:[],meet:'11:45',where:s.homeAway==='home'?'Kunstrasen':'Parkplatz am Sportplatz',t:nowMs-864e5,by:'Admin'};
+    s.squad={p:players.filter(p=>!p.trial).slice(0,15).map(p=>p.name),out:[],meet:'11:45',where:s.homeAway==='home'?'Kunstrasen':'Parkplatz am Sportplatz',t:nowMs-864e5,by:'Demo-Trainer'};
   }
   // Entwicklungsziele with feedback
   const zt=nowMs-30*864e5,fd=new Date(nowMs-9*864e5);
   [[4,'tech','Schwacher Fuß im Spielaufbau','Pässe mit links auch unter Druck','Nach dem Training 10 Minuten Pässe gegen die Wand mit links',1],
    [8,'takt','Zwischen den Linien anbieten','Du bekommst den Ball zwischen Abwehr und Mittelfeld','Vor dem Ballkontakt zweimal Schulterblick',0],
    [11,'ath','Antritt auf den ersten 5 Metern','Du gewinnst mehr Laufduelle','Sprints im Training immer voll',1]].forEach(([pi,area,txt,see,how,v],i)=>{
-    players[pi].ziele=[{id:'zd'+i,area,txt,see,how,bis:1,t:zt,by:'Admin',fb:[{d:_demoIso(fd),v,c:v===1?'Gute Entwicklung, dranbleiben.':'Erste Schritte sind gemacht.',t:fd.getTime(),by:'Admin'}]}];
+    players[pi].ziele=[{id:'zd'+i,area,txt,see,how,bis:1,t:zt,by:'Demo-Trainer',fb:[{d:_demoIso(fd),v,c:v===1?'Gute Entwicklung, dranbleiben.':'Erste Schritte sind gemacht.',t:fd.getTime(),by:'Demo-Trainer'}]}];
   });
   const db={[key]:{sessions,players},
     [team+'__rules']:{autoYes:{t:true,m:true},abs:{m:'frist',h:4},meet:{h:60,a:75,aw:'Parkplatz am Sportplatz'}},
     [team+'__focuses']:foc.slice()};
   // Spieler des Monats: last month
   const lm=new Date(now.getFullYear(),now.getMonth()-1,1),ym=lm.getFullYear()+'-'+String(lm.getMonth()+1).padStart(2,'0');
-  if(now.getDate()<=14)db[team+'__som']={[ym]:{n:'Finn Wolf',why:'Bei jedem Training da und immer voll dabei',t:new Date(now.getFullYear(),now.getMonth(),1,19).getTime(),by:'Admin'}};
+  if(now.getDate()<=14)db[team+'__som']={[ym]:{n:'Finn Wolf',why:'Bei jedem Training da und immer voll dabei',t:new Date(now.getFullYear(),now.getMonth(),1,19).getTime(),by:'Demo-Trainer'}};
   const g=sanitizeG({version:14,teamList:[team],seasonList:[season],currentSeason:season,clubName:'Demo-Verein',
-    trainers:[{name:'Co-Trainer',teams:[team],role:'Trainer'}],db,auditLog:[]});
+    trainers:[{name:'Demo-Trainer',id:'t_demo',teams:[team],role:'Trainer',mgr:true,plan:true},{name:'Co-Trainer',id:'t_co',teams:[team],role:'Trainer'}],db,auditLog:[]});
   if(!Array.isArray(g.auditLog))g.auditLog=[];
-  g.newsSeen={admin:APP_NEWS[0].id};
+  g.newsSeen={'demo-trainer':APP_NEWS[0].id};
   return g;
 }
 function _demoBadge(){
@@ -41919,7 +41921,7 @@ function _demoStart(){
       try{_bootVeilHide();}catch(e){}
       return;
     }
-    CU={name:'Admin',role:'admin',teams:[],loginAt:Date.now()};
+    CU={name:'Demo-Trainer',role:'trainer',teams:[team],loginAt:Date.now()};
     if(ao)ao.classList.remove('open');
     showApp();
   };
