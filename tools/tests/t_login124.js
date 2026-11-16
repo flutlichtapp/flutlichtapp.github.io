@@ -1,7 +1,7 @@
 // 1.2.124: Anmeldeseite auf dem Handy. node tools/tests/t_login124.js [index.html] [shotdir]
 // Mit offenem E-Mail-Formular ist die Seite höher als ein Handybildschirm. Mit
 // justify-content:center lag das Logo dann über dem Anfang des Scrollbereichs
-// und war nicht erreichbar (Artem 16.11.). Geprüft: Logo und unterster Knopf
+// und war nicht erreichbar (Artem 16.11., am PC; auf dem Handy genauso). Geprüft: Logo und unterster Knopf
 // erreichbar, sonst weiter mittig (Handy, Desktop, Fenster mit nur einer Karte).
 // Firebase wird durch einen Platzhalter ersetzt (kein Netz), niemand ist angemeldet.
 const {chromium}=require('playwright');const http=require('http');const fs=require('fs');const path=require('path');
@@ -28,8 +28,8 @@ srv.listen(0,async()=>{const B='http://localhost:'+srv.address().port;const b=aw
    await c.route(/googleapis|firebaseio|firebasedatabase/,r=>r.abort());
    const p=await c.newPage();p.on('pageerror',e=>console.log('PAGEERR',e.message));
    await p.goto(B+'/');await p.waitForTimeout(1500);return p;};
- for(const [w,h,n] of [[375,667,'iPhone SE'],[390,700,'iPhone 14 in Safari mit Leisten'],[360,640,'kleines Android'],[390,844,'iPhone 14']]){
-  const p=await page(w,h,true);
+ for(const [w,h,n,mob] of [[375,667,'iPhone SE',1],[390,700,'iPhone 14 in Safari mit Leisten',1],[360,640,'kleines Android',1],[390,844,'iPhone 14',1],[1536,730,'PC-Fenster (Laptop 1536, Browser mit Leisten)',0],[1366,657,'PC-Fenster 1366',0]]){
+  const p=await page(w,h,mob);
   ok(await p.evaluate(()=>document.getElementById('authOverlay').classList.contains('open')&&!!document.getElementById('acctMailBtn')),n+': Anmeldeseite offen');
   await p.click('#acctMailBtn');await p.waitForTimeout(400);
   const r=await p.evaluate(()=>{const o=document.getElementById('authOverlay');o.scrollTop=0;
