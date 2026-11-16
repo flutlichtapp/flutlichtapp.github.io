@@ -4774,7 +4774,7 @@ body.design-heute #moWeekReport .wr2-side{display:flex;flex-direction:column;gap
   body.design-heute #moWeekReport > .mob > *:not(.mob-close-x){max-width:1120px;}
   body.design-heute #moWeekReport .wr2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;align-items:start;grid-auto-flow:dense;}
   body.design-heute #moWeekReport .wr2 > *{margin:0 !important;}
-  body.design-heute #moWeekReport :is(.wr2-top,.wr2s-team){grid-column:1 / -1;}
+  body.design-heute #moWeekReport :is(.wr2-top,.wr2-wt,.wr2s-team){grid-column:1 / -1;}
   body.design-heute #moWeekReport .wr2s-att{grid-column:1;}
   body.design-heute #moWeekReport .wr2-side{grid-column:2;}
 }
@@ -7723,8 +7723,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.119'; // v1.2.119: Spieler des Spiels nur vom letzten Spiel
-const APP_VERSION_LABEL='1.2.119';
+const APP_VERSION='1.2.120'; // v1.2.120: Wochenbericht – Thema der Woche über die ganze Breite
+const APP_VERSION_LABEL='1.2.120';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
