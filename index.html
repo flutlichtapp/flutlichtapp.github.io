@@ -360,7 +360,7 @@ html:has(body.player-mode){background:#080f22;}
 
 /* AUTH: night ground lit from above (the floodlight), Flutlicht lockup, white card.
    .auth-box stays centred and white: the player-link and error screens reuse it. */
-#authOverlay{position:fixed;inset:0;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:24px;
+#authOverlay{position:fixed;inset:0;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:24px;
   padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));overflow-y:auto;box-sizing:border-box;
   background:radial-gradient(120% 85% at 50% 0%,#142A5C 0%,#0A1328 62%) #0A1328;}
 #authOverlay.open{display:flex;}
@@ -369,6 +369,11 @@ html:has(body.player-mode){background:#080f22;}
 #authOverlay::after{content:'';position:fixed;left:0;right:0;bottom:0;height:260px;pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 260'%3E%3Cg fill='none' stroke='%23E3E9F2' stroke-opacity='.07' stroke-width='2'%3E%3Ccircle cx='450' cy='300' r='160'/%3E%3Cpath d='M0 300H900'/%3E%3C/g%3E%3C/svg%3E") center bottom/900px 260px no-repeat;}
 #authOverlay>*{position:relative;z-index:1;flex:none;}
+/* 1.2.124: centred by auto margins instead of justify-content:center. With the
+   e-mail form open the page is taller than a phone screen; centring then pushed
+   the logo above the start of the scroll area, out of reach (Artem 16.11.). Auto
+   margins centre while it fits and become 0 when it does not. */
+#authOverlay>:first-child{margin-top:auto;}#authOverlay>:last-child{margin-bottom:auto;}
 .auth-brand{display:flex;flex-direction:column;align-items:center;gap:12px;color:#fff;}
 .auth-brand-ic{display:block;border-radius:16px;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 14px 34px -10px rgba(255,214,120,.35);}
 .auth-brand-wm{display:block;}
@@ -7744,8 +7749,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.123'; // v1.2.123: Demo als Trainer, nicht als Admin
-const APP_VERSION_LABEL='1.2.123';
+const APP_VERSION='1.2.124'; // v1.2.124: Anmeldung – Logo und Formular passen aufs Handy
+const APP_VERSION_LABEL='1.2.124';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
