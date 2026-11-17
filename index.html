@@ -4899,6 +4899,9 @@ body.design-heute .hx-a-week .hx-day-n > span[aria-hidden]{display:inline-flex;a
 body.design-heute .hx-a-week .hx-day-n.done{color:var(--hx-muted);}
 body.design-heute .hx-a-week .hx-day-n.done svg{align-self:center;color:#2E8B5E;}
 body.design-heute .hx-a-week .hx-day-n.todo{color:var(--hx-quiet2);}
+/* 1.2.126: the session just past ("Zuletzt"), above the days */
+body.design-heute .hx-a-week .hx-day.hx-zl{border-radius:12px 12px 0 0;box-shadow:inset 0 -1px 0 var(--hx-line);margin-bottom:4px;}
+body.design-heute .hx-a-week .hx-day.hx-zl .hx-day-t{color:var(--hx-ink2);}
 .hx-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
 @media(min-width:768px){
   body.design-heute .hx-a-week .hx-day{align-items:baseline;}
@@ -7758,8 +7761,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.125'; // v1.2.125: Trainingsplaner – Übung als neue Übung speichern
-const APP_VERSION_LABEL='1.2.125';
+const APP_VERSION='1.2.126'; // v1.2.126: Diese Woche – „Zuletzt“ und „Nächste Woche“
+const APP_VERSION_LABEL='1.2.126';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -7783,7 +7786,7 @@ const FL_MARK='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F
 function _clubSlug(){return (_clubName()||'Flutlicht').replace(/[^A-Za-z0-9ÄÖÜäöüß]+/g,'-').replace(/^-|-$/g,'')||'Flutlicht';}
 function _clubInfo(){const c=(G&&G.club&&typeof G.club==='object')?G.club:{};return {name:_clubName(),resp:String(c.resp||''),addr:String(c.addr||''),mail:String(c.mail||''),dsb:String(c.dsb||'')};}
 const APP_NEWS=[
-  {id:'20261116-1',d:'16.11.',t:'Neue Adresse: flutlichtapp.de',x:'Flutlicht ist umgezogen. Alte Links führen automatisch hierher. Einmal neu anmelden, Benachrichtigungen unter Einstellungen → Benachrichtigungen neu einschalten und den Kalender, falls abonniert, neu abonnieren.',go:['Zu den Benachrichtigungen',"hxGo('settings')"]},
+  {id:'20261116-1',d:'16.11.',t:'Neue Adresse: FlutlichtApp.de',x:'Flutlicht ist umgezogen. Alte Links führen automatisch hierher. Einmal neu anmelden, Benachrichtigungen unter Einstellungen → Benachrichtigungen neu einschalten und den Kalender, falls abonniert, neu abonnieren.',go:['Zu den Benachrichtigungen',"hxGo('settings')"]},
   {id:'20261112-2',d:'12.11.',t:'Spieler des Monats',x:'In der Statistik wählt ihr jeden Monat einen Spieler des Monats. Flutlicht schlägt vor, wer im Training am häufigsten da war, danach zählen ▲ und Spieler des Spiels; die Spieler sehen ihn zwei Wochen lang in ihrer App, mit eurem Satz und ohne Zahlen.',go:['Zur Statistik',"hxGo('stats')"]},
   {id:'20261112-1',d:'12.11.',t:'Im Profil und im Termin blättern',x:'Oben im Spielerprofil, im Termin und im Trainerprofil stehen jetzt ‹ ›: Sie gehen durch die Liste, aus der du es geöffnet hast – etwa alle „Offen“ eines Termins, Im Blick oder die Tabelle; über die Mitte springst du direkt zu jemand anderem. Am Computer gehen auch die Pfeiltasten ← →.'},
   {id:'20261111-1',d:'11.11.',t:'Spieler: Abwesenheit melden und Foto erlauben',x:'Spieler können sich in der App für mehrere Termine auf einmal abmelden – du bestätigst es unter „Im Blick behalten“ mit einem Tipp: entschuldigt oder, bei längerer Zeit, als Pause. Außerdem fragt die App sie, ob ihr Spielerfoto hier zu sehen sein darf; bis dahin sehen es nur die Trainer, die Antwort steht im Profil.'},
@@ -30362,11 +30365,42 @@ function hxRender(){
       <button type="button" class="hx-link" onclick="openWeekReport()">Wochenbericht öffnen</button>
     </section>`;
   }catch(e){console.error('[hx week]',e);}
-  // ── This week, Mon–Sun ──
-  const b=_dbWeekBounds(0);
+  // ── This week, Mon–Sun – or the next one (1.2.126) ──
+  // Once every session of this week is over (Sunday after the match), the card
+  // shows the coming week: that is what gets planned now. The session just past
+  // stays one tap away in a "Zuletzt" line above the days – up to three days and
+  // until the next one begins, also from last week (Artem 16.11.: on Monday he
+  // wanted Sunday's match, and the card was already on the new week).
+  const nowMs=Date.now();
+  const endMs=s=>{const t=_rpeStartMs(s);if(t==null)return null;const m=+rpeSessionMinutes(s,null,null);return t+(m>0?m:90)*60000;};
+  const inWk=(s,bb)=>{const k=sk(s);return k>=bb.mondayYSK&&k<=bb.sundayYSK;};
+  let wo=0;
+  {const b0=_dbWeekBounds(0),b1=_dbWeekBounds(1);
+   const ahead=S.some(s=>{if(!s||!s.date||!inWk(s,b0))return false;const e=endMs(s);return e==null||e>nowMs;});
+   if(!ahead&&S.some(s=>s&&s.date&&inWk(s,b1)))wo=1;}
+  const b=_dbWeekBounds(wo);
   const days=[];
   for(let i=0;i<7;i++){const d=new Date(b.monday);d.setDate(b.monday.getDate()+i);days.push(d);}
-  html+=`<section class="hx-card hx-a-week" aria-label="Diese Woche"><div class="hx-h2row"><h3 class="hx-h2">Diese Woche</h3><span class="hx-wkr">${_wtPill(b.monday.getFullYear()*10000+(b.monday.getMonth()+1)*100+b.monday.getDate(),true)}<span class="hx-meta">KW ${_dbIsoWeek(b.monday)}</span></span></div>`;
+  let zl='';
+  try{
+    let li=-1,lt=-1;
+    S.forEach((s,si)=>{if(!s||!s.date||!sessTookPlace(s,season))return;const t=_rpeStartMs(s);if(t!=null&&t>lt){lt=t;li=si;}});
+    const k=li>=0?sk(S[li]):0;
+    if(li>=0&&k<b.mondayYSK&&Math.round((_hxDate(today)-_hxDate(k))/86400000)<=3){
+      const s=S[li],c=_hxCounts(D,li,season),isM=s.type==='match',dd=_hxDate(k);
+      const dow=dd.toLocaleDateString('de-DE',{weekday:'short'}).replace('.','');
+      const t=isM?(s.label||'Spiel'):(s.focus||'Training');
+      const res=isM&&typeof sbResult==='function'?sbResult(s):null;
+      let bel='';try{const g=_rpeSessGroups(D,s,li,season),n=g.rated.length+g.open.length;if(n)bel='Belastung '+g.rated.length+'/'+n;}catch(e){}
+      // kept to one line in the narrow column: the score says "match" by itself
+      const sub=['Zuletzt',res?res.txt:(isM?'Spiel':''),bel].filter(Boolean).join(' · ');
+      const todo=c.present===0,n=(todo?'–':c.present)+'/'+c.total;
+      const tip=todo?'Anwesenheit noch nicht erfasst':c.present+' von '+c.total+' anwesend';
+      zl=`<button type="button" class="hx-day past hx-zl" onclick="openSessFromMain(${li})"><span class="hx-day-d"><small>${esc(dow)}</small><b>${dd.getDate()}</b></span><span class="hx-day-x"><span class="hx-day-t">${esc(t)}</span><span class="hx-day-s">${esc(sub)}</span></span><span class="hx-day-n${todo?' todo':' done'}" title="${esc(tip)}"><span class="hx-vh">${esc(tip)}</span><span aria-hidden="true">${todo?'':hxIcon('check',13)}${esc(n)}</span></span></button>`;
+    }
+  }catch(e){console.error('[hx zuletzt]',e);}
+  const wkT=wo?'Nächste Woche':'Diese Woche';
+  html+=`<section class="hx-card hx-a-week" aria-label="${wkT}"><div class="hx-h2row"><h3 class="hx-h2">${wkT}</h3><span class="hx-wkr">${_wtPill(b.monday.getFullYear()*10000+(b.monday.getMonth()+1)*100+b.monday.getDate(),true)}<span class="hx-meta">KW ${_dbIsoWeek(b.monday)}</span></span></div>${zl}`;
   days.forEach(d=>{
     const dk=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
     const list=[];S.forEach((s,si)=>{if(s&&s.date&&sk(s)===dk)list.push(si);});
