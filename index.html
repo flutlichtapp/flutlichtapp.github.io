@@ -4439,9 +4439,33 @@ body.design-heute.hxk-dk .calx-e:hover{filter:brightness(1.15);}
 .som-hub.me{border-color:var(--fl-lamp,#F2C230);}
 .mk-som{margin:10px 0 0;font-size:.86rem;font-weight:600;text-align:center;}
 /* Demo (1.2.122) */
-#demoBadge{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));z-index:3000;pointer-events:none;
+#demoBadge{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));z-index:3000;cursor:pointer;
   background:rgba(14,35,80,.92);color:#F3F5FA;border:1px solid #F2C230;border-radius:999px;padding:5px 12px;font:600 .74rem/1.2 'Barlow',sans-serif;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.25);}
 #demoBadge b{color:#F2C230;font-weight:800;}
+#demoBadge u{color:#F2C230;text-underline-offset:2px;}
+#demoBadge:focus-visible{outline:2px solid #F2C230;outline-offset:2px;}
+/* Demo welcome (1.2.131): what Flutlicht is and where to start – one card, no tour */
+#demoWelcome{position:fixed;inset:0;z-index:3100;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(5,12,28,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);}
+#demoWelcome.open{display:flex;}
+#demoWelcome .dw-card{position:relative;width:min(480px,100%);max-height:calc(100% - 8px);overflow:auto;border-radius:22px;padding:24px 22px 20px;
+  background:radial-gradient(90% 220px at 50% 0,rgba(255,206,92,.16),rgba(255,206,92,0) 75%),#111D3A;color:#F3F5FA;border:1px solid #22386B;box-shadow:0 24px 70px rgba(0,0,0,.45);
+  font:500 15px/1.5 'Barlow',sans-serif;}
+#demoWelcome .dw-head{display:flex;align-items:center;gap:14px;margin:0 0 14px;}
+#demoWelcome .dw-head img{width:56px;height:56px;border-radius:14px;flex-shrink:0;}
+#demoWelcome h2{margin:0;font:800 2rem/1 'Big Shoulders Display',sans-serif;letter-spacing:.2px;color:#F3F5FA;}
+#demoWelcome .dw-tag{display:block;margin-top:4px;font-size:.8rem;font-weight:600;color:#B6C4DE;}
+#demoWelcome p{margin:0 0 10px;color:#D6DEEC;}
+#demoWelcome .dw-h{margin:16px 0 8px;font-size:.84rem;font-weight:700;color:#F2C230;}
+#demoWelcome .dw-list{display:flex;flex-direction:column;gap:8px;}
+#demoWelcome .dw-it{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border-radius:14px;border:1px solid #22386B;background:#172750;color:#F3F5FA;font:600 .95rem/1.3 'Barlow',sans-serif;text-align:left;cursor:pointer;}
+#demoWelcome .dw-it:hover{border-color:#F2C230;}
+#demoWelcome .dw-it svg{flex-shrink:0;color:#F2C230;}
+#demoWelcome .dw-it span{flex:1;min-width:0;}
+#demoWelcome .dw-it i{font-style:normal;color:#8796B8;font-size:1.1rem;}
+#demoWelcome .dw-go{display:block;width:100%;margin-top:16px;padding:13px;border:none;border-radius:14px;background:#F2C230;color:#0E2350;font:800 1rem/1 'Barlow',sans-serif;cursor:pointer;}
+#demoWelcome .dw-note{margin:10px 0 0;text-align:center;font-size:.78rem;color:#8796B8;}
+#demoWelcome :is(.dw-it,.dw-go):focus-visible{outline:2px solid #F2C230;outline-offset:2px;}
+@media(max-width:480px){#demoWelcome{padding:10px;align-items:flex-end;}#demoWelcome .dw-card{border-radius:20px;padding:20px 16px 16px;}#demoWelcome h2{font-size:1.75rem;}}
 @media(max-width:767px){#demoBadge{bottom:calc(76px + env(safe-area-inset-bottom));}}
 /* trainers: the dialog and the profile line */
 .abw-c-sum{margin:0 0 4px;font-size:1rem;color:var(--hx-ink,var(--bd));}
@@ -7770,8 +7794,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.130'; // v1.2.130: Im Blick behalten – nach Wichtigkeit
-const APP_VERSION_LABEL='1.2.130';
+const APP_VERSION='1.2.131'; // v1.2.131: Demo – Begrüßung mit „Probier mal“
+const APP_VERSION_LABEL='1.2.131';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -42143,9 +42167,59 @@ function _demoData(){
 }
 function _demoBadge(){
   if(document.getElementById('demoBadge'))return;
-  const b=document.createElement('div');b.id='demoBadge';b.setAttribute('role','status');
-  b.innerHTML='<b>Demo</b> · Beispieldaten, nichts wird gespeichert';
+  const b=document.createElement('button');b.type='button';b.id='demoBadge';b.title='Begrüßung und „Probier mal“ anzeigen';
+  b.innerHTML='<b>Demo</b> · Beispieldaten, nichts wird gespeichert · <u>Info</u>';
+  b.onclick=()=>_demoWelcome();
   document.body.appendChild(b);
+}
+// The welcome (1.2.131, Artem 17.11.): someone opening the demo from a link
+// lands on a trainer's overview without any idea what it is. One card: what
+// Flutlicht is, that nothing is kept, and four places to try – each a button.
+// Shown on entry (?demo, not the demo's own links with demo=1); the badge
+// brings it back. No step-by-step tour: skipped by most, and it breaks.
+function _demoNextTraining(){
+  const D=cd(),n=Date.now();if(!D)return -1;
+  return D.sessions.findIndex(s=>s&&s.type==='training'&&_rpeStartMs(s)>n);
+}
+function _demoWelcome(){
+  let w=document.getElementById('demoWelcome');
+  if(!w){
+    w=document.createElement('div');w.id='demoWelcome';w.setAttribute('role','dialog');w.setAttribute('aria-modal','true');w.setAttribute('aria-labelledby','dwTitle');
+    const ic=p=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+    const it=(k,svg,t)=>`<button type="button" class="dw-it" data-dw="${k}">${ic(svg)}<span>${t}</span><i aria-hidden="true">›</i></button>`;
+    w.innerHTML=`<div class="dw-card">
+      <div class="dw-head"><img src="icons/flutlicht-icon.svg" alt=""><div><h2 id="dwTitle">Willkommen bei Flutlicht</h2><span class="dw-tag">Demo · Beispieldaten</span></div></div>
+      <p>Die Team-App für Trainer und Spieler: Termine, Zu- und Absagen, Trainingsplanung, Belastung und Statistik an einem Ort. Spieler brauchen kein Konto – sie öffnen ihren Link aus der WhatsApp-Gruppe.</p>
+      <p>Du siehst die App als Trainer einer erfundenen Mannschaft. Probier alles aus – nichts wird gespeichert.</p>
+      <div class="dw-h">Probier mal</div>
+      <div class="dw-list">
+        ${it('sess','<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>','Wer kommt zum nächsten Training?')}
+        ${it('plan','<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/>','Den Trainingsplan ansehen')}
+        ${it('pv','<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>','So sehen es die Spieler')}
+        ${it('stats','<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>','Statistik und Wochenbericht')}
+      </div>
+      <button type="button" class="dw-go">Los geht's</button>
+      <p class="dw-note">Diese Infos gibt es wieder über „Demo“ unten.</p></div>`;
+    w.addEventListener('click',e=>{
+      if(e.target===w||e.target.closest('.dw-go')){_demoWelcomeClose();return;}
+      const b=e.target.closest('[data-dw]');if(b)_demoTry(b.dataset.dw);
+    });
+    document.body.appendChild(w);
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&w.classList.contains('open')){e.stopPropagation();_demoWelcomeClose();}},true);
+  }
+  w.classList.add('open');
+  setTimeout(()=>{const g=w.querySelector('.dw-go');if(g)g.focus({preventScroll:true});},30);
+}
+function _demoWelcomeClose(){const w=document.getElementById('demoWelcome');if(w)w.classList.remove('open');}
+function _demoTry(k){
+  _demoWelcomeClose();
+  const nt=_demoNextTraining();
+  try{
+    if(k==='sess'){if(nt>=0)openSessFromMain(nt);}
+    else if(k==='plan'){if(nt>=0)tplOpen(nt);}
+    else if(k==='pv'){const D=cd(),pi=D.players.findIndex(p=>p&&p.name==='Finn Wolf');previewPlayer(ensurePlayerToken(pi>=0?pi:0));}
+    else if(k==='stats'){hxGo('stats');}
+  }catch(e){console.warn('[Demo] Probier mal',e);}
 }
 function _demoStart(){
   const go=()=>{
@@ -42180,6 +42254,8 @@ function _demoStart(){
     try{_demoPlanSeed(dp,team);}catch(e){console.warn('[Demo] Trainingsplaner',e);}
     if(ao)ao.classList.remove('open');
     showApp();
+    // entry from a link (?demo), not the demo's own links (demo=1)
+    if([...q.keys()].every(k=>k==='demo')&&q.get('demo')!=='1')setTimeout(_demoWelcome,350);
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go,{once:true});else go();
 }
