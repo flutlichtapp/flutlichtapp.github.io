@@ -6326,6 +6326,15 @@ body.design-heute .a2hs{background:var(--hx-nav);bottom:calc(var(--mob-nav-h,62p
 .tpl-pick{display:flex;flex-direction:column;gap:8px;}
 .tpl-pk{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid var(--tp-line);background:var(--tp-card);cursor:pointer;text-align:left;color:var(--tp-ink);width:100%;}
 .tpl-pk:hover{border-color:var(--tp-link);background:var(--tp-sel);}
+/* 1.2.125: replace in the library / save as a new drill */
+.tpl-pk:disabled{cursor:default;opacity:.6;}
+.tpl-pk:disabled:hover{border-color:var(--tp-line);background:var(--tp-card);}
+.tpl-pk .tpl-bt span.tpl-wrap{white-space:normal;overflow:visible;}
+.tpl-lnew{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--tp-line);}
+.tpl-lnew>b{font-size:15px;}
+.tpl-lerr{font-size:13px;font-weight:600;line-height:1.4;color:#D9443F;}
+.tpl-lerr:empty{display:none;}
+.tpl-dlg.lib{width:600px;}
 .tpl-pk .tpl-bt b{font-size:15px;}
 .tpl-pk .tpl-bt span{font-size:13px;color:var(--tp-mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .tpl-pk-del{width:32px;height:32px;border-radius:9px;border:1px solid var(--tp-line2);background:var(--tp-card);color:var(--tp-mut);cursor:pointer;flex:0 0 auto;}
@@ -7749,8 +7758,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.124'; // v1.2.124: Anmeldung – Logo und Formular passen aufs Handy
-const APP_VERSION_LABEL='1.2.124';
+const APP_VERSION='1.2.125'; // v1.2.125: Trainingsplaner – Übung als neue Übung speichern
+const APP_VERSION_LABEL='1.2.125';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -37196,7 +37205,8 @@ function tplLibEdit(id){
   const it=id?TPL.lib[id]:null;
   const x=it||{title:'',cat:(TPL.libCat&&TPL.libCat!=='Alle')?TPL.libCat:'Spielform',min:15,players:'',area:'',desc:'',coach:''};
   _tplDlg(`<h4>${it?'Übung bearbeiten':'Neue Übung'}</h4>
-    <label>Name<input id="tlTitle" value="${_tplE(x.title)}" placeholder="z. B. Rondo 4 gegen 2" maxlength="120"></label>
+    <label>Name<input id="tlTitle" value="${_tplE(x.title)}" placeholder="z. B. Rondo 4 gegen 2" maxlength="120" oninput="_tplLibErr('tlErr','')"></label>
+    <div class="tpl-lerr" id="tlErr" role="alert"></div>
     <div class="two"><label>Kategorie${_tplCatSelect('tlCat',x.cat)}</label>
       <label>Dauer (Min.)<input id="tlMin" type="number" inputmode="numeric" min="1" max="240" value="${+x.min||''}"></label>
       <label>Spieler<input id="tlPl" value="${_tplE(x.players)}" placeholder="z. B. 8–12"></label></div>
@@ -37205,24 +37215,34 @@ function tplLibEdit(id){
     <label>Ablauf<textarea id="tlDesc" rows="5" placeholder="Aufbau, Regeln, Durchgänge und Pausen …">${_tplE(x.desc)}</textarea></label>
     <label>Coaching-Punkte<textarea id="tlCoach" rows="4" placeholder="Ein Punkt pro Zeile">${_tplE(x.coach)}</textarea></label>
     <div class="tpl-dlg-f">${it?`<button type="button" class="tpl-btn danger sp" onclick="tplLibDel(this,'${id}')">Löschen</button>`:''}
+      ${it?`<button type="button" class="tpl-btn" id="tlSaveNew" onclick="tplLibSave('${id}',true)" title="„${_tplE(x.title)}“ bleibt, wie sie ist">Als neue Übung speichern</button>`:''}
       <button type="button" class="tpl-btn" onclick="tplDlgClose()">Abbrechen</button>
-      <button type="button" class="tpl-btn pri" onclick="tplLibSave('${id||''}')">Speichern</button></div>`);
+      <button type="button" class="tpl-btn pri" onclick="tplLibSave('${id||''}')">Speichern</button></div>`,it?'lib':'');
   setTimeout(()=>{const t=document.getElementById('tlTitle');if(t)t.focus();},40);
 }
 // the help from inside the drill dialog: keep what was typed, come back to it
 function _tplLibIntHelp(){
   const box=document.getElementById('tplDlgBox');if(!box)return;
-  const keep=[...box.querySelectorAll('input,select,textarea')].map(e=>[e.id,e.value]);const html=box.innerHTML;
+  const keep=[...box.querySelectorAll('input,select,textarea')].map(e=>[e.id,e.value]);const html=box.innerHTML,cls=box.className;
   tplIntHelp();
   const btn=document.querySelector('#tplDlgBox .tpl-dlg-f .tpl-btn.pri');
-  if(btn){btn.textContent='Zurück zur Übung';btn.onclick=()=>{box.innerHTML=html;keep.forEach(([id,v])=>{const e=id&&document.getElementById(id);if(e)e.value=v;});};}
+  if(btn){btn.textContent='Zurück zur Übung';btn.onclick=()=>{box.innerHTML=html;box.className=cls;keep.forEach(([id,v])=>{const e=id&&document.getElementById(id);if(e)e.value=v;});};}
 }
-function tplLibSave(id){
+// asNew (1.2.125): what is in the dialog becomes a new drill, with the sketch
+// of the one it was opened from; that one stays as it is
+function tplLibSave(id,asNew){
   const v=k=>{const e=document.getElementById(k);return e?String(e.value||'').trim():'';};
   const title=v('tlTitle');
   if(!title){const t=document.getElementById('tlTitle');if(t){t.focus();t.style.borderColor='#D9443F';}return;}
-  const nid=id||_tplId('l');
-  const it=Object.assign({},TPL.lib[nid]||{},{title:title,cat:v('tlCat')||'Sonstiges',min:Math.max(0,Math.min(240,parseInt(v('tlMin'),10)||0)),
+  const src=id?TPL.lib[id]:null;
+  if(asNew&&!src)return;
+  if(asNew&&_tplLibNameTaken(title)){
+    _tplLibErr('tlErr',`„${title}“ gibt es schon in der Bibliothek – gib der neuen Übung einen anderen Namen.`);
+    const t=document.getElementById('tlTitle');if(t){t.focus();t.select();}return;
+  }
+  const nid=(id&&!asNew)?id:_tplId('l');
+  const base=asNew?(_dgHas(src.dia)?{dia:_tplClean(src.dia)}:{}):(TPL.lib[nid]||{});
+  const it=Object.assign({},base,{title:title,cat:v('tlCat')||'Sonstiges',min:Math.max(0,Math.min(240,parseInt(v('tlMin'),10)||0)),
     players:v('tlPl'),area:v('tlArea'),desc:v('tlDesc'),coach:v('tlCoach'),int:(+v('tlInt')>=1&&+v('tlInt')<=10)?+v('tlInt'):'',upd:Date.now()});
   TPL.lib[nid]=it;_tplWrite(_tplBase()+'/lib/'+nid,_tplClean(it));
   tplDlgClose();TPL.libOpen=nid;
@@ -37230,7 +37250,13 @@ function tplLibSave(id){
   _tplRenderLib();_tplRenderEd();
   const nf=TPL.newFor;TPL.newFor=null;
   if(!id&&nf!=null&&TPL.plan&&_tplIsSlot(TPL.plan.blocks[nf])){_tplFill(nf,nid);return;}
-  _tplToast(id?'Übung gespeichert':'Neue Übung in der Bibliothek');
+  _tplToast(asNew?`Neue Übung „${title}“ in der Bibliothek`:(id?'Übung gespeichert':'Neue Übung in der Bibliothek'));
+}
+function _tplLibErr(elId,msg){const e=document.getElementById(elId);if(e)e.textContent=msg||'';}
+// a name already in the library (any drill but exceptId), case ignored
+function _tplLibNameTaken(name,exceptId){
+  const k=String(name||'').trim().toLowerCase();
+  return !!k&&_tplLibItems().some(x=>x.id!==exceptId&&String(x.title||'').trim().toLowerCase()===k);
 }
 function tplLibDel(btn,id){
   if(!btn.dataset.arm){btn.dataset.arm='1';btn.textContent='Wirklich löschen?';return;}
@@ -37242,17 +37268,69 @@ function tplLibDel(btn,id){
     const it=Object.assign({},old,{upd:Date.now()});TPL.lib[id]=it;_tplWrite(_tplBase()+'/lib/'+id,it);_tplRenderLib();_tplRenderEd();
   });
 }
+// A block that came from the library asks first (1.2.125, Artem 17.11.: a new
+// drill based on an old one): replace the drill there with this version, or keep
+// it and save this version as a new drill, which the block then belongs to.
+// Plans that already hold the drill keep their own copy either way.
 function tplToLib(){
   const b=_tplCur();if(!b)return;
   if(!String(b.title||'').trim()){_tplToast('Bitte zuerst einen Namen eingeben');const t=document.getElementById('tplTitle');if(t)t.focus();return;}
-  const ex=!!(b.libId&&TPL.lib[b.libId]);const id=ex?b.libId:_tplId('l');
-  const it=Object.assign({},ex?TPL.lib[id]:{},{title:String(b.title).trim(),cat:b.cat,min:+b.min||0,players:b.players||'',
+  if(b.libId&&TPL.lib[b.libId]){_tplToLibDlg();return;}
+  _tplToLibPut(b,null);
+}
+function _tplLibOf(b,base){
+  return Object.assign({},base||{},{title:String(b.title).trim(),cat:b.cat,min:+b.min||0,players:b.players||'',
     area:b.area||'',desc:b.desc||'',coach:b.coach||'',dia:_dgHas(b.dia)?_tplClean(b.dia):null,int:b.int||'',upd:Date.now()});
-  TPL.lib[id]=it;b.libId=id;
-  _tplWrite(_tplBase()+'/lib/'+id,_tplClean(it));
+}
+// id: replace that drill; null: a new one
+function _tplToLibPut(b,id){
+  const ex=!!(id&&TPL.lib[id]);const nid=ex?id:_tplId('l');
+  const it=_tplLibOf(b,ex?TPL.lib[nid]:null);
+  TPL.lib[nid]=it;b.libId=nid;
+  _tplWrite(_tplBase()+'/lib/'+nid,_tplClean(it));
+  if(!ex){TPL.libOpen=nid;if(TPL.libCat&&TPL.libCat!=='Alle'&&TPL.libCat!==it.cat)TPL.libCat='Alle';}
   _tplRenderLib();_tplTouch();
   const lb=document.getElementById('tplLibBtn');if(lb)lb.innerHTML=_tplLibLbl(true);
-  _tplToast(ex?'Übung in der Bibliothek aktualisiert':'Übung in der Bibliothek gespeichert');
+  return ex;
+}
+// the block says the same as the drill in the library
+function _tplLibSame(b,it){
+  const n=x=>String(x==null?'':x).trim();
+  return n(b.title)===n(it.title)&&n(b.cat)===n(it.cat)&&(+b.min||0)===(+it.min||0)&&n(b.players)===n(it.players)
+    &&n(b.area)===n(it.area)&&n(b.desc)===n(it.desc)&&n(b.coach)===n(it.coach)&&n(b.int)===n(it.int)
+    &&JSON.stringify(_dgHas(b.dia)?b.dia:null)===JSON.stringify(_dgHas(it.dia)?it.dia:null);
+}
+function _tplToLibDlg(){
+  const b=_tplCur();const it=b&&TPL.lib[b.libId];if(!it)return;
+  const t=String(b.title||'').trim(),ot=String(it.title||'').trim()||t;
+  const same=_tplLibSame(b,it);
+  const def=t.toLowerCase()===ot.toLowerCase()?t+' – Variante':t;
+  _tplDlg(`<h4>In die Bibliothek</h4>
+    <p class="tpl-hint">Dieser Block kommt aus der Bibliothek: „${_tplE(ot)}“.</p>
+    <button type="button" class="tpl-pk" id="tlRepl" onclick="tplToLibDo('replace')"${same?' disabled':''}><span class="tpl-bt"><b>In der Bibliothek ersetzen</b>
+      <span class="tpl-wrap">${same?'Nichts geändert – in der Bibliothek steht schon diese Fassung.':`„${_tplE(ot)}“ bekommt diese Fassung. Pläne, in denen die Übung schon steht, bleiben, wie sie sind.`}</span></span></button>
+    <div class="tpl-lnew"><b>Oder als neue Übung speichern</b>
+      <span class="tpl-hint">„${_tplE(ot)}“ bleibt, wie sie ist. Dieser Block gehört dann zur neuen Übung.</span>
+      <label>Name der neuen Übung<input id="tlNewT" value="${_tplE(def)}" maxlength="120" oninput="_tplLibErr('tlNewErr','')" onkeydown="if(event.key==='Enter'){event.preventDefault();tplToLibDo('new');}"></label>
+      <div class="tpl-lerr" id="tlNewErr" role="alert"></div></div>
+    <div class="tpl-dlg-f"><button type="button" class="tpl-btn" onclick="tplDlgClose()">Abbrechen</button>
+      <button type="button" class="tpl-btn pri" id="tlNewBtn" onclick="tplToLibDo('new')">Als neue Übung speichern</button></div>`);
+}
+function tplToLibDo(mode){
+  const b=_tplCur();if(!b||!b.libId||!TPL.lib[b.libId])return;
+  if(mode==='replace'){
+    if(_tplLibSame(b,TPL.lib[b.libId])){tplDlgClose();return;}
+    _tplToLibPut(b,b.libId);tplDlgClose();
+    _tplToast('Übung in der Bibliothek aktualisiert');return;
+  }
+  const inp=document.getElementById('tlNewT');const name=inp?inp.value.trim():'';
+  const bad=m=>{_tplLibErr('tlNewErr',m);if(inp){inp.focus();inp.select();}};
+  if(!name){bad('Bitte einen Namen eingeben.');return;}
+  if(_tplLibNameTaken(name)){bad(`„${name}“ gibt es schon in der Bibliothek – bitte einen anderen Namen.`);return;}
+  b.title=name;
+  _tplToLibPut(b,null);tplDlgClose();
+  _tplRenderList();_tplRenderEd();
+  _tplToast(`Neue Übung „${name}“ in der Bibliothek`);
 }
 
 // ── Templates and earlier plans
