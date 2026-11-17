@@ -7770,8 +7770,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.128'; // v1.2.128: Demo – Trainingsplaner, Aufstellung, Links, Rückblick und mehr
-const APP_VERSION_LABEL='1.2.128';
+const APP_VERSION='1.2.129'; // v1.2.129: Demo – Wochenthemen, Link zur Trainingsphilosophie des DFB
+const APP_VERSION_LABEL='1.2.129';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -42111,11 +42111,12 @@ function _demoData(){
    p.prb=[{id:'prd1',d:_demoIso(d1),v:{tech:4,takt:3,ath:4,einst:5},auf:'vl',n:'Starker Antritt, gutes Kopfballspiel. Im Aufbau noch unsicher unter Druck.',by:'Demo-Trainer',t:d1.getTime()+21*36e5},
      {id:'prd2',d:_demoIso(d2),v:{tech:4,takt:4,ath:4,einst:5},auf:'ja',n:'Fügt sich gut ein, spricht viel auf dem Platz.',by:'Co-Trainer',t:d2.getTime()+21*36e5}];}
   // Physio at the next training: three slots, two booked
-  {const nt=sessions.findIndex((s,si)=>s.type==='training'&&start[si]>nowMs);
+  {const tn=sessions.map((s,si)=>si).filter(si=>sessions[si].type==='training'&&start[si]>nowMs),nt=tn.length>1?tn[1]:(tn.length?tn[0]:-1);
    if(nt>=0){sessions[nt].physio=3;[2,9].forEach(pi=>{const p=players[pi];if(!Array.isArray(p.physio))p.physio=[];p.physio[nt]=true;});}}
   const db={[key]:{sessions,players},
-    [team+'__rules']:{autoYes:{t:true,m:true},abs:{m:'frist',h:4},meet:{h:60,a:75,aw:'Parkplatz am Sportplatz'}},
+    [team+'__rules']:{autoYes:{t:true,m:true},abs:{m:'frist',h:4},meet:{h:60,a:75,aw:'Parkplatz am Sportplatz'},wt:['Breite','Tiefe']},
     [team+'__focuses']:foc.slice(),[team+'__gegner']:{o:oppN}};
+  {const m0=new Date(from);m0.setDate(m0.getDate()-((m0.getDay()+6)%7));db[key].wk={['w'+skOf(m0)]:'Breite'};}
   // Spieler des Monats: last month
   const lm=new Date(now.getFullYear(),now.getMonth()-1,1),ym=lm.getFullYear()+'-'+String(lm.getMonth()+1).padStart(2,'0');
   if(now.getDate()<=14)db[team+'__som']={[ym]:{n:'Finn Wolf',why:'Bei jedem Training da und immer voll dabei',t:new Date(now.getFullYear(),now.getMonth(),1,19).getTime(),by:'Demo-Trainer'}};
@@ -42125,7 +42126,7 @@ function _demoData(){
   g.newsSeen={'demo-trainer':APP_NEWS[0].id};
   g.matchLineups=lineups;
   g.quickLinks=[{text:'Spielplan & Tabelle – fussball.de',url:'https://www.fussball.de'},
-    {text:'Training & Übungen – DFB',url:'https://www.dfb.de/trainer'},
+    {text:'Trainingsphilosophie Deutschland – DFB',url:'https://www.dfb.de/mehr-fussball/dfb-akademie/trainingsphilosophie-deutschland'},
     {text:'Fußball-Regeln 2026/27 (DFB, PDF)',url:'https://assets.dfb.de/uploads/000/336/376/original_REGELHEFT_SCHIRIS_2026_27_GESAMT_web.pdf'}];
   Object.defineProperty(g,'__dp',{value:dp,enumerable:false,configurable:true});
   return g;

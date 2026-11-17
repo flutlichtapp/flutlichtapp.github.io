@@ -51,8 +51,14 @@ srv.listen(0,async()=>{const B='http://localhost:'+srv.address().port;
  r=await p.evaluate(()=>{const x=_rvLibIdx();return Object.keys(x).length;});
  ok(r>=3,tag+'Bibliothek zeigt den Rückblick zu Übungen ('+r+')');
  // Links
- r=await p.evaluate(()=>({n:getLinks().length,vis:(()=>{const li=document.getElementById('hxLinksItem');return !!li&&li.style.display!=='none';})()}));
+ r=await p.evaluate(()=>({urls:getLinks().map(l=>l.url),n:getLinks().length,vis:(()=>{const li=document.getElementById('hxLinksItem');return !!li&&li.style.display!=='none';})()}));
  ok(r.n===3&&(ph||r.vis),tag+'Links: 3 Einträge'+(ph?'':', Menüpunkt sichtbar'));
+ ok(r.urls.every(u=>/^https:\/\//.test(u))&&!r.urls.some(u=>/dfb\.de\/trainer\/?$/.test(u)),tag+'Links: nur geprüfte Adressen (nicht mehr dfb.de/trainer, 1.2.129)');
+ // Wochenthemen (1.2.129): Breite/Tiefe take turns, the pill in the overview and the Wochenbericht
+ r=await p.evaluate(()=>{const D=cd();const m=wtMap(D,UI.currentTeam,UI.currentSeason);const v=Object.values(m).map(x=>x.t);
+   hxRender();const pill=(document.querySelector('#hxHome .hx-a-week .wt-pill')||{}).textContent||'';
+   return {pool:wtPool().join(','),n:v.length,b:v.filter(t=>t==='Breite').length,t:v.filter(t=>t==='Tiefe').length,pill};});
+ ok(r.pool==='Breite,Tiefe'&&r.n>=8&&Math.abs(r.b-r.t)<=1&&/^(Breite|Tiefe)$/.test(r.pill),tag+'Wochenthemen: Breite und Tiefe im Wechsel, in der Übersicht „'+r.pill+'“ ('+r.b+'/'+r.t+')');
  // Aufstellung for the next match
  r=await p.evaluate(nm=>{const k=_mlKey(UI.currentTeam,UI.currentSeason,nm),lu=G.matchLineups[k];return lu?Object.keys(lu.slots).length+'/'+lu.subs.length:'';},S.nm);
  ok(r==='11/3',tag+'Aufstellung für das nächste Spiel ('+r+')');
@@ -68,8 +74,8 @@ srv.listen(0,async()=>{const B='http://localhost:'+srv.address().port;
  ok(r==='2 2',tag+'Probetraining: Eindrücke von beiden Trainern');
  r=await p.evaluate(()=>{window._hxFlagsAll=true;hxRender();window._hxFlagsAll=false;return [...document.querySelectorAll('#hxHome .hx-a-flags .hx-flag')].map(x=>x.textContent.replace(/\s+/g,' ')).join(' | ');});
  ok(/nicht da .*Urlaub/.test(r),tag+'Im Blick: gemeldete Abwesenheit zum Bestätigen');
- r=await p.evaluate(nt=>{const D=cd(),s=D.sessions[nt];return sessPhysioOn(s)+' '+D.players.filter(p=>Array.isArray(p.physio)&&p.physio[nt]).length;},S.nt);
- ok(r==='true 2',tag+'Physio beim nächsten Training (2 gebucht)');
+ r=await p.evaluate(()=>{const D=cd(),n=Date.now();const i=D.sessions.findIndex(s=>sessPhysioOn(s));const s=D.sessions[i];return (i>=0&&s.type==='training'&&_rpeStartMs(s)>n)+' '+D.players.filter(p=>Array.isArray(p.physio)&&p.physio[i]).length;});
+ ok(r==='true 2',tag+'Physio bei einem kommenden Training (2 gebucht)');
  // nothing reached real storage or Firebase
  await p.goto(B+'/sw.js');
  const after=await p.evaluate(()=>JSON.stringify(Object.keys(localStorage).sort()));
