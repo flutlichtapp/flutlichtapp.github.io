@@ -7770,8 +7770,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.127'; // v1.2.127: „Zuletzt“ unten in der Karte des nächsten Termins
-const APP_VERSION_LABEL='1.2.127';
+const APP_VERSION='1.2.128'; // v1.2.128: Demo – Trainingsplaner, Aufstellung, Links, Rückblick und mehr
+const APP_VERSION_LABEL='1.2.128';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -17725,7 +17725,7 @@ async function rvOpen(si,opts){
   _rvRender();
   openM('moRv');
   // With a plan: its exercises and the planned figures
-  if(s.pid&&typeof _tplRead==='function'&&_tplAllowed()&&_fbReady()){
+  if(s.pid&&typeof _tplRead==='function'&&_tplAllowed()&&(_fbReady()||window.FL_DEMO)){
     try{
       const pl=_tplNorm(await _tplRead(_tplBase(R.team)+'/plans/'+s.pid));
       if(_rv!==R||!pl)return;
@@ -41934,6 +41934,93 @@ document.addEventListener('click',(e)=>{
 // its own page — matches the trainer's.
 function _demoRnd(a,b){let h=(Math.imul(a+1,2654435761)^Math.imul(b+7,40503))>>>0;h=Math.imul(h^(h>>>15),2246822519)>>>0;h=Math.imul(h^(h>>>13),3266489917)>>>0;return ((h^(h>>>16))>>>0)/4294967296;}
 function _demoIso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+// ── Demo, second round (1.2.128): what a trainer would otherwise find empty –
+// the Trainingsplaner (library, plans, a template), a lineup for the next
+// match, links, Rückblick, notes on opponents, a trial player's impressions,
+// a reported absence and the physio. All invented.
+function _demoPlanner(sessions,start,nowMs,season){
+  const C=DG_CONES;
+  const P=(k,x,y,n)=>({t:'p',k,x,y,n:n==null?'':String(n)});
+  const L=(k,x1,y1,x2,y2,cx,cy)=>Object.assign({t:'l',k,x1,y1,x2,y2},cx!=null?{cx,cy}:{});
+  const lib={
+    ld_akt:{title:'Aktivierung mit Ball',cat:'Aufwärmen',min:10,players:'alle',area:'30 × 20 m',int:3,
+      desc:'Jeder mit Ball. Freies Dribbling im Feld; auf Zuruf Richtungswechsel, Sohle, Übersteiger. Zum Schluss dynamisch dehnen.',
+      coach:'Kopf hoch\nViele Ballkontakte\nTempo langsam steigern',
+      dia:{bg:'',it:[{t:'z',x:120,y:80,w:400,h:240},P('a',190,140),P('a',300,210),P('a',430,150),P('a',250,280),P('a',420,270),
+        {t:'b',x:208,y:152},{t:'b',x:318,y:222},{t:'b',x:448,y:162},L('drib',190,140,260,120,225,105),L('drib',430,150,470,230,480,180)]}},
+    ld_rondo:{title:'Rondo 5 gegen 2',cat:'Rondo',min:12,players:'7 pro Feld',area:'12 × 12 m',int:5,
+      desc:'Fünf außen halten den Ball gegen zwei in der Mitte. Wer den Ball verliert oder einen Fehlpass spielt, geht in die Mitte. 3 × 3 Minuten, 1 Minute Pause.',
+      coach:'Offene Körperstellung\nBall flach in den starken Fuß\nNach dem Pass sofort neu anbieten',
+      dia:{bg:'',it:[{t:'z',x:220,y:100,w:200,h:200},{t:'c',x:220,y:100,c:C[0]},{t:'c',x:420,y:100,c:C[0]},{t:'c',x:420,y:300,c:C[0]},{t:'c',x:220,y:300,c:C[0]},
+        P('a',320,100,7),P('a',420,180,8),P('a',380,300,10),P('a',260,300,6),P('a',220,190,4),P('b',300,190),P('b',350,225),{t:'b',x:336,y:112},
+        L('pass',320,100,420,180),L('pass',420,180,260,300,330,230)]}},
+    ld_pass:{title:'Passdreieck mit Nachlaufen',cat:'Passspiel',min:12,players:'3–4 pro Station',area:'15 × 15 m',int:4,
+      desc:'Drei Hütchen im Dreieck. Pass zum nächsten Hütchen und dem eigenen Pass hinterherlaufen. Nach 2 Minuten Richtung wechseln, danach nur Direktpässe.',
+      coach:'Passschärfe\nAnnahme mit dem richtigen Fuß in die Laufrichtung\nVor dem Pass ansprechen',
+      dia:{bg:'',it:[{t:'c',x:200,y:310,c:C[1]},{t:'c',x:440,y:310,c:C[1]},{t:'c',x:320,y:100,c:C[1]},P('a',185,330),P('a',455,330),P('a',320,80),{t:'b',x:204,y:322},
+        L('pass',200,310,440,310),L('run',185,330,430,330,310,360),L('pass',440,310,320,100),L('pass',320,100,200,310)]}},
+    ld_press:{title:'Pressing 6 gegen 4 + 2',cat:'Umschalten',min:20,players:'12',area:'40 × 30 m',int:7,
+      desc:'Vier halten mit zwei Anspielern an den Enden den Ball, sechs pressen. Nach Ballgewinn in 6 Sekunden auf eins der Minitore abschließen.',
+      coach:'Ballnahe Seite zuschieben\nAuf das Signal gemeinsam anlaufen (schlechte Annahme, Rückpass)\nNach Ballgewinn sofort nach vorn',
+      dia:{bg:'',it:[{t:'z',x:120,y:70,w:400,h:260},{t:'g',x:250,y:70,r:0},{t:'g',x:390,y:70,r:0},P('n',100,200),P('n',540,200),
+        P('b',230,160),P('b',410,160),P('b',250,270),P('b',390,270),P('a',300,140),P('a',340,200),P('a',280,230),P('a',400,220),P('a',200,220),P('a',450,120),
+        {t:'b',x:262,y:282},L('run',300,140,250,255),L('run',280,230,255,262)]}},
+    ld_aufbau:{title:'Spielaufbau 7 gegen 5',cat:'Spielform',min:20,players:'12 + TW',area:'Halbes Feld',int:7,
+      desc:'Torwart und sechs Feldspieler bauen gegen fünf auf. Dribbling über die Mittellinie = 1 Punkt. Die Fünf kontern nach Ballgewinn auf das große Tor.',
+      coach:'Breite geben\nTorwart als zusätzlicher Spieler\nAbstände 10–15 m'},
+    ld_tor:{title:'Torabschluss nach Doppelpass',cat:'Torschuss',min:15,players:'8–12 + TW',area:'Strafraum',int:6,
+      desc:'Pass auf den Wandspieler, Doppelpass, Abschluss aus 16 m. Zwei Gruppen links und rechts, nach jedem Schuss die Seite wechseln.',
+      coach:'Erster Kontakt Richtung Tor\nFlach und platziert\nNachsetzen',
+      dia:{bg:'half',it:[{t:'G',x:320,y:28,r:0},P('k',320,48),P('a',190,320),P('a',450,320),P('n',320,200),{t:'c',x:190,y:340,c:C[0]},{t:'c',x:450,y:340,c:C[0]},
+        {t:'b',x:204,y:308},L('pass',190,320,310,210),L('pass',310,210,250,170),L('run',190,320,250,175,200,240),L('shot',250,170,300,48)]}},
+    ld_spiel:{title:'Abschlussspiel 8 gegen 8',cat:'Spielform',min:25,players:'16 + 2 TW',area:'Halbes Feld',int:8,
+      desc:'Freies Spiel auf zwei große Tore. Ein Tor nach Ballgewinn im letzten Drittel zählt doppelt.',
+      coach:'Thema der Woche umsetzen\nCoachen nur in Unterbrechungen'},
+    ld_aus:{title:'Auslaufen und Dehnen',cat:'Auslaufen',min:8,players:'alle',int:2,
+      desc:'Locker auslaufen, danach Dehnen der großen Muskelgruppen. Kurzes Wort zum Training.',coach:''}
+  };
+  Object.keys(lib).forEach(id=>{lib[id].upd=nowMs-20*864e5;});
+  const blk=(pid,i,id,ph,min)=>{const it=lib[id];
+    return Object.assign({},it,{id:'b'+pid.slice(1,9)+i,libId:id,ph:ph||'',min:min||it.min,org:'',grp:'',dia:it.dia||null});};
+  const tr=[];sessions.forEach((s,si)=>{if(s.type==='training')tr.push(si);});
+  const pastT=tr.filter(si=>start[si]+90*6e4<nowMs),nextT=tr.filter(si=>start[si]+90*6e4>=nowMs);
+  const plans={},rv={};
+  const mk=(si,list,done)=>{
+    const s=sessions[si],pid=_tplPidFor({sessions},s,season);s.pid=pid;
+    const p={v:1,season,date:s.date,time:s.time,upd:start[si]-2*864e5,by:'Demo-Trainer',grps:[],
+      blocks:list.map((x,i)=>blk(pid,i,x[0],x[1],x[2]))};
+    if(done)p.done={ts:start[si],sec:p.blocks.map((b,i)=>b.min*60+(i===2?180:i===3?-120:30)),tot:0};
+    if(p.done)p.done.tot=p.done.sec.reduce((a,x)=>a+x,0);
+    plans[pid]=p;return p;
+  };
+  // the last two trainings: with plan, plan against field and a Rückblick
+  if(pastT.length>=2){
+    const a=pastT[pastT.length-2],b=pastT[pastT.length-1];
+    const pa=mk(a,[['ld_akt'],['ld_rondo'],['ld_press'],['ld_spiel',null,30],['ld_aus']],true);
+    rv[a]={g:2,gut:'Pressing mit viel Einsatz, die Ballgewinne kamen oft.',anders:'Rondo zu lang – 2 × 3 Minuten reichen.',
+      b:{[pa.blocks[1].id]:{v:'adj',c:'kürzer',n:pa.blocks[1].title,l:'ld_rondo'},[pa.blocks[2].id]:{v:'ok',n:pa.blocks[2].title,l:'ld_press'}},t:start[a]+3*36e5,by:'Demo-Trainer'};
+    const pb=mk(b,[['ld_akt'],['ld_rondo',null,8],['ld_pass'],['ld_aufbau',null,25],['ld_spiel',null,25],['ld_aus']],true);
+    rv[b]={g:3,gut:'Rondo kurz und knackig, alle waren wach. Spielaufbau über den Torwart klappte immer besser.',anders:'Spielaufbau: Feld war zu klein – nächstes Mal 45 × 35 m.',
+      b:{[pb.blocks[1].id]:{v:'ok',n:pb.blocks[1].title,l:'ld_rondo'},[pb.blocks[3].id]:{v:'adj',c:'Feld größer',n:pb.blocks[3].title,l:'ld_aufbau'},[pb.blocks[4].id]:{v:'ok',n:pb.blocks[4].title,l:'ld_spiel'}},t:start[b]+3*36e5,by:'Demo-Trainer'};
+  }
+  // the next training: planned along the Standardablauf; the one after: not yet
+  if(nextT.length)mk(nextT[0],[['ld_akt','Aktivierung 1',10],['ld_rondo','Aktivierung 2',10],['ld_press','Hauptteil 1',20],['ld_tor','Hauptteil 2',20],['ld_spiel','Schlussteil',30]],false);
+  Object.keys(rv).forEach(si=>{sessions[si].rv=rv[si];});
+  const tpl={td1:{name:'Pressing · 90 Min.',blocks:[['ld_akt','Aktivierung 1',10],['ld_rondo','Aktivierung 2',10],['ld_press','Hauptteil 1',20],['ld_tor','Hauptteil 2',20],['ld_spiel','Schlussteil',30]]
+    .map((x,i)=>{const b=blk('ptpl0000',i,x[0],x[1],x[2]);delete b.id;return b;}),n:5,m:90,upd:nowMs-30*864e5,grps:[]}};
+  return {lib,plans,tpl};
+}
+// The planner keeps unconfirmed writes in localStorage (TPL_LS) and reads
+// them back without Firebase – in the demo that is the in-memory storage.
+function _demoPlanSeed(dp,team){
+  if(!dp)return;
+  const b=_tplBase(team),ts=Date.now()-6e4,a={},idx={};
+  Object.keys(dp.lib).forEach(id=>{a[b+'/lib/'+id]={v:dp.lib[id],ts};});
+  Object.keys(dp.plans).forEach(pid=>{const p=dp.plans[pid];a[b+'/plans/'+pid]={v:p,ts};idx[pid]=_tplIdxSum(p);a[b+'/idx/'+pid]={v:idx[pid],ts};});
+  Object.keys(dp.tpl).forEach(id=>{a[b+'/tpl/'+id]={v:dp.tpl[id],ts};});
+  try{localStorage.setItem(TPL_LS,JSON.stringify(a));}catch(e){}
+  TPL.idxCache[team]=idx;_tplIdxRemember(team);
+}
 function _demoData(){
   const now=new Date(),day0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const y0=now.getMonth()>=6?now.getFullYear():now.getFullYear()-1;
@@ -41965,7 +42052,7 @@ function _demoData(){
     sessions.forEach((s,si)=>{
       if(pi===TRIAL&&start[si]<trialFrom.getTime()){p.s[si]=3;return;}
       if(past(si)&&nowMs-start[si]>26*36e5){
-        const r=_demoRnd(pi,si);p.s[si]=r<0.84?1:(r<0.92?0:2);p.ay[si]=null;
+        const r=_demoRnd(pi,si);p.s[si]=r<0.88?1:(r<0.91?0:2);p.ay[si]=null;
         if(p.s[si]===1){
           if(_demoRnd(pi+40,si)<0.78)p.rpe[si]=s.type==='match'?6+Math.floor(_demoRnd(pi+60,si)*4):3+Math.floor(_demoRnd(pi+60,si)*5);
           const q=_demoRnd(pi+80,si);if(q<0.14)p.perf[si]=1;else if(q>0.96)p.perf[si]=3;
@@ -41988,12 +42075,6 @@ function _demoData(){
     const top=field[Math.floor(_demoRnd(si,30)*Math.min(field.length,10))];
     if(top)s.mvp={c:{[top.name]:5,[field[0].name===top.name?field[1].name:field[0].name]:2}};
   });
-  // The next match within four days: Kader and Treffpunkt published
-  const nm=sessions.findIndex((s,si)=>s.type==='match'&&start[si]>nowMs);
-  if(nm>=0&&start[nm]-nowMs<4*864e5){
-    const s=sessions[nm];
-    s.squad={p:players.filter(p=>!p.trial).slice(0,15).map(p=>p.name),out:[],meet:'11:45',where:s.homeAway==='home'?'Kunstrasen':'Parkplatz am Sportplatz',t:nowMs-864e5,by:'Demo-Trainer'};
-  }
   // Entwicklungsziele with feedback
   const zt=nowMs-30*864e5,fd=new Date(nowMs-9*864e5);
   [[4,'tech','Schwacher Fuß im Spielaufbau','Pässe mit links auch unter Druck','Nach dem Training 10 Minuten Pässe gegen die Wand mit links',1],
@@ -42001,9 +42082,40 @@ function _demoData(){
    [11,'ath','Antritt auf den ersten 5 Metern','Du gewinnst mehr Laufduelle','Sprints im Training immer voll',1]].forEach(([pi,area,txt,see,how,v],i)=>{
     players[pi].ziele=[{id:'zd'+i,area,txt,see,how,bis:1,t:zt,by:'Demo-Trainer',fb:[{d:_demoIso(fd),v,c:v===1?'Gute Entwicklung, dranbleiben.':'Erste Schritte sind gemacht.',t:fd.getTime(),by:'Demo-Trainer'}]}];
   });
+  const dp=_demoPlanner(sessions,start,nowMs,season);
+  const skOf=d=>d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
+  // A reported absence, not yet confirmed: Mats on holiday from tomorrow for a week
+  {const p=players[12],f=new Date(day0),u=new Date(day0);f.setDate(f.getDate()+1);u.setDate(u.getDate()+8);
+   const fk=skOf(f),uk=skOf(u);p.abw={['b'+fk]:{f:fk,u:uk,t:nowMs-20*36e5,g:'u'}};p.excOK=[];
+   sessions.forEach((s,si)=>{const d=new Date(start[si]);const k=skOf(d);if(k>=fk&&k<=uk&&start[si]>nowMs){p.s[si]=2;p.ay[si]=null;p.excOK[si]='a';}});}
+  // The next match within four days: Kader and Treffpunkt published (without who is away)
+  const nm=sessions.findIndex((s,si)=>s.type==='match'&&start[si]>nowMs);
+  if(nm>=0&&start[nm]-nowMs<4*864e5){
+    const s=sessions[nm];
+    s.squad={p:players.filter(p=>!p.trial&&p.s[nm]!==2).slice(0,15).map(p=>p.name),out:[],meet:'11:45',where:s.homeAway==='home'?'Kunstrasen':'Parkplatz am Sportplatz',t:nowMs-864e5,by:'Demo-Trainer'};
+  }
+  // Aufstellung for the next match
+  const lineups={};
+  if(nm>=0){
+    lineups[_mlKey(team,season,nm)]={formation:'4-2-3-1',slots:{gk:0,rb:3,cb1:1,cb2:2,lb:4,dm1:5,dm2:13,mr:9,mc:8,ml:10,st:11},
+      subs:[6,7,14],guests:[],customSlots:null,matchKind:'meisterschaft',savedAt:nowMs-864e5,sessDate:sessions[nm].date,season};
+  }
+  // Notes on opponents: the next one and the last one
+  const oppN={};
+  {const last=sessions.map((s,si)=>si).filter(si=>sessions[si].type==='match'&&start[si]<nowMs).pop();
+   const put=(si,o)=>{if(si==null||si<0)return;const lb=sessions[si].label;oppN[_oppKey(lb)]=Object.assign({n:lb,t:nowMs-3*864e5,by:'Demo-Trainer'},o);};
+   put(nm,{wie:'4-4-2, presst hoch, viele lange Bälle auf die schnelle Nr. 9.',acht:'Nr. 9 nie allein lassen. Standards: zwei Kopfballspieler bei Ecken.',platz:'Kunstrasen, Parken hinter der Halle, Kabine 2.'});
+   put(last,{wie:'Tief stehend, kontert über links.',acht:'Rückwärtsbewegung nach eigenem Ballverlust.'});}
+  // The trial player: impressions of both trainers
+  {const p=players[TRIAL],d1=new Date(day0),d2=new Date(day0);d1.setDate(d1.getDate()-14);d2.setDate(d2.getDate()-7);
+   p.prb=[{id:'prd1',d:_demoIso(d1),v:{tech:4,takt:3,ath:4,einst:5},auf:'vl',n:'Starker Antritt, gutes Kopfballspiel. Im Aufbau noch unsicher unter Druck.',by:'Demo-Trainer',t:d1.getTime()+21*36e5},
+     {id:'prd2',d:_demoIso(d2),v:{tech:4,takt:4,ath:4,einst:5},auf:'ja',n:'Fügt sich gut ein, spricht viel auf dem Platz.',by:'Co-Trainer',t:d2.getTime()+21*36e5}];}
+  // Physio at the next training: three slots, two booked
+  {const nt=sessions.findIndex((s,si)=>s.type==='training'&&start[si]>nowMs);
+   if(nt>=0){sessions[nt].physio=3;[2,9].forEach(pi=>{const p=players[pi];if(!Array.isArray(p.physio))p.physio=[];p.physio[nt]=true;});}}
   const db={[key]:{sessions,players},
     [team+'__rules']:{autoYes:{t:true,m:true},abs:{m:'frist',h:4},meet:{h:60,a:75,aw:'Parkplatz am Sportplatz'}},
-    [team+'__focuses']:foc.slice()};
+    [team+'__focuses']:foc.slice(),[team+'__gegner']:{o:oppN}};
   // Spieler des Monats: last month
   const lm=new Date(now.getFullYear(),now.getMonth()-1,1),ym=lm.getFullYear()+'-'+String(lm.getMonth()+1).padStart(2,'0');
   if(now.getDate()<=14)db[team+'__som']={[ym]:{n:'Finn Wolf',why:'Bei jedem Training da und immer voll dabei',t:new Date(now.getFullYear(),now.getMonth(),1,19).getTime(),by:'Demo-Trainer'}};
@@ -42011,6 +42123,11 @@ function _demoData(){
     trainers:[{name:'Demo-Trainer',id:'t_demo',teams:[team],role:'Trainer',mgr:true,plan:true},{name:'Co-Trainer',id:'t_co',teams:[team],role:'Trainer'}],db,auditLog:[]});
   if(!Array.isArray(g.auditLog))g.auditLog=[];
   g.newsSeen={'demo-trainer':APP_NEWS[0].id};
+  g.matchLineups=lineups;
+  g.quickLinks=[{text:'Spielplan & Tabelle – fussball.de',url:'https://www.fussball.de'},
+    {text:'Training & Übungen – DFB',url:'https://www.dfb.de/trainer'},
+    {text:'Fußball-Regeln 2026/27 (DFB, PDF)',url:'https://assets.dfb.de/uploads/000/336/376/original_REGELHEFT_SCHIRIS_2026_27_GESAMT_web.pdf'}];
+  Object.defineProperty(g,'__dp',{value:dp,enumerable:false,configurable:true});
   return g;
 }
 function _demoBadge(){
@@ -42022,6 +42139,7 @@ function _demoBadge(){
 function _demoStart(){
   const go=()=>{
     G=_demoData();
+    const dp=G.__dp;
     _fbInitialLoaded=true;
     const team='U19',season=G.seasonList[0];
     try{localStorage.setItem('fcf_currentTeam',team);localStorage.setItem('fcf_currentSeason',season);}catch(e){}
@@ -42048,6 +42166,7 @@ function _demoStart(){
       return;
     }
     CU={name:'Demo-Trainer',role:'trainer',teams:[team],loginAt:Date.now()};
+    try{_demoPlanSeed(dp,team);}catch(e){console.warn('[Demo] Trainingsplaner',e);}
     if(ao)ao.classList.remove('open');
     showApp();
   };
