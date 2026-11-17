@@ -4109,6 +4109,16 @@ body.design-kabine:not(.theme-dark) .mob .db-h{font-family:var(--d-num);font-wei
 #moSettings .set-hide{display:none !important;}
 .set-sec-h{margin:0 0 2px;font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:1.5px;font-weight:400;color:var(--bd);}
 .set-sec-sub{margin:0 0 12px;font-size:.75rem;color:var(--gm);}
+/* Einstellungen → Trainerteam (1.2.132) */
+.trt-list{margin-bottom:12px;}
+.trt-add{border-top:1px solid var(--gl);padding-top:12px;}
+.trt-form{display:flex;flex-direction:column;gap:6px;max-width:440px;}
+#moSettings .trt-l{display:block;margin:4px 0 0;font-size:.8rem;font-weight:700;color:var(--bd);text-transform:none;letter-spacing:0;}
+.trt-form input{width:100%;padding:8px 10px;border:1px solid var(--gl);border-radius:8px;font:500 .9rem 'Barlow',sans-serif;box-sizing:border-box;}
+.trt-form .tchecks{margin-bottom:0;}
+.trt-hint{margin:2px 0 0;font-size:.75rem;color:var(--gm);}
+.trt-btns{display:flex;gap:8px;margin-top:6px;}
+.trt-add[hidden],.trt-form[hidden],.trt-open[hidden]{display:none!important;}
 .set-link{padding:12px;border:1px solid var(--gl);background:#fff;margin-bottom:8px;gap:12px;}
 .set-link:hover{border-color:var(--bm);}
 .set-link-go{margin-left:auto;font-size:1.4rem;opacity:.45;line-height:1;}
@@ -6165,6 +6175,16 @@ body.design-kabine #mainTable.mx tfoot td.mx-pct{font-size:.95rem;}
 .kb-leg i.open{background:#C9D3E3;}
 .kb-lu{flex:0 0 auto;height:44px;padding:0 18px;border-radius:12px;border:none;background:var(--hx-yellow);color:#0E2350;font:700 .92rem 'Barlow',sans-serif;cursor:pointer;}
 .kb-lu:hover{filter:brightness(.96);}
+/* 1.2.132: squad and lineup next to each other; the yellow one is the next step */
+.kb-acts{flex:0 0 auto;display:flex;flex-direction:column;gap:8px;}
+.kb-lu.alt{background:transparent;border:1.5px solid var(--hx-line);color:var(--hx-ink);}
+.kb-lu.alt:hover{filter:none;border-color:var(--hx-ink2);}
+.kb-sq{margin-top:4px;font-size:.84rem;line-height:1.35;color:var(--hx-ink2);}
+.kb-sq b{color:var(--hx-ink);}
+.kb-sq.no{color:#9A5506;font-weight:600;}
+.kb-card.st-nk{background:#EEF1F6;box-shadow:none;}
+.st-nk .kb-st{background:#DCE3ED;color:#4E5D7C;}
+.kb-bar i.nk{background:rgba(255,255,255,.28);}
 .kb-sum{display:none;}
 .kb-board{position:relative;border-radius:18px;overflow:hidden;background:#2E7D46;}
 .kb-pitch{position:absolute;inset:0;width:100%;height:100%;display:block;}
@@ -6216,6 +6236,9 @@ body.design-kabine #mainTable.mx tfoot td.mx-pct{font-size:.95rem;}
   body.design-heute #tab-tafel.tpanel.active{flex:0 0 auto;overflow:visible;}
   body.design-heute #tab-tafel #kbBoard{flex:0 0 auto;overflow:visible;}
   .kb-lu{width:100%;}
+  .kb-acts{width:100%;}
+  .kb-bar i.nk{background:#C9D3E3;}
+  .kb-card.st-nk{background:var(--hx-card2);border-color:var(--hx-card2);}
   /* Phone: a small pitch with the four lines as the summary, the lists below */
   .kb-sum{display:grid;grid-template-columns:.8fr 1fr 1fr 1fr;gap:6px;padding:10px;border-radius:14px;
     background:linear-gradient(90deg,rgba(255,255,255,.07) 0 25%,transparent 25% 50%,rgba(255,255,255,.07) 50% 75%,transparent 75%),#2E7D46;}
@@ -7013,6 +7036,13 @@ body.design-heute.hxk-dk .st-ok .kb-st{background:var(--hk-ok-bg);color:var(--hk
 body.design-heute.hxk-dk .st-open .kb-st{background:color-mix(in srgb,#fff 8%,var(--hk-card2));color:var(--hk-ink2);}
 body.design-heute.hxk-dk .st-warn .kb-st{background:var(--hk-warn-bg);color:var(--hk-warn);}
 body.design-heute.hxk-dk .st-bad .kb-st{background:var(--hk-bad-bg);color:var(--hk-bad);}
+body.design-heute.hxk-dk .st-nk .kb-st{background:color-mix(in srgb,#fff 6%,var(--hk-card2));color:var(--hk-ink2);}
+body.design-heute.hxk-dk .kb-lu.alt{border-color:var(--hk-line);color:var(--hk-ink);}
+body.design-heute.hxk-dk .kb-sq{color:var(--hk-ink2);}
+body.design-heute.hxk-dk .kb-sq b{color:var(--hk-ink);}
+body.design-heute.hxk-dk .kb-sq.no{color:var(--hk-warn);}
+body.design-heute.hxk-dk .trt-form input{background:var(--hk-card2);border-color:var(--hk-line);color:var(--hk-ink);}
+body.design-heute.hxk-dk #moSettings .trt-l{color:var(--hk-ink);}
 body.design-heute.hxk-dk .tpl-pos{filter:invert(.9) hue-rotate(180deg) saturate(1.2);}
 body.design-heute.hxk-dk :is(.hx-seg,.hxl-lg,.ssx-gh) .s-open{background:var(--hk-track);}
 body.design-heute.hxk-dk :is(.kb-leg,.kb-bar) i.open{background:var(--hk-track);}
@@ -7650,7 +7680,6 @@ if(window._fbBlocked){
     <button class="tbtn active" data-tab="spieler" onclick="switchTab('spieler',1)">Spieler</button>
     <button class="tbtn" data-tab="ziele" onclick="switchTab('ziele',1)">Ziele</button>
     <button class="tbtn" data-tab="videos" onclick="switchTab('videos',1)">Videos</button>
-    <button class="tbtn" data-tab="trainer" onclick="switchTab('trainer',1)">Trainer</button>
   </div>
   <div class="tpanel" id="tab-tafel"><div id="kbBoard"></div></div>
   <div class="tpanel active" id="tab-spieler">
@@ -7674,20 +7703,6 @@ if(window._fbBlocked){
   </div>
   <div class="tpanel" id="tab-ziele"><div class="tmgr-scroll zl-wrap" id="zl-list"></div></div>
   <div class="tpanel" id="tab-videos"><div class="tmgr-scroll vd-wrap" id="vd-list"></div></div>
-  <div class="tpanel" id="tab-trainer">
-    <p class="note" style="margin-bottom:8px;">Trainer für <strong id="mgr-team-lbl">–</strong></p>
-    <div id="mgr-tr-list" style="margin-bottom:10px;"></div>
-    <div id="mgr-tr-add">
-      <div class="mob-hr"></div>
-      <label>Name</label><input type="text" id="tNewName" placeholder="Vorname Nachname"/>
-      <label>Mannschaft(en)</label>
-      <div class="tchecks" id="tTeamChecks"></div>
-      <div class="mob-btns">
-        <button class="btn bp" onclick="addTrainer()">Hinzufügen</button>
-        
-      </div>
-    </div>
-  </div>
 </div></div>
 
 <!-- Add Team -->
@@ -7794,8 +7809,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.131'; // v1.2.131: Demo – Begrüßung mit „Probier mal“
-const APP_VERSION_LABEL='1.2.131';
+const APP_VERSION='1.2.132'; // v1.2.132: Kader fürs Spiel auf der Tafel, Trainerteam in den Einstellungen
+const APP_VERSION_LABEL='1.2.132';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -7819,6 +7834,7 @@ const FL_MARK='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F
 function _clubSlug(){return (_clubName()||'Flutlicht').replace(/[^A-Za-z0-9ÄÖÜäöüß]+/g,'-').replace(/^-|-$/g,'')||'Flutlicht';}
 function _clubInfo(){const c=(G&&G.club&&typeof G.club==='object')?G.club:{};return {name:_clubName(),resp:String(c.resp||''),addr:String(c.addr||''),mail:String(c.mail||''),dsb:String(c.dsb||'')};}
 const APP_NEWS=[
+  {id:'20261117-1',d:'17.11.',t:'Kader fürs Spiel auf der Tafel',x:'Unter Kader → Tafel siehst du, wer fürs Spiel verfügbar ist, und legst dort gleich den Kader fest. Danach füllt „Aufstellung aus dem Kader“ die Aufstellung mit genau diesen Spielern. Die Liste der Trainer steht jetzt unter Einstellungen → Trainerteam.',go:['Zur Tafel',"openTeamMgr('tafel')"]},
   {id:'20261116-1',d:'16.11.',t:'Neue Adresse: FlutlichtApp.de',x:'Flutlicht ist umgezogen. Alte Links führen automatisch hierher. Einmal neu anmelden, Benachrichtigungen unter Einstellungen → Benachrichtigungen neu einschalten und den Kalender, falls abonniert, neu abonnieren.',go:['Zu den Benachrichtigungen',"hxGo('settings')"]},
   {id:'20261112-2',d:'12.11.',t:'Spieler des Monats',x:'In der Statistik wählt ihr jeden Monat einen Spieler des Monats. Flutlicht schlägt vor, wer im Training am häufigsten da war, danach zählen ▲ und Spieler des Spiels; die Spieler sehen ihn zwei Wochen lang in ihrer App, mit eurem Satz und ohne Zahlen.',go:['Zur Statistik',"hxGo('stats')"]},
   {id:'20261112-1',d:'12.11.',t:'Im Profil und im Termin blättern',x:'Oben im Spielerprofil, im Termin und im Trainerprofil stehen jetzt ‹ ›: Sie gehen durch die Liste, aus der du es geöffnet hast – etwa alle „Offen“ eines Termins, Im Blick oder die Tabelle; über die Mitte springst du direkt zu jemand anderem. Am Computer gehen auch die Pfeiltasten ← →.'},
@@ -11207,7 +11223,7 @@ async function invAccept(user){
   setTimeout(()=>{try{showSaveFlash('👋 Willkommen, '+first);}catch(e){}},900);
 }
 
-// ── Admin: access per trainer (Kader → Trainer → Profil → Zugang) ──
+// ── Admin: access per trainer (Einstellungen → Trainerteam → Profil → Zugang) ──
 let _acctAdm={t:0,inv:null,mem:null,err:'',busy:false};
 function _acctAdmOn(){return !!(typeof isAdmin==='function'&&isAdmin()&&CU&&CU.acct&&fbDb&&_fbReady());}
 async function _acctAdmLoad(force){
@@ -12385,7 +12401,7 @@ function buildSearchCorpus(){
         label:t.name,
         meta:Array.isArray(t.teams)?t.teams.join(', '):'',
         searchText:[t.name,(t.teams||[]).join(' ')].join(' ').toLowerCase(),
-        action:()=>{closeSearch();if(canEdit()&&typeof openTeamMgr==='function')openTeamMgr('trainers');}
+        action:()=>{closeSearch();const gi=G.trainers.indexOf(t);if(canEdit()&&gi>=0&&typeof openTrainerProfile==='function')openTrainerProfile(gi);else openSettings('trainer');}
       });
     });
   }
@@ -13053,6 +13069,7 @@ function render(){
     updateUndoBtns();
     if(typeof hxRenderNav==='function')hxRenderNav();
     if(typeof _kbVisible==='function'&&_kbVisible())try{kbRender();}catch(e){console.error('kbRender',e);}
+    if(typeof _trtVisible==='function'&&_trtVisible())try{trtRender();}catch(e){console.error('trtRender',e);}
     // Keep Startseite in sync: Firebase sync, undo/redo, team/season switch
     // all funnel through render() — refresh home if it's currently visible.
     const _homeOv=document.getElementById('homeOverlay');
@@ -15112,6 +15129,7 @@ function _setVisible(sec){
   if(sec==='daten'||sec==='backup'||sec==='trash'||sec==='audit')return typeof isAdmin==='function'&&isAdmin();
   if(sec==='verein')return typeof isAdmin==='function'&&isAdmin();
   if(sec==='team')return typeof canEdit==='function'&&canEdit();
+  if(sec==='trainer')return !!CU&&role!=='player';
   return true;
 }
 function _setFill(){
@@ -15126,6 +15144,7 @@ function _setFill(){
   if(typeof cardRulesRender==='function')cardRulesRender();
   if(typeof fdbRender==='function')fdbRender();
   if(typeof wtRender==='function')wtRender();
+  if(_setVisible('trainer'))try{trtRender();}catch(e){console.error('[Trainerteam]',e);}
   _setLogoSync();
   const tc=document.getElementById('set-trash-count');
   if(tc)tc.textContent=Array.isArray(G.trash)&&G.trash.length?`(${G.trash.length})`:'';
@@ -15211,6 +15230,7 @@ function settingsShow(sec){
   if(t)t.textContent=_setPhone()&&(nav||subH)?(nav||subH).textContent.replace(/^\S+\s/,''):((typeof hxOn==='function'&&hxOn())?'Einstellungen':'⚙️ Einstellungen');
   if(sec)_setLast=parent;
   const pane=document.getElementById('set-pane');if(pane)pane.scrollTop=0;
+  if(sec==='trainer')try{trtRender();}catch(e){console.error('[Trainerteam]',e);}
 }
 function settingsBack(){
   const mob=document.querySelector('#moSettings .set-mob');
@@ -19211,6 +19231,7 @@ function squadWithdraw(si){
 }
 function _sqRefresh(si){
   try{if(_lpOpenOn(si))lpRender();}catch(e){}
+  try{if(typeof _kbVisible==='function'&&_kbVisible())kbRender();}catch(e){}
   try{if(typeof _currentSessIdx!=='undefined'&&_currentSessIdx===si)_ssHxAttRender(si);}catch(e){}
   try{if(typeof hxRender==='function')hxRender();}catch(e){}
 }
@@ -31056,7 +31077,8 @@ function homeRemoveHeroPhoto(){
 }
 // ── Start view preference (per user, cloud-synced) ──
 function openTeamMgr(tab,fromId){
-  if(tab==='trainers')tab='trainer';
+  // The trainers live in Einstellungen → Trainerteam since 1.2.132: Kader is the players
+  if(tab==='trainers'||tab==='trainer')return openSettings('trainer');
   if(_multiSelMode&&typeof _msExit==='function')_msExit();
   // Kader is people only — the former tabs have one home each
   // (Statistik page, Kalender, Einstellungen → Mannschaft).
@@ -31163,17 +31185,17 @@ document.addEventListener('wheel',e=>{
 // next "Kader". Programmatic switches (opening, refresh, back) never overwrite it.
 function switchTab(t,user){
   if(t==='tafel'&&!_kbOn())t='spieler';
+  if(!['tafel','spieler','ziele','videos'].includes(t))t='spieler';
   if(t!=='spieler'&&_multiSelMode&&typeof _msExit==='function')_msExit();
   const tb=document.getElementById('tbtn-tafel');if(tb)tb.style.display=_kbOn()?'':'none';
   document.querySelectorAll('#moTeamMgr .tbtn').forEach(b=>{const on=b.dataset.tab===t;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
-  ['tafel','spieler','ziele','videos','trainer'].forEach(n=>document.getElementById('tab-'+n)?.classList.toggle('active',n===t));
+  ['tafel','spieler','ziele','videos'].forEach(n=>document.getElementById('tab-'+n)?.classList.toggle('active',n===t));
   if(user&&_kbOn())try{localStorage.setItem('fcf_kb_tab',t);}catch(e){}
   if(t==='tafel')kbRender();
   document.getElementById('tmgr-h').textContent='Kader';
   if(t==='spieler')renderMgrPlayers();
   if(t==='ziele')zlRenderTab();
   if(t==='videos')vdRenderTab();
-  if(t==='trainer'){document.getElementById('mgr-team-lbl').textContent=UI.currentTeam;renderMgrTrainers();buildTeamChecks('tTeamChecks');}
 }
 
 // ══ Kader-Tafel (Konzept B „Kader-Board“) ══════════════════════════════
@@ -31195,14 +31217,14 @@ function _kbVisible(){
 function _kbDefaultTab(){
   if(!_kbOn())return 'spieler';
   let t='';try{t=localStorage.getItem('fcf_kb_tab')||'';}catch(e){}
-  return ['tafel','spieler','ziele','trainer'].includes(t)?t:'tafel';
+  return ['tafel','spieler','ziele','videos'].includes(t)?t:'tafel';
 }
 // Before the session: the players' answers; from its start: attendance
 const KB_ST={
   plan:{4:['Zugesagt','ok'],3:['Offen','open'],2:['Entschuldigt','warn'],0:['Abgesagt','bad'],1:['Anwesend','ok']},
   roll:{1:['Anwesend','ok'],0:['Fehlend','bad'],2:['Entschuldigt','warn'],4:['Nicht erfasst','open'],3:['Offen','open']}
 };
-const KB_ORDER={ok:0,open:1,warn:2,bad:3};
+const KB_ORDER={ok:0,nk:1,open:2,warn:3,bad:4};
 const KB_WD=['So','Mo','Di','Mi','Do','Fr','Sa'];
 function _kbList(D,season,future){
   const today=todaySK();
@@ -31228,6 +31250,10 @@ function kbRender(){
   const si=KB.si,s=si!=null?D.sessions[si]:null;
   const roll=!!(s&&typeof _isSessRollCallTime==='function'&&_isSessRollCallTime(si));
   const meta=roll?KB_ST.roll:Object.assign({},KB_ST.plan,{4:[_YwFor(s),'ok']});
+  // A match before kick-off (1.2.132): the squad is chosen here. Once it is
+  // published the board shows who is in it; available but not picked = grey.
+  const sqOn=!!(s&&s.type==='match'&&!roll&&!_sqStarted(s,season));
+  const q=sqOn?_sqOf(s):null,inSq=q?new Set(q.p):null;
   const held=_kbList(D,season,false);
   const ed=typeof canEdit==='function'&&canEdit();
   const join=(p,ss)=>typeof _sessAfterJoin!=='function'||_sessAfterJoin(p,ss,season);
@@ -31238,6 +31264,10 @@ function kbRender(){
     const v=s?((p.s&&si<p.s.length)?p.s[si]:3):null;
     const m=s?(meta[v]||meta[3]):null;
     const x={p,pi,cls:m?m[1]:'',lbl:m?m[0]:''};
+    if(inSq){
+      if(inSq.has(p.name)){if(v!==0&&v!==2){x.cls='ok';x.lbl='Im Kader';}}
+      else if(x.cls==='ok'){x.cls='nk';x.lbl='Nicht im Kader';}
+    }
     const li=_ssaLineOf(p);(li<lines.length?lines[li].list:none).push(x);
   });
   const pIdx=q=>{const i=POS.indexOf(q);return i<0?99:i;};
@@ -31254,8 +31284,8 @@ function kbRender(){
       <b class="kb-nm">${nm(x.p)}</b>
       <span class="kb-row">${badge(x.p.pos)}${x.p.pos2?badge(x.p.pos2):''}${x.lbl?`<span class="kb-st">${e(x.lbl)}</span>`:''}${held.length?`<span class="kb-dots" title="${e(dotsLbl(x.p))}" aria-label="${e(dotsLbl(x.p))}">${dots(x.p)}</span>`:''}</span></button>`;
   const cnt=(l,k)=>l.list.filter(x=>x.cls===k).length;
-  const bar=l=>`<span class="kb-bar" aria-hidden="true">${['ok','open','warn','bad'].map(k=>cnt(l,k)?`<i class="${k}" style="flex:${cnt(l,k)}"></i>`:'').join('')}</span>`;
-  const word=roll?'da':_ywFor(s);
+  const bar=l=>`<span class="kb-bar" aria-hidden="true">${['ok','nk','open','warn','bad'].map(k=>cnt(l,k)?`<i class="${k}" style="flex:${cnt(l,k)}"></i>`:'').join('')}</span>`;
+  const word=roll?'da':(q?'im Kader':_ywFor(s));
   // Date strip
   const days=ups.map(x=>{const d=_hxDate(x.k);const m=x.s.type==='match';
     return `<button type="button" class="kb-day${x.i===si?' on':''}${m?' m':''}" onclick="kbPick(${x.i})" aria-pressed="${x.i===si}"><span>${KB_WD[d.getDay()]}</span><b>${d.getDate()}</b><i>${m?'Spiel':e(x.s.time||'Training')}</i></button>`;}).join('');
@@ -31267,9 +31297,24 @@ function kbRender(){
     const c=_hxCounts(D,si,season);
     const parts=roll?[['ok',c.present,'da'],['bad',c.no,'fehlen'],['warn',c.exc,'entschuldigt'],['open',c.open,'offen']]
       :[['ok',c.yes,_ywFor(s)],['warn',c.exc,'entschuldigt'],['bad',c.no,'abgesagt'],['open',c.open,'offen']];
+    let sqL='';
+    if(sqOn){
+      if(q){
+        const due=_newsDue(q.t),hm=x=>{const d=new Date(x);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
+        const sent=Date.now()<due?'geht frühestens '+hm(due)+' aufs Handy':'veröffentlicht '+new Date(q.t).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})+' '+hm(q.t);
+        sqL=`<div class="kb-sq on"><b>Kader · ${q.p.length} Spieler</b> · Treffpunkt ${e(q.meet)}${q.where?', '+e(q.where):''} · ${e(sent)}</div>`;
+      }else sqL='<div class="kb-sq no">Kader noch nicht veröffentlicht</div>';
+    }
+    // First the squad, then the lineup: the yellow button is the next step
+    let acts='';
+    if(m&&ed){
+      const lu=`<button type="button" class="kb-lu${sqOn&&!q?' alt':''}" onclick="kbLineup()">${q?'Aufstellung aus dem Kader':'Aufstellung aus Zusagen'}</button>`;
+      const sq=sqOn?`<button type="button" class="kb-lu${q?' alt':''}" onclick="squadOpen(${si})">${q?'Kader ändern':'Kader festlegen'}</button>`:'';
+      acts=`<div class="kb-acts">${sqOn&&!q?sq+lu:lu+sq}</div>`;
+    }
     head=`<div class="kb-head"><div class="kb-ttl">${e(what)}</div><div class="kb-meta">${e(when)}</div>
-      <div class="kb-leg">${parts.filter(p=>p[1]).map(p=>`<span><i class="${p[0]}"></i><b>${p[1]}</b> ${p[2]}</span>`).join('')}</div></div>
-      ${m&&ed?`<button type="button" class="kb-lu" onclick="kbLineup()">Aufstellung aus Zusagen</button>`:''}`;
+      <div class="kb-leg">${parts.filter(p=>p[1]).map(p=>`<span><i class="${p[0]}"></i><b>${p[1]}</b> ${p[2]}</span>`).join('')}</div>${sqL}</div>
+      ${acts}`;
   }else head=`<div class="kb-head"><div class="kb-ttl">Keine kommenden Termine</div><div class="kb-meta">Die Tafel zeigt den Kader nach Linien.</div></div>`;
   const sum=lines.map((l,i)=>`<button type="button" onclick="kbScroll(${i})"><b>${s?cnt(l,'ok'):l.list.length}<small>${s?'/'+l.list.length:''}</small></b><span>${e(l.name)}</span></button>`).join('');
   host.innerHTML=`<div class="kb-top">${ups.length?`<div class="kb-days" role="group" aria-label="Termin wählen">${days}</div>`:''}${head}</div>
@@ -31292,9 +31337,15 @@ function kbLineup(){
   if(!s||s.type!=='match'||!(typeof canEdit==='function'&&canEdit()))return;
   const season=UI.currentSeason;
   const join=(p,ss)=>typeof _sessAfterJoin!=='function'||_sessAfterJoin(p,ss,season);
-  const okV=(typeof _isSessRollCallTime==='function'&&_isSessRollCallTime(si))?[1]:[4,1];
-  const avail=D.players.map((p,pi)=>({p,pi})).filter(x=>x.p&&join(x.p,s)&&okV.includes(x.p.s&&x.p.s[si]));
-  if(!avail.length){alert(_ywFor(s)==='verfügbar'?'Für dieses Spiel ist noch niemand verfügbar.':'Für dieses Spiel hat noch niemand zugesagt.');return;}
+  const rollNow=typeof _isSessRollCallTime==='function'&&_isSessRollCallTime(si);
+  const okV=rollNow?[1]:[4,1];
+  // Published squad (1.2.132): the lineup comes from it — whoever is in it and
+  // has not declined since; otherwise from everyone available
+  const q=(!rollNow&&!_sqStarted(s,season))?_sqOf(s):null;
+  const avail=D.players.map((p,pi)=>({p,pi})).filter(x=>x.p&&join(x.p,s)&&(q
+    ?(q.p.includes(x.p.name)&&![0,2,5].includes(x.p.s&&x.p.s[si]))
+    :okV.includes(x.p.s&&x.p.s[si])));
+  if(!avail.length){alert(q?'Im Kader ist niemand mehr dabei.':(_ywFor(s)==='verfügbar'?'Für dieses Spiel ist noch niemand verfügbar.':'Für dieses Spiel hat noch niemand zugesagt.'));return;}
   const held=(D.sessions||[]).map((ss,i)=>({ss,i})).filter(x=>typeof sessTookPlace!=='function'||sessTookPlace(x.ss,season));
   avail.forEach(x=>{let a=0,n=0;held.forEach(h=>{if(!join(x.p,h.ss))return;const v=x.p.s&&x.p.s[h.i];if(v===1||v===0||v===2){n++;if(v===1)a++;}});x.r=n?a/n:0;});
   openLineupPlanner(si);
@@ -31721,7 +31772,7 @@ function renderMgrTrainers(){
       const handle=isAdmin()?`<span class="tr-grip" title="Ziehen zum Sortieren" onpointerdown="trDragStart(event,${gi})">\u283f</span>`:'';
       return _headBefore(t)+`<div class="tr-row" data-gi="${gi}">${handle}<div class="tr-main" onclick="openTrainerProfile(${gi})" title="Profil öffnen">${av}<div><div class="tr-nm">${escapeHtml(t.name)}${_acctChip(t)}${_tpPlanChip(t)}</div><div class="tr-teams">${escapeHtml(sub)}</div></div></div>${isAdmin()?`<button class="tr-del" onclick="delTrainer(${gi})">✕</button>`:''}</div>`;
     }).join('')
-    :'<p style="font-size:.76rem;color:var(--gm);">Kein Trainer für dieses Team.</p>';
+    :'<p style="font-size:.76rem;color:var(--gm);">Für diese Mannschaft ist noch kein Trainer eingetragen.</p>';
 }
 function buildTeamChecks(cid){
   const c=document.getElementById(cid);if(!c)return;
@@ -31734,7 +31785,7 @@ function _trAddedFlash(name){
   if(typeof showSaveFlash==='function')showSaveFlash('✓ '+first+' hinzugefügt'+(typeof isAdmin==='function'&&isAdmin()?' – einladen im Profil unter „Zugang“':''));
 }
 async function addTrainer(){
-  if(!canEdit())return;
+  if(!(typeof isAdmin==='function'&&isAdmin()))return;
   const name=document.getElementById('tNewName').value.trim(),teams=getChecked('tTeamChecks');
   if(!name)return alert('Name eingeben.');
   snap();
@@ -31743,9 +31794,31 @@ async function addTrainer(){
   document.getElementById('tNewName').value='';
   logAudit('Trainer hinzugefügt',name,teams.join(', '));
   _trAddedFlash(name);
+  trtAddOpen(false);
+}
+// Einstellungen → Trainerteam (1.2.132): the list that was Kader → Trainer.
+// Everybody in the trainer app sees who belongs to the team; the admin adds,
+// removes, sorts, and invites and gives rights in the profile.
+function _trtVisible(){
+  const m=document.getElementById('moSettings'),sec=document.querySelector('#moSettings .set-sec[data-sec="trainer"]');
+  return !!(m&&m.classList.contains('open')&&sec&&sec.classList.contains('on'));
+}
+function trtRender(){
+  const adm=typeof isAdmin==='function'&&isAdmin(),team=UI.currentTeam||'';
+  const sub=document.getElementById('trt-sub');
+  if(sub)sub.textContent=adm?'Trainer von '+team+'. Tippe auf einen Namen: dort lädst du ihn ein und vergibst Rechte.'
+    :'Trainer von '+team+'. Ändern kann der Admin.';
+  renderMgrTrainers();
+  const add=document.getElementById('mgr-tr-add');if(add)add.hidden=!adm;
+}
+function trtAddOpen(on){
+  const f=document.getElementById('trt-form'),b=document.getElementById('trt-open');
+  if(on&&!(typeof isAdmin==='function'&&isAdmin()))return;
+  if(f)f.hidden=!on;if(b)b.hidden=!!on;
+  if(on){buildTeamChecks('tTeamChecks');const i=document.getElementById('tNewName');if(i){i.value='';i.focus();}}
 }
 async function delTrainer(i){
-  if(!canEdit())return;
+  if(!(typeof isAdmin==='function'&&isAdmin()))return;
   const tr=G.trainers[i];
   if(!tr)return;
   if(!confirm(`Trainer „${tr.name}" entfernen?`))return;
@@ -36513,8 +36586,8 @@ function _tplAllowed(){
   return TPL_VIEW_ALL||_tplMayPlan();
 }
 // Creating and changing plans (1.2.60): the admin, and every trainer he has
-// cleared for it (trainer record: plan = true; Kader → Trainer → Profil →
-// Rechte). The others open existing plans and use them (Ablauf, Gruppen,
+// cleared for it (trainer record: plan = true; Einstellungen → Trainerteam →
+// Profil → Rechte). The others open existing plans and use them (Ablauf, Gruppen,
 // Auf dem Platz, Drucken) — read-only.
 function _myTrainer(){
   if(!CU||CU.role!=='trainer'||!G||!Array.isArray(G.trainers))return null;
@@ -42409,6 +42482,7 @@ _pubCleanupSchedule();
       <button type="button" class="set-nav-it" data-sec="benach" onclick="settingsShow('benach')"><span class="set-nav-ic">🔔</span><span class="set-nav-tx"><b>Benachrichtigungen</b><small>Push, Erinnerungen</small></span></button>
       <button type="button" class="set-nav-it" data-sec="verein" onclick="settingsShow('verein')"><span class="set-nav-ic">🛡</span><span class="set-nav-tx"><b>Verein</b><small>Name, Logo, Datenschutz</small></span></button>
       <button type="button" class="set-nav-it" data-sec="team" onclick="settingsShow('team')"><span class="set-nav-ic">👥</span><span class="set-nav-tx"><b>Mannschaft</b><small>Titelbild, Regeln, Anzeige der Spieler</small></span></button>
+      <button type="button" class="set-nav-it" data-sec="trainer" onclick="settingsShow('trainer')"><span class="set-nav-ic">🎽</span><span class="set-nav-tx"><b>Trainerteam</b><small>Trainer, Zugang, Rechte</small></span></button>
       <button type="button" class="set-nav-it" data-sec="daten" onclick="settingsShow('daten')"><span class="set-nav-ic">💾</span><span class="set-nav-tx"><b>Daten</b><small>Backups, Papierkorb, Verlauf</small></span></button>
     </nav>
     <div class="set-pane" id="set-pane">
@@ -42533,6 +42607,23 @@ _pubCleanupSchedule();
         <div id="foc-add-row" style="display:flex;gap:7px;">
         <input type="text" id="newFocusName" placeholder="Neuer Schwerpunkt..." style="flex:1;margin-bottom:0;"/>
         <button class="btn bp" onclick="addFocus()" style="flex:none;">＋</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="set-sec" data-sec="trainer">
+      <h4 class="set-sec-h">🎽 Trainerteam</h4>
+      <p class="set-sec-sub" id="trt-sub">Die Trainer der Mannschaft.</p>
+      <div id="mgr-tr-list" class="trt-list"></div>
+      <div id="mgr-tr-add" class="trt-add" hidden>
+        <button type="button" class="btn bp trt-open" id="trt-open" onclick="trtAddOpen(true)">+ Trainer</button>
+        <div class="trt-form" id="trt-form" hidden>
+          <label class="trt-l" for="tNewName">Name</label>
+          <input type="text" id="tNewName" placeholder="Vorname Nachname" autocomplete="off"/>
+          <div class="trt-l">Mannschaften</div>
+          <div class="tchecks" id="tTeamChecks"></div>
+          <p class="trt-hint">Einladen und Rechte vergeben: danach in seinem Profil.</p>
+          <div class="trt-btns"><button type="button" class="btn bp" onclick="addTrainer()">Hinzufügen</button><button type="button" class="btn bs" onclick="trtAddOpen(false)">Abbrechen</button></div>
         </div>
       </div>
     </section>
