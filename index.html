@@ -5076,6 +5076,36 @@ body.design-heute #links-admin-area input::placeholder{color:#9AA7BF;}
 body.design-heute #links-admin-area .btn.bp{background:var(--hx-yellow) !important;color:var(--hx-on-acc,var(--hx-ink)) !important;border:none !important;border-radius:999px !important;height:36px;font-weight:700;font-size:.86rem !important;}
 /* Aufstellung: "Spiel | Saisonkader" as the heading of both tools */
 .hx-lptabs{display:none;}
+/* 1.2.138: Saisonkader head = Kader page head (title + the four pills) */
+.slp-kh,.slp-kpills{display:none;}
+body.design-heute .slp-kh{display:block;margin:0;font-family:var(--hx-num);font-weight:800;font-size:2rem;letter-spacing:.2px;line-height:1.1;color:#fff;white-space:nowrap;}
+body.design-heute .slp-kpills{display:inline-flex;align-items:center;gap:2px;padding:3px;margin-left:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;flex-shrink:0;}
+body.design-heute .slp-kpills button{background:transparent;border:1px solid transparent;border-radius:999px;color:#DCE5F5;padding:7px 15px;margin:0;font-family:inherit;font-size:.86rem;font-weight:600;line-height:1.2;cursor:pointer;white-space:nowrap;}
+body.design-heute .slp-kpills button:hover:not(.on){color:#fff;background:rgba(255,255,255,.1);}
+body.design-heute .slp-kpills button.on{background:#fff;color:var(--hx-ink);cursor:default;}
+body.design-heute .slp-kpills button:focus-visible{outline:2px solid var(--hx-yellow);outline-offset:2px;}
+@media(min-width:768px) and (max-width:1180px){
+  body.design-heute .slp-kh{font-size:1.7rem;}
+  body.design-heute .slp-kpills button{padding:7px 11px;}
+  body.design-heute #moSeasonLineup :is(#slp-status-btn,#slp-close-btn) .fb-long{display:none;}
+  body.design-heute #moSeasonLineup :is(#slp-status-btn,#slp-close-btn) .fb-short{display:inline;}
+}
+/* tablets and small laptop windows: the pills say where you are */
+@media(min-width:768px) and (max-width:1049px){
+  body.design-heute #moSeasonLineup :is(.slp-kh,.slp-sub){display:none;}
+}
+@media(min-width:768px) and (max-width:899px){
+  body.design-heute #moSeasonLineup .slp-topbar{gap:8px;}
+  body.design-heute .slp-kpills{margin-left:0;}
+  body.design-heute .slp-kpills button{padding:7px 9px;}
+}
+@media(max-width:767px){
+  body.design-heute .slp-kh{font-size:1.6rem;line-height:38px;}
+  /* phone: like the Kader page — light pills on the ground, own row */
+  body.design-heute .slp-kpills{order:2 !important;flex:1 1 100%;margin:10px 0 0;padding:0;gap:6px;background:none;border:none;border-radius:0;flex-wrap:wrap;}
+  body.design-heute .slp-kpills button{padding:7px 13px;font-size:.82rem;background:var(--hx-field);border-color:var(--hx-line);color:var(--hx-ink2);}
+  body.design-heute .slp-kpills button.on{background:var(--hx-solid,var(--hx-ink));border-color:var(--hx-solid,var(--hx-ink));color:var(--hx-on-solid,#fff);}
+}
 body.design-heute .hx-lptabs{display:flex;gap:18px;align-items:flex-end;}
 body.design-heute .hx-lptabs button{background:none;border:none;padding:0 0 3px;margin:0;cursor:pointer;font-family:var(--hx-num);font-weight:800;font-size:1.5rem;line-height:1.05;letter-spacing:.2px;color:#8FA3C8;border-bottom:3px solid transparent;white-space:nowrap;}
 body.design-heute .hx-lptabs button:hover{color:#fff;}
@@ -7838,8 +7868,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.137'; // v1.2.137: Anwesenheit „22 Spieler · 2 Pause · 1 Probetraining“; Statistik „Ø … von 22“ (wer gerade kommen kann); Wochenbericht nur wer in der Woche zur Mannschaft gehörte
-const APP_VERSION_LABEL='1.2.137';
+const APP_VERSION='1.2.138'; // v1.2.138: Saisonkader mit demselben Kopf wie Kader – „Kader“ und Spieler · Saisonkader · Ziele · Videos
+const APP_VERSION_LABEL='1.2.138';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -43062,13 +43092,14 @@ _pubCleanupSchedule();
 </div>
 <div class="slp-overlay" id="moSeasonLineup">
   <div class="slp-topbar">
-    <div class="lp-title"><div class="hx-lptabs" role="tablist" aria-label="Kader"><button type="button" role="tab" aria-selected="false" onclick="kaderGo('spieler',1)">Spieler</button><button type="button" role="tab" class="on" aria-selected="true">Saisonkader</button></div><div class="slp-logo">📋 Saisonkader-Planer <span id="slp-presence-inline" class="inline-presence"></span></div><div class="slp-sub" id="slp-context-info">Mehrere Spieler pro Position</div></div>
+    <div class="lp-title"><h3 class="slp-kh">Kader</h3><div class="slp-logo">📋 Saisonkader-Planer <span id="slp-presence-inline" class="inline-presence"></span></div><div class="slp-sub" id="slp-context-info">Mehrere Spieler pro Position</div></div>
+    <div class="slp-kpills" role="tablist" aria-label="Kader"><button type="button" role="tab" aria-selected="false" onclick="kaderGo('spieler',1)">Spieler</button><button type="button" role="tab" class="on" aria-selected="true">Saisonkader</button><button type="button" role="tab" aria-selected="false" onclick="kaderGo('ziele',1)">Ziele</button><button type="button" role="tab" aria-selected="false" onclick="kaderGo('videos',1)">Videos</button></div>
     <div id="slp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-left:8px;"></div>
     <div style="flex:1;"></div>
     <div id="slp-hint" style="display:none;"></div>
     <input type="checkbox" id="slp-conf-toggle" onchange="slpToggleConfirmations(this.checked)" style="cursor:pointer;margin:0 4px 0 0;width:14px;height:14px;vertical-align:middle;"/>
     <span id="slp-conf-toggle-lbl" style="font-size:.75rem;color:rgba(255,255,255,.95);font-weight:600;margin-right:6px;user-select:none;cursor:pointer;" onclick="const _t=document.getElementById('slp-conf-toggle');_t.checked=!_t.checked;slpToggleConfirmations(_t.checked);" title="Grün mit ✓ = für die Saison bestätigt, gelb = noch nicht spielberechtigt">Status</span>
-    <button class="slp-close-btn" id="slp-status-btn" onclick="slpOpenStatusList()" style="display:none;background:rgba(232,200,64,0.15);border-color:rgba(232,200,64,0.4);color:#e8c840;"><span class="fb-long">📋 Status verwalten</span><span class="fb-short">📋</span></button>
+    <button class="slp-close-btn" id="slp-status-btn" title="Status verwalten" aria-label="Status verwalten" onclick="slpOpenStatusList()" style="display:none;background:rgba(232,200,64,0.15);border-color:rgba(232,200,64,0.4);color:#e8c840;"><span class="fb-long">📋 Status verwalten</span><span class="fb-short">📋</span></button>
     <button class="slp-close-btn" id="slp-close-btn" onclick="closeSeasonLineup()" aria-label="Schließen"><span class="fb-long">✕ Schließen</span><span class="fb-short">✕</span></button>
   </div>
   <div class="slp-body">

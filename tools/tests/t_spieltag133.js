@@ -3,6 +3,7 @@
 // oben neben der Begrüßung (Übersicht ohne Scrollen auf 1536×730), Statistik ohne
 // eigenen Mannschafts-/Saisonwechsel, Wochenbericht „Auffällig diese Woche“.
 // Artem 18.11.: „со всем согласен“; „опять не влазит Übersicht … маленький скрол“.
+// 1.2.138: im Saisonkader-Kopf alle vier (Spieler · Saisonkader · Ziele · Videos), nicht nur zwei.
 // node tools/tests/t_spieltag133.js [index.html] [shotdir]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 const out=process.argv[3]||'';
@@ -20,7 +21,7 @@ const st=p=>p.evaluate(()=>{const tm=document.getElementById('moTeamMgr'),vis=e=
   return {nav:[...document.querySelectorAll('#hxNav .hx-item.on')].map(x=>x.textContent.trim()).join(),
     page:tm.classList.contains('open')?tm.dataset.mode:'',tool:_hxToolOpen(),
     head:tabsOf('#tmgr-h .hx-lptabs button'),pills:tabsOf('#moTeamMgr .tbar .tbtn'),
-    lp:tabsOf('#moLineup .hx-lptabs button'),slp:tabsOf('#moSeasonLineup .hx-lptabs button'),
+    lp:tabsOf('#moLineup .hx-lptabs button'),slp:tabsOf('#moSeasonLineup .slp-kpills button'),
     lpSi:document.getElementById('moLineup').classList.contains('open')?lpState.sessIdx:null,kbSi:KB.si,
     days:[...document.querySelectorAll('#kbBoard .kb-day')].map(x=>x.textContent.replace(/\s+/g,' ').trim())};});
 const J=JSON.stringify;
@@ -54,9 +55,9 @@ const J=JSON.stringify;
   ok(!r.tool&&r.page==='kader'&&r.nav==='Kader'&&J(r.pills)===J(['Spieler','Saisonkader','Ziele','Videos'])&&r.head.length===0,'Kader: Spieler, Saisonkader, Ziele, Videos');
   await p.click('#moTeamMgr .tbar .tbtn:has-text("Saisonkader")');await p.waitForTimeout(700);
   r=await st(p);
-  ok(r.tool==='moSeasonLineup'&&r.nav==='Kader'&&J(r.slp)===J(['Spieler','Saisonkader*']),'Saisonkader: eigenes Werkzeug, Navigation bleibt „Kader“, Kopf „Spieler | Saisonkader“');
+  ok(r.tool==='moSeasonLineup'&&r.nav==='Kader'&&J(r.slp)===J(['Spieler','Saisonkader*','Ziele','Videos']),'Saisonkader: eigenes Werkzeug, Navigation bleibt „Kader“, Kopf mit allen vier (seit 1.2.138)');
   if(out)await p.screenshot({path:out+'/spieltag133_saisonkader.png'});
-  await p.click('#moSeasonLineup .hx-lptabs button:has-text("Spieler")');await p.waitForTimeout(700);
+  await p.click('#moSeasonLineup .slp-kpills button:has-text("Spieler")');await p.waitForTimeout(700);
   r=await st(p);
   ok(!r.tool&&r.page==='kader'&&r.pills.includes('Spieler')&&await p.evaluate(()=>document.getElementById('tab-spieler').classList.contains('active')),'„Spieler“ im Saisonkader: zurück zur Liste');
   // Statistik and Wochenbericht
