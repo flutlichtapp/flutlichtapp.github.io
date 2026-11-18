@@ -815,6 +815,7 @@ body.design-kabine tbody tr:hover td.csn.past-locked{background:color-mix(in srg
 .ma-btn.ma-6{background:#7C8AA3;}
 .ma-btn.ma-6.dim{background:#e3e8f0;color:#8fa0b8;}
 body.design-heute .ssx-gh > i.s-nk,body.design-heute .s-nk{background:#8E9BB0;}
+body.design-heute .ssx-gh > i.s-prb,body.design-heute .s-prb{background:#7C3AED;}
 .pm-fb-nk{background:rgba(124,138,163,.14);color:#46536A;}
 .rc-b.sel-n{background:#7C8AA3 !important;border-color:#7C8AA3 !important;color:#fff !important;}
 
@@ -6209,6 +6210,8 @@ body.design-kabine #mainTable.mx tfoot td.mx-pct{font-size:.95rem;}
 .kb-sq.no{color:#9A5506;font-weight:600;}
 .kb-card.st-nk{background:#EEF1F6;box-shadow:none;}
 .st-nk .kb-st{background:#DCE3ED;color:#4E5D7C;}
+.kb-card.st-prb{background:#EEF1F6;box-shadow:none;}
+.st-prb .kb-st{background:#EDE7FB;color:#5B32B8;}
 .kb-bar i.nk{background:rgba(255,255,255,.28);}
 .kb-sum{display:none;}
 .kb-board{position:relative;border-radius:18px;overflow:hidden;background:#2E7D46;}
@@ -6263,7 +6266,7 @@ body.design-kabine #mainTable.mx tfoot td.mx-pct{font-size:.95rem;}
   .kb-lu{width:100%;}
   .kb-acts{width:100%;}
   .kb-bar i.nk{background:#C9D3E3;}
-  .kb-card.st-nk{background:var(--hx-card2);border-color:var(--hx-card2);}
+  .kb-card.st-nk,.kb-card.st-prb{background:var(--hx-card2);border-color:var(--hx-card2);}
   /* Phone: a small pitch with the four lines as the summary, the lists below */
   .kb-sum{display:grid;grid-template-columns:.8fr 1fr 1fr 1fr;gap:6px;padding:10px;border-radius:14px;
     background:linear-gradient(90deg,rgba(255,255,255,.07) 0 25%,transparent 25% 50%,rgba(255,255,255,.07) 50% 75%,transparent 75%),#2E7D46;}
@@ -7834,8 +7837,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.135'; // v1.2.135: Im Blick nur „tun“ und „entscheiden“ – Hinschauen in „Wer braucht Aufmerksamkeit?“; kein Belastungssprung; Spielzeit ohne automatisches „dabei“
-const APP_VERSION_LABEL='1.2.135';
+const APP_VERSION='1.2.136'; // v1.2.136: Probetraining ohne Antwort ist nicht „offen“ – nicht in „Noch ohne Antwort“, nicht in „x von y“; eigene Gruppe im Termin, „Probetraining“ auf der Tafel
+const APP_VERSION_LABEL='1.2.136';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -28074,10 +28077,12 @@ function _ssHxAttRender(si){
     ?[[1,'Anwesend','ok'],[0,'Fehlend','bad'],[2,'Entschuldigt','warn'],[4,'Nicht erfasst','open'],[3,'Offen','open'],[5,'Nicht im Kader','nk']]
     :[[4,_YwFor(cd().sessions[si]),'ok'],[3,'Offen','open'],[2,'Entschuldigt','warn'],[0,'Abgesagt','bad'],[1,'Anwesend','ok']];
   const by={};groups.forEach(g=>{by[g[0]]=[];});
+  const prb=[];   // Probetraining without an answer (1.2.136): not "Offen"
   (D.players||[]).forEach((p,pi)=>{
     if(!p)return;
     if(typeof _sessAfterJoin==='function'&&!_sessAfterJoin(p,s,season))return;
     const v=(p.s&&si<p.s.length)?p.s[si]:3;
+    if((v===3||v==null)&&!_sessCounts(p,s,season)){prb.push({p,pi});return;}
     (by[v]||by[3]).push({p,pi});
   });
   // Sorted by position (TW → ST) unless the trainer picked name or number;
@@ -28128,6 +28133,7 @@ function _ssHxAttRender(si){
     }else body=`<div class="ssx-chips">${list.map(x=>chip(x)).join('')}</div>`;
     h+=`<div class="ssx-grp" data-st="${v}" data-pnl="${e(String(label))}"><div class="ssx-gh"><i class="s-${cls}"></i>${label} <b>${list.length}</b>${remind}</div>${body}</div>`;
   });
+  if(prb.length)h+=`<div class="ssx-grp ssx-prb" data-st="prb"><div class="ssx-gh"><i class="s-prb"></i>Probetraining \u2013 ${roll?'nicht erfasst':'ohne Antwort'} <b>${prb.length}</b></div><div class="ssx-chips">${prb.map(x=>chip(x)).join('')}</div></div>`;
   // In Pause on this day (1.2.52): back with one tap
   {const pz=ed?_pzAt(D,s,season):[];
    if(pz.length)h+=`<div class="ssx-grp ssx-pz"><div class="ssx-gh"><i class="s-nk"></i>In Pause <b>${pz.length}</b></div><div class="ssx-chips">${pz.map(({p,pi})=>
@@ -30388,12 +30394,16 @@ function _hxEnd(time,dur){
   return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
 }
 function _hxCounts(D,si,season){
-  const s=D.sessions[si];const c={yes:0,present:0,exc:0,no:0,open:0,total:0,openList:[],nk:0};
+  const s=D.sessions[si];const c={yes:0,present:0,exc:0,no:0,open:0,total:0,openList:[],nk:0,tr:0};
   (D.players||[]).forEach((p,pi)=>{
     if(!p||!_sessAfterJoin(p,s,season))return;
     const v=(p.s&&si<p.s.length)?p.s[si]:3;
     // Not in the squad: not expected, so not part of "x of y"
     if(v===5){c.nk++;return;}
+    // Probetraining without an answer (1.2.136, Artem 18.11.): the rule gives
+    // him no "M", he gets no reminders, and after the session no entry means
+    // "not there" (1.2.53) — so not open and not expected. Marked, he counts.
+    if((v===3||v==null)&&!_sessCounts(p,s,season)){c.tr++;return;}
     c.total++;
     if(v===1){c.present++;c.yes++;}
     else if(v===4)c.yes++;
@@ -31361,7 +31371,7 @@ const KB_ST={
   plan:{4:['Zugesagt','ok'],3:['Offen','open'],2:['Entschuldigt','warn'],0:['Abgesagt','bad'],1:['Anwesend','ok']},
   roll:{1:['Anwesend','ok'],0:['Fehlend','bad'],2:['Entschuldigt','warn'],4:['Nicht erfasst','open'],3:['Offen','open']}
 };
-const KB_ORDER={ok:0,nk:1,open:2,warn:3,bad:4};
+const KB_ORDER={ok:0,nk:1,open:2,prb:2.5,warn:3,bad:4};
 const KB_WD=['So','Mo','Di','Mi','Do','Fr','Sa'];
 function _kbList(D,season,future){
   const today=todaySK();
@@ -31402,6 +31412,7 @@ function kbRender(){
     const v=s?((p.s&&si<p.s.length)?p.s[si]:3):null;
     const m=s?(meta[v]||meta[3]):null;
     const x={p,pi,cls:m?m[1]:'',lbl:m?m[0]:''};
+    if(s&&(v===3||v==null)&&!_sessCounts(p,s,season)){x.cls='prb';x.lbl='Probetraining';}   // 1.2.136
     if(inSq){
       if(inSq.has(p.name)){if(v!==0&&v!==2){x.cls='ok';x.lbl='Im Kader';}}
       else if(x.cls==='ok'){x.cls='nk';x.lbl='Nicht im Kader';}
