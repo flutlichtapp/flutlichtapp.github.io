@@ -5084,23 +5084,33 @@ body.design-heute .slp-kpills button{background:transparent;border:1px solid tra
 body.design-heute .slp-kpills button:hover:not(.on){color:#fff;background:rgba(255,255,255,.1);}
 body.design-heute .slp-kpills button.on{background:#fff;color:var(--hx-ink);cursor:default;}
 body.design-heute .slp-kpills button:focus-visible{outline:2px solid var(--hx-yellow);outline-offset:2px;}
-@media(min-width:768px) and (max-width:1180px){
-  body.design-heute .slp-kh{font-size:1.7rem;}
-  body.design-heute .slp-kpills button{padding:7px 11px;}
-  body.design-heute #moSeasonLineup :is(#slp-status-btn,#slp-close-btn) .fb-long{display:none;}
-  body.design-heute #moSeasonLineup :is(#slp-status-btn,#slp-close-btn) .fb-short{display:inline;}
-}
-/* tablets and small laptop windows: the pills say where you are */
-@media(min-width:768px) and (max-width:1049px){
-  body.design-heute #moSeasonLineup :is(.slp-kh,.slp-sub){display:none;}
-}
-@media(min-width:768px) and (max-width:899px){
-  body.design-heute #moSeasonLineup .slp-topbar{gap:8px;}
+/* 1.2.140: one header for pages and tools. Aufstellung and Saisonkader keep
+   only title/tabs (and ✕) in the band, at the same place and size as Kader,
+   Tafel and Kalender; their controls sit in a row below it on the ground. */
+.hx-toolrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;padding:8px 18px;background:rgba(0,0,0,.3);}
+body.design-heute .hx-toolrow{background:transparent;border-bottom:1px solid var(--hx-line);min-height:56px;box-sizing:border-box;column-gap:10px;row-gap:8px;}
+body.design-heute .hx-toolrow :is(.lp-fmt-btn,.slp-fmt-btn):not(.active),
+body.design-heute .hx-toolrow :is(#lp-fmt-btns,#slp-fmt-btns) :is(select,button):not(.active){background-color:var(--hx-field) !important;border:1px solid var(--hx-line) !important;color:var(--hx-ink) !important;}
+body.design-heute .hx-toolrow :is(#lp-fmt-btns,#slp-fmt-btns){margin-left:0 !important;}
+body.design-heute .hx-toolrow select:is(.lp-fmt-sel,.slp-fmt-sel):not([multiple]):not([size]):not(#hxs-none){background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234E5D7C' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;}
+body.design-heute .hx-toolrow .lp-kind-wrap{margin-left:0 !important;}
+body.design-heute .hx-toolrow .lp-sub{color:var(--hx-ink);font-size:.92rem;font-weight:600;letter-spacing:0;text-transform:none;margin:0 6px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+body.design-heute .hx-toolrow .lp-hint{color:var(--hx-muted);font-size:.8rem;}
+body.design-heute .hx-toolrow #slp-conf-toggle-lbl{color:var(--hx-ink) !important;}
+body.design-heute .hx-toolrow .lp-spacer{flex:1 1 auto;}
+body.design-heute .slp-topbar .slp-sub{display:none !important;}   /* team and season stand in the navigation */
+@media(min-width:768px){
+  /* the pages measure from their box minus 2×40px, the tools from the full width: 1240 + 80 */
+  body.design-heute :is(.lp-topbar,.slp-topbar),body.design-heute .hx-toolrow{padding-left:max(40px,calc((100% - 1320px) / 2 + 40px)) !important;padding-right:max(40px,calc((100% - 1320px) / 2 + 40px)) !important;}
+  body.design-heute :is(.lp-topbar,.slp-topbar){column-gap:18px !important;}
   body.design-heute .slp-kpills{margin-left:0;}
-  body.design-heute .slp-kpills button{padding:7px 9px;}
 }
 @media(max-width:767px){
   body.design-heute .slp-kh{font-size:1.6rem;line-height:38px;}
+  body.design-heute .hx-toolrow{padding:10px 12px 10px 16px;min-height:0;border-bottom:none;}
+  body.design-heute .hx-toolrow :is(.lp-spacer,div[style*="flex:1"]){display:none;}
+  body.design-heute #moLineup .lp-topbar{padding-bottom:12px !important;}
+  body.design-heute .lp-topbar .lp-title{justify-content:flex-start !important;padding-top:6px;box-sizing:border-box;}
   /* phone: like the Kader page — light pills on the ground, own row */
   body.design-heute .slp-kpills{order:2 !important;flex:1 1 100%;margin:10px 0 0;padding:0;gap:6px;background:none;border:none;border-radius:0;flex-wrap:wrap;}
   body.design-heute .slp-kpills button{padding:7px 13px;font-size:.82rem;background:var(--hx-field);border-color:var(--hx-line);color:var(--hx-ink2);}
@@ -5322,7 +5332,6 @@ body.design-heute .hxv-item{display:flex !important;}
 }
 @media(min-width:768px) and (max-width:1180px){
   body.design-heute .tpl-ov .tpl-tabs button{padding:8px 12px;}
-  body.design-heute .hx-lptabs button{font-size:1.7rem !important;}
 }
 @media(min-width:768px){
   body.design-heute .tpl-ov .tpl-ttl h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -7868,8 +7877,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.139'; // v1.2.139: Trainingsplaner, Anwesenheit erfassen oder Spielbericht offen + anderer Bildschirm (Suche, Navigation, Demo-Info) – das Werkzeug schließt (speichert) zuerst, statt dass der Bildschirm darunter aufgeht
-const APP_VERSION_LABEL='1.2.139';
+const APP_VERSION='1.2.140'; // v1.2.140: eine Kopfzeile für Seiten und Werkzeuge – Aufstellung und Saisonkader: Titel und Reiter an derselben Stelle wie Kader/Tafel, Schema und Co. in einer Zeile darunter
+const APP_VERSION_LABEL='1.2.140';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -42546,7 +42555,12 @@ _pubCleanupSchedule();
 <div class="lp-overlay" id="moLineup">
   <!-- Topbar -->
   <div class="lp-topbar">
-    <div class="lp-title"><div class="hx-lptabs" role="tablist" aria-label="Spieltag"><button type="button" role="tab" aria-selected="false" onclick="stGo('kader',1)">Kader</button><button type="button" role="tab" class="on" aria-selected="true">Aufstellung</button></div><div class="lp-logo">⚽ Aufstellungsplaner <span id="lp-presence-inline" class="inline-presence"></span></div><div class="lp-sub" id="lp-context-info"></div></div>
+    <div class="lp-title"><div class="hx-lptabs" role="tablist" aria-label="Spieltag"><button type="button" role="tab" aria-selected="false" onclick="stGo('kader',1)">Kader</button><button type="button" role="tab" class="on" aria-selected="true">Aufstellung</button></div><div class="lp-logo">⚽ Aufstellungsplaner <span id="lp-presence-inline" class="inline-presence"></span></div></div>
+    <div class="lp-spacer"></div>
+    <button class="lp-close-btn" onclick="closeLineupPlanner()" aria-label="Schließen"><span class="fb-long">✕ Schließen</span><span class="fb-short">✕</span></button>
+  </div>
+  <div class="hx-toolrow lp-toolrow">
+    <div class="lp-sub" id="lp-context-info"></div>
     <div id="lp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;margin-left:8px;"></div>
     <div class="lp-kind-wrap" style="display:flex;gap:4px;margin-left:10px;align-items:center;" title="Spieltyp bestimmt die Bankgröße">
       <button class="lp-fmt-btn active" id="lp-kind-ms" onclick="lpSetMatchKind('meisterschaft')" title="Meisterschaftsspiel: 7 Bankplätze"><span class="lk-long">Meisterschaft</span><span class="lk-short">M</span> · 7</button>
@@ -42554,7 +42568,6 @@ _pubCleanupSchedule();
     </div>
     <div class="lp-spacer"></div>
     <div class="lp-hint" id="lp-hint">Slot wählen → Spieler klicken</div>
-    <button class="lp-close-btn" onclick="closeLineupPlanner()" aria-label="Schließen"><span class="fb-long">✕ Schließen</span><span class="fb-short">✕</span></button>
   </div>
   <div id="lp-var-bar" class="lp-var-bar" style="display:none;"></div>
   <div id="lp-unavail-bar" class="lp-unavail-bar" style="display:none;"></div>
@@ -43103,13 +43116,16 @@ _pubCleanupSchedule();
   <div class="slp-topbar">
     <div class="lp-title"><h3 class="slp-kh">Kader</h3><div class="slp-logo">📋 Saisonkader-Planer <span id="slp-presence-inline" class="inline-presence"></span></div><div class="slp-sub" id="slp-context-info">Mehrere Spieler pro Position</div></div>
     <div class="slp-kpills" role="tablist" aria-label="Kader"><button type="button" role="tab" aria-selected="false" onclick="kaderGo('spieler',1)">Spieler</button><button type="button" role="tab" class="on" aria-selected="true">Saisonkader</button><button type="button" role="tab" aria-selected="false" onclick="kaderGo('ziele',1)">Ziele</button><button type="button" role="tab" aria-selected="false" onclick="kaderGo('videos',1)">Videos</button></div>
+    <div class="lp-spacer"></div>
+    <button class="slp-close-btn" id="slp-close-btn" onclick="closeSeasonLineup()" aria-label="Schließen"><span class="fb-long">✕ Schließen</span><span class="fb-short">✕</span></button>
+  </div>
+  <div class="hx-toolrow slp-toolrow">
     <div id="slp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-left:8px;"></div>
     <div style="flex:1;"></div>
     <div id="slp-hint" style="display:none;"></div>
     <input type="checkbox" id="slp-conf-toggle" onchange="slpToggleConfirmations(this.checked)" style="cursor:pointer;margin:0 4px 0 0;width:14px;height:14px;vertical-align:middle;"/>
     <span id="slp-conf-toggle-lbl" style="font-size:.75rem;color:rgba(255,255,255,.95);font-weight:600;margin-right:6px;user-select:none;cursor:pointer;" onclick="const _t=document.getElementById('slp-conf-toggle');_t.checked=!_t.checked;slpToggleConfirmations(_t.checked);" title="Grün mit ✓ = für die Saison bestätigt, gelb = noch nicht spielberechtigt">Status</span>
     <button class="slp-close-btn" id="slp-status-btn" title="Status verwalten" aria-label="Status verwalten" onclick="slpOpenStatusList()" style="display:none;background:rgba(232,200,64,0.15);border-color:rgba(232,200,64,0.4);color:#e8c840;"><span class="fb-long">📋 Status verwalten</span><span class="fb-short">📋</span></button>
-    <button class="slp-close-btn" id="slp-close-btn" onclick="closeSeasonLineup()" aria-label="Schließen"><span class="fb-long">✕ Schließen</span><span class="fb-short">✕</span></button>
   </div>
   <div class="slp-body">
     <div class="slp-roster-col" id="slp-roster-col">
