@@ -723,6 +723,7 @@ tbody td.next-col:not([class*="cs"]){background:#e8f5ec !important;}
 /* TFOOT */
 tfoot td{background:color-mix(in srgb,var(--bd) 75%,#000);color:#fff;font-weight:700;font-size:.86rem;padding:7px 4px;text-align:center;border-top:3px solid var(--ac);position:sticky;bottom:0;z-index:4;white-space:nowrap;}
 tfoot td.tdl{text-align:left;padding-left:8px;}
+tfoot td.c1.mx-team{max-width:none;}   /* 1.2.137: "22 Spieler · 2 Pause · 1 Probetraining" over Spieler + Pos. */
 
 tfoot td.match-col{background:#3a0e00 !important;}
 
@@ -7837,8 +7838,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.136'; // v1.2.136: Probetraining ohne Antwort ist nicht „offen“ – nicht in „Noch ohne Antwort“, nicht in „x von y“; eigene Gruppe im Termin, „Probetraining“ auf der Tafel
-const APP_VERSION_LABEL='1.2.136';
+const APP_VERSION='1.2.137'; // v1.2.137: Anwesenheit „22 Spieler · 2 Pause · 1 Probetraining“; Statistik „Ø … von 22“ (wer gerade kommen kann); Wochenbericht nur wer in der Woche zur Mannschaft gehörte
+const APP_VERSION_LABEL='1.2.137';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -8630,6 +8631,18 @@ function pzBack(pi,si){
 }
 // "18 Spieler": the team today — not on trial, not gone
 function _pTeamCount(players){return (players||[]).filter(p=>p&&!p.trial&&!_pGone(p)).length;}
+// Today, split (1.2.137, Artem 18.11.): who can come, on pause, Probetraining.
+// "Nicht mehr dabei" is not part of it (own folded group in the table).
+function _pTeamSplit(players){
+  const r={a:0,pz:0,tr:0};
+  (players||[]).forEach(p=>{if(!p)return;const k=_pState(p).k;if(k==='pause')r.pz++;else if(k==='trial')r.tr++;else if(k!=='gone')r.a++;});
+  return r;
+}
+// "22 Spieler · 2 Pause · 1 Probetraining" — adds up to the rows of the table
+function _pTeamLine(players){
+  const r=_pTeamSplit(players);
+  return r.a+' Spieler'+(r.pz?' \u00b7 '+r.pz+' Pause':'')+(r.tr?' \u00b7 '+r.tr+' Probetraining':'');
+}
 function _todayISO(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
 function dispToSortKey(s){
   if(!s||typeof s!=='string')return 99999999;
@@ -13333,7 +13346,7 @@ function renderTfoot(){
 
   tFoot.innerHTML=`<tr>
     <td class="tdl c0" style="font-family:'Bebas Neue';letter-spacing:1px;font-size:.9rem;">∑</td>
-    <td class="tdl c1" style="font-size:.8rem;font-weight:500;">${_pTeamCount(D.players)} Spieler &nbsp;·&nbsp; Ø ${avg}%</td>
+    <td class="tdl c1" style="font-size:.8rem;font-weight:500;">${_pTeamLine(D.players)} &nbsp;·&nbsp; Ø ${avg}%</td>
     <td class="c2"></td>
     ${cells}
     <td></td>
@@ -13647,8 +13660,7 @@ function mxFoot(){
   }).join('');
   tf.innerHTML=`<tr>
     <td class="tdl c0" style="font-family:'Bebas Neue';letter-spacing:1px;font-size:.9rem;">∑</td>
-    <td class="tdl c1" style="font-size:.8rem;font-weight:500;">${_pTeamCount(D.players)} Spieler</td>
-    <td class="c2"></td>
+    <td class="tdl c1 mx-team" colspan="2" style="font-size:.8rem;font-weight:500;">${_pTeamLine(D.players)}</td>
     <td class="c3 mx-pct" style="color:${_mxPctCol(avg)};" title="Ø der Mannschaft in der Saison">${avg==null?'–':'<small class="mx-avg">Ø</small>'+avg+'%'}</td>
     ${cells}
     <td></td>
@@ -23530,7 +23542,8 @@ function dbComputeMetrics(data){
       matches:mIdx.length,           // all planned
       trainingsDone:tPastIdx.length, // only completed
       matchesDone:mPastIdx.length,   // only completed
-      players:_pTeamCount(players)
+      players:_pTeamCount(players),       // squad (with pause) — "Kadergröße"
+      avail:_pTeamSplit(players).a        // who can come now (1.2.137)
     }
   };
 }
@@ -24301,7 +24314,7 @@ function dbRenderWeekReportSection(data){
   html+='</div>';
   // ── 1. Week grid ──
   const sym={1:['A','csa'],0:['F','csf'],2:['E','cse'],4:['M','csm'],3:['?','csq'],5:['N','csn']};
-  const rows=players.map((p,pi)=>({p,pi})).filter(x=>x.p).map(x=>{
+  const rows=players.map((p,pi)=>({p,pi})).filter(x=>x.p&&wk.some(w=>_sessCounts(x.p,w.s,season))).map(x=>{
     const now=pctOf(x.p,held),pr=pctOf(x.p,prevHeld);
     return Object.assign(x,{now,pr});
   }).sort((a,b)=>((b.now==null?-1:b.now)-(a.now==null?-1:a.now))||nm(a.p).localeCompare(nm(b.p)));
@@ -24621,8 +24634,8 @@ function _statSumHtml(data,m,sb){
   h+=r('Training',m.pct.training==null?null:m.pct.training+' %',m.counts.trainingsDone+' von '+m.counts.trainings+' absolviert');
   h+=r('Spiele',m.pct.match==null?null:m.pct.match+' %',m.counts.matchesDone+' von '+m.counts.matches+' absolviert');
   if(_attShow(data)&&wT&&bT)h+=r('Letzte 4 Wochen',pc(wA,wT)+' %','davor '+pc(bA,bT)+' %');
-  h+=r('Ø im Training',m.groupSize.training,'von '+m.counts.players+' Spielern');
-  if(m.counts.matchesDone)h+=r('Ø im Spiel',m.groupSize.match,'von '+m.counts.players+' Spielern');
+  h+=r('Ø im Training',m.groupSize.training,'von '+m.counts.avail+' Spielern');
+  if(m.counts.matchesDone)h+=r('Ø im Spiel',m.groupSize.match,'von '+m.counts.avail+' Spielern');
   {
     let w=0,dr=0,l=0,gf=0,ga=0;
     (data.sessions||[]).forEach(x=>{const q=sbResult(x);if(!q)return;gf+=q.f;ga+=q.a;if(q.k==='w')w++;else if(q.k==='l')l++;else dr++;});
