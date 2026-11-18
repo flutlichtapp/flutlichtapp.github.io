@@ -3,6 +3,8 @@
 // название“ → „давай, как ты предлагаешь“. Kader ist die Spieler: auf der Tafel
 // wird der Kader fürs Spiel festgelegt (dann „Aufstellung aus dem Kader“), die
 // Trainerliste steht in den Einstellungen; ändern kann sie der Admin.
+// Seit 1.2.133 (18.11.) ist die Tafel „Spieltag → Kader“ (nur Spiele) und der
+// Saisonkader ein Reiter in Kader – Wege und Erwartungen hier angepasst.
 // node tools/tests/t_kader132.js [index.html] [shotdir]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 const out=process.argv[3]||'';
@@ -14,7 +16,7 @@ const open=async(b,o)=>{o=o||{};const c=await b.newContext({viewport:o.vp||{widt
   if(o.cu)await p.evaluate(cu=>{CU=Object.assign({loginAt:Date.now()},cu);},o.cu);
   if(o.tab)await p.evaluate(t=>localStorage.setItem('fcf_kb_tab',t),o.tab);
   return {p,c,errs};};
-const kader=async p=>{await p.evaluate(()=>{document.getElementById('homeOverlay').style.display='';hxRender();hxGo('team');});await p.waitForTimeout(400);};
+const kader=async p=>{await p.evaluate(()=>{document.getElementById('homeOverlay').style.display='';hxRender();hxGo('lineup');});await p.waitForTimeout(400);};
 const board=p=>p.evaluate(()=>{const h=document.getElementById('kbBoard');
   const btn=[...h.querySelectorAll('.kb-acts button')].map(b=>({t:b.textContent.trim(),alt:b.classList.contains('alt')}));
   const sq=h.querySelector('.kb-sq');
@@ -25,8 +27,9 @@ const tabs=p=>p.evaluate(()=>[...document.querySelectorAll('#moTeamMgr .tbar .tb
 (async()=>{const b=await chromium.launch();
  // ── Tafel, admin, the match tomorrow
  {const {p,c,errs}=await open(b);
+  await p.evaluate(()=>{document.getElementById('homeOverlay').style.display='';hxRender();hxGo('team');});await p.waitForTimeout(400);
+  ok(JSON.stringify(await tabs(p))===JSON.stringify(['Spieler','Saisonkader','Ziele','Videos']),'Kader: Spieler, Saisonkader, Ziele, Videos – kein „Trainer“ (seit 1.2.133 ohne Tafel)');
   await kader(p);
-  ok(JSON.stringify(await tabs(p))===JSON.stringify(['Tafel','Spieler','Ziele','Videos']),'Kader: Tafel, Spieler, Ziele, Videos – kein „Trainer“ mehr');
   let r=await board(p);
   ok(/Spiel gegen/.test(r.ttl)&&r.sq==='Kader noch nicht veröffentlicht'&&r.sqNo,'Spiel ohne Kader: „Kader noch nicht veröffentlicht“');
   ok(r.btn.length===2&&r.btn[0].t==='Kader festlegen'&&!r.btn[0].alt&&r.btn[1].t==='Aufstellung aus Zusagen'&&r.btn[1].alt,'erst „Kader festlegen“ (gelb), dann „Aufstellung aus Zusagen“');
@@ -52,16 +55,16 @@ const tabs=p=>p.evaluate(()=>[...document.querySelectorAll('#moTeamMgr .tbar .tb
     return {n:used.length,mats:used.includes('Mats Lange'),emil:used.includes('Emil Hartmann')};});
   ok(r.n===13&&!r.mats&&!r.emil,'„Aufstellung aus dem Kader“: nur die 13 aus dem Kader ('+r.n+')');
   await p.evaluate(()=>{lpState.slots={};lpState.subs=[];closeM('moLineup');});await p.waitForTimeout(300);
-  // a training: nothing about a squad
+  // a training is not on the Tafel any more (1.2.133): it stays on the match
   await p.evaluate(()=>{const si=cd().sessions.findIndex(s=>s.date==='Di 10.11');kbPick(si);});
   r=await board(p);
-  ok(r.sq===null&&!r.btn.length&&/^Training/.test(r.ttl),'Training: keine Kader-Zeile, keine Knöpfe');
+  ok(/^Spiel/.test(r.ttl)&&await p.evaluate(()=>[...document.querySelectorAll('#kbBoard .kb-day')].every(x=>/Spiel/.test(x.textContent))),'Tafel nur mit Spielen (Training: „Wer kommt?“ im Termin)');
   // withdrawn: back to "not published"
   await p.evaluate(()=>{const si=cd().sessions.findIndex(s=>s.date==='So 08.11');kbPick(si);squadWithdraw(si);});await p.waitForTimeout(200);
   r=await board(p);
   ok(r.sq==='Kader noch nicht veröffentlicht'&&r.btn[0].t==='Kader festlegen'&&r.cards.Mats.st==='Verfügbar','zurückgenommen: wieder „noch nicht veröffentlicht“');
   // remembered tab: a stored "trainer" falls back to the Tafel
-  ok(await p.evaluate(()=>{localStorage.setItem('fcf_kb_tab','trainer');return _kbDefaultTab()==='tafel';}),'gemerkter alter Reiter „Trainer“: Kader öffnet mit der Tafel');
+  ok(await p.evaluate(()=>{localStorage.setItem('fcf_kb_tab','trainer');const a=_kbDefaultTab();localStorage.setItem('fcf_kb_tab','tafel');return a==='spieler'&&_kbDefaultTab()==='spieler';}),'gemerkter alter Reiter „Trainer“ oder „Tafel“: Kader öffnet mit „Spieler“');
   await p.evaluate(()=>switchTab('videos',1));
   ok(await p.evaluate(()=>_kbDefaultTab()==='videos'),'„Videos“ wird jetzt auch gemerkt');
   ok(!errs.length,'keine Fehler'+(errs.length?': '+errs[0]:''));await c.close();}
@@ -86,9 +89,9 @@ const tabs=p=>p.evaluate(()=>[...document.querySelectorAll('#moTeamMgr .tbar .tb
  {const {p,c,errs}=await open(b,{vp:{width:390,height:844}});
   await kader(p);
   const r=await p.evaluate(()=>{const bs=[...document.querySelectorAll('#kbBoard .kb-acts button')].map(x=>x.getBoundingClientRect());
-    return {n:bs.length,w:bs.every(x=>x.width>320),fit:document.documentElement.scrollWidth<=innerWidth+1,tabs:[...document.querySelectorAll('#moTeamMgr .tbar .tbtn')].filter(e=>e.offsetParent).every(e=>e.getBoundingClientRect().right<=innerWidth)};});
+    return {n:bs.length,w:bs.every(x=>x.width>320),fit:document.documentElement.scrollWidth<=innerWidth+1,tabs:[...document.querySelectorAll('#tmgr-h .hx-lptabs button')].filter(e=>e.offsetParent).every(e=>e.getBoundingClientRect().right<=innerWidth)};});
   ok(r.n===2&&r.w&&r.fit,'Handy: beide Knöpfe über die ganze Breite, nichts ragt über den Rand');
-  ok(r.tabs,'Handy: alle Reiter passen (vier statt fünf)');
+  ok(r.tabs,'Handy: „Kader | Aufstellung“ passt');
   if(out)await p.screenshot({path:out+'/kader132_phone.png'});
   ok(!errs.length,'Handy: keine Fehler'+(errs.length?': '+errs[0]:''));await c.close();}
 

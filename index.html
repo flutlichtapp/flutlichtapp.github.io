@@ -5620,6 +5620,23 @@ body.design-heute #hxHome.hx-has-hero .hx-date{text-shadow:0 1px 8px rgba(0,0,0,
 .hx-tp-x b{display:block;font-size:1rem;font-weight:700;}
 .hx-tp-x span{display:block;margin-top:2px;font-size:.88rem;line-height:1.35;color:var(--hx-muted);}
 .hx-tp .hx-btns{flex:none;flex-wrap:nowrap;}
+/* What is new, in the head of the Übersicht (1.2.133; wide screens only) */
+.hx-nwtop{display:none;}
+@media(min-width:1024px){
+  body.design-heute .hx-nwtop{display:flex;align-items:center;gap:10px;min-width:0;max-width:min(640px,62%);padding:5px 5px 5px 12px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;}
+  body.design-heute .hx-card.hx-nw{display:none;}
+}
+.hx-nwtop-ic{flex:none;display:flex;gap:3px;}
+.hx-nwtop-ic i{width:6px;height:6px;border-radius:50%;background:var(--hx-yellow);}
+.hx-nwtop-t{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.9rem;color:#DCE5F5;}
+.hx-nwtop-t b{color:#fff;font-weight:700;}
+.hx-nwtop-go{flex:none;height:34px;padding:0 14px;border:none;border-radius:999px;background:var(--hx-yellow);color:var(--hx-on-acc,#0E2350);font:700 .85rem 'Barlow',sans-serif;cursor:pointer;}
+.hx-nwtop-x{flex:none;width:34px;height:34px;border:none;border-radius:50%;background:transparent;color:#DCE5F5;font-size:.95rem;cursor:pointer;}
+.hx-nwtop-x:hover{background:rgba(255,255,255,.12);color:#fff;}
+.hx-nwtop :is(button):focus-visible{outline:2px solid var(--hx-yellow);outline-offset:2px;}
+/* Kader page in Spieltag mode: the step tabs are the heading, no pill bar (1.2.133) */
+body.design-heute #moTeamMgr[data-mode="spieltag"] .tbar{display:none !important;}
+#moTeamMgr #tmgr-h .hx-lptabs{display:inline-flex;}
 .hx-tp .hx-btn{height:42px;}
 @media (max-width:767px){
   .hx-card.hx-tp{flex-wrap:wrap;gap:12px;padding:14px 16px;}
@@ -7143,7 +7160,7 @@ if(window._fbBlocked){
   <button type="button" class="hx-item" data-hx="table" onclick="hxGo('table')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg><span>Anwesenheit</span></button>
   <button type="button" class="hx-item" data-hx="cal" onclick="hxGo('cal')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Kalender</span></button>
   <button type="button" class="hx-item" data-hx="team" onclick="hxGo('team')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.9.7 3.1 2.4 3.5 5.2"/></svg><span>Kader</span></button>
-  <button type="button" class="hx-item" data-hx="lineup" onclick="hxGo('lineup')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18"/><circle cx="12" cy="12" r="3"/></svg><span>Aufstellung</span></button>
+  <button type="button" class="hx-item" data-hx="lineup" onclick="hxGo('lineup')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18"/><circle cx="12" cy="12" r="3"/></svg><span>Spieltag</span></button>
   <button type="button" class="hx-item grp" data-hx="stats" onclick="hxGo('stats')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Statistik</span></button>
   <button type="button" class="hx-item" data-hx="week" onclick="hxGo('week')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg><span>Wochenbericht</span></button>
   <div class="hx-fill"></div>
@@ -7676,8 +7693,8 @@ if(window._fbBlocked){
     <h3 id="tmgr-h" style="margin:0;flex:1;">Mannschaft</h3>
   </div>
   <div class="tbar">
-    <button class="tbtn" data-tab="tafel" id="tbtn-tafel" onclick="switchTab('tafel',1)" style="display:none;">Tafel</button>
     <button class="tbtn active" data-tab="spieler" onclick="switchTab('spieler',1)">Spieler</button>
+    <button class="tbtn" data-tab="saison" id="tbtn-saison" onclick="kaderGo('saison',1)">Saisonkader</button>
     <button class="tbtn" data-tab="ziele" onclick="switchTab('ziele',1)">Ziele</button>
     <button class="tbtn" data-tab="videos" onclick="switchTab('videos',1)">Videos</button>
   </div>
@@ -7809,8 +7826,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.132'; // v1.2.132: Kader fürs Spiel auf der Tafel, Trainerteam in den Einstellungen
-const APP_VERSION_LABEL='1.2.132';
+const APP_VERSION='1.2.133'; // v1.2.133: Spieltag (Kader → Aufstellung) und Kader (Spieler, Saisonkader, Ziele, Videos); Neuigkeiten oben in der Übersicht
+const APP_VERSION_LABEL='1.2.133';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -7834,7 +7851,7 @@ const FL_MARK='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F
 function _clubSlug(){return (_clubName()||'Flutlicht').replace(/[^A-Za-z0-9ÄÖÜäöüß]+/g,'-').replace(/^-|-$/g,'')||'Flutlicht';}
 function _clubInfo(){const c=(G&&G.club&&typeof G.club==='object')?G.club:{};return {name:_clubName(),resp:String(c.resp||''),addr:String(c.addr||''),mail:String(c.mail||''),dsb:String(c.dsb||'')};}
 const APP_NEWS=[
-  {id:'20261117-1',d:'17.11.',t:'Kader fürs Spiel auf der Tafel',x:'Unter Kader → Tafel siehst du, wer fürs Spiel verfügbar ist, und legst dort gleich den Kader fest. Danach füllt „Aufstellung aus dem Kader“ die Aufstellung mit genau diesen Spielern. Die Liste der Trainer steht jetzt unter Einstellungen → Trainerteam.',go:['Zur Tafel',"openTeamMgr('tafel')"]},
+  {id:'20261118-1',d:'18.11.',t:'Spieltag: erst der Kader, dann die Aufstellung',x:'„Aufstellung“ heißt jetzt „Spieltag“: Unter „Kader“ siehst du fürs Spiel, wer verfügbar ist, und legst den Kader mit Treffpunkt fest; unter „Aufstellung“ stellst du auf – „Aufstellung aus dem Kader“ füllt sie mit genau diesen Spielern. Der Saisonkader steht jetzt unter Kader, die Liste der Trainer unter Einstellungen → Trainerteam.',go:['Zum Spieltag','hxSpieltag()']},
   {id:'20261116-1',d:'16.11.',t:'Neue Adresse: FlutlichtApp.de',x:'Flutlicht ist umgezogen. Alte Links führen automatisch hierher. Einmal neu anmelden, Benachrichtigungen unter Einstellungen → Benachrichtigungen neu einschalten und den Kalender, falls abonniert, neu abonnieren.',go:['Zu den Benachrichtigungen',"hxGo('settings')"]},
   {id:'20261112-2',d:'12.11.',t:'Spieler des Monats',x:'In der Statistik wählt ihr jeden Monat einen Spieler des Monats. Flutlicht schlägt vor, wer im Training am häufigsten da war, danach zählen ▲ und Spieler des Spiels; die Spieler sehen ihn zwei Wochen lang in ihrer App, mit eurem Satz und ohne Zahlen.',go:['Zur Statistik',"hxGo('stats')"]},
   {id:'20261112-1',d:'12.11.',t:'Im Profil und im Termin blättern',x:'Oben im Spielerprofil, im Termin und im Trainerprofil stehen jetzt ‹ ›: Sie gehen durch die Liste, aus der du es geöffnet hast – etwa alle „Offen“ eines Termins, Im Blick oder die Tabelle; über die Mitte springst du direkt zu jemand anderem. Am Computer gehen auch die Pfeiltasten ← →.'},
@@ -11526,6 +11543,18 @@ function _newsCardHtml(){
       <span class="hx-tp-x"><b>Neu in Flutlicht</b><span>${names}${more}</span></span>
       <span class="hx-btns"><button type="button" class="hx-btn primary" onclick="openNews()">Ansehen</button><button type="button" class="hx-btn" onclick="newsDismiss()">Ausblenden</button></span>
     </section>`;
+  }catch(e){return '';}
+}
+// 1.2.133: on a computer the news sits in the head next to the greeting —
+// a card of its own pushed the Übersicht past the window (1536×730: +57 px)
+function _newsTopHtml(){
+  try{
+    if(!CU||CU.role==='player'||(typeof isPlayerMode==='function'&&isPlayerMode()))return '';
+    const u=_nwUnseen();if(!u.length)return '';
+    const e=escapeHtml,more=u.length>1?' · '+(u.length-1)+' weitere':'';
+    return `<div class="hx-nwtop" role="region" aria-label="Neu in Flutlicht"><span class="hx-nwtop-ic" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="hx-nwtop-t"><b>Neu:</b> ${e(u[0].t)}${more}</span>
+      <button type="button" class="hx-nwtop-go" onclick="openNews()">Ansehen</button><button type="button" class="hx-nwtop-x" onclick="newsDismiss()" aria-label="Ausblenden" title="Ausblenden">✕</button></div>`;
   }catch(e){return '';}
 }
 // all = from the menu: everything (newest first); otherwise what is new
@@ -23395,12 +23424,6 @@ function openDashboard(){
   // Default to current
   _dbState.team=UI.currentTeam;
   _dbState.season=UI.currentSeason;
-  // Populate team & season selectors
-  const teamSel=document.getElementById('db-team-sel');
-  const seasonSel=document.getElementById('db-season-sel');
-  const editableTeams=isAdmin()?G.teamList:(CU&&CU.teams?CU.teams:[]);
-  teamSel.innerHTML=(G.teamList||[]).filter(t=>editableTeams.includes(t)).map(t=>`<option value="${t}"${t===UI.currentTeam?' selected':''}>${t}</option>`).join('');
-  seasonSel.innerHTML=(G.seasonList||[]).map(s=>`<option value="${s}"${s===UI.currentSeason?' selected':''}>${s}</option>`).join('');
   openM('moDashboard');
   renderDashboard();
 }
@@ -23433,8 +23456,9 @@ function _dbDocClick(e){
   else setTimeout(()=>document.addEventListener('click',_dbDocClick,{once:true}),10);
 }
 function dbGetData(){
-  const team=document.getElementById('db-team-sel')?.value||_dbState.team;
-  const season=document.getElementById('db-season-sel')?.value||_dbState.season;
+  // The team and season of the app (1.2.133: Statistik has no own switch any more)
+  const team=UI.currentTeam||_dbState.team;
+  const season=UI.currentSeason||_dbState.season;
   _dbState.team=team;_dbState.season=season;
   const block=G.db&&G.db[team+'__'+season];
   if(!block||!Array.isArray(block.sessions)||!Array.isArray(block.players)){
@@ -24244,7 +24268,7 @@ function dbRenderWeekReportSection(data){
     const phy=own.filter(x=>Array.isArray(p.physio)&&p.physio[x.si]===true);
     if(phy.length)flags.push({pi,p,cls:'info',ic:'🧑‍⚕️',t:'Physio: '+phy.map(x=>x.s.date).join(', ')});
   });
-  html+='<div class="wr2-sec wr2s-flags"><div class="db-h">⚠ Im Blick behalten</div>';
+  html+='<div class="wr2-sec wr2s-flags"><div class="db-h">⚠ Auffällig diese Woche</div>';
   if(!flags.length)html+='<div class="wr2-ok">✓ Nichts Auffälliges in dieser Woche.</div>';
   else{
     const order={bad:0,warn:1,info:2};
@@ -30136,7 +30160,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 function hxSyncNav(){
   const ov=document.getElementById('homeOverlay');
   const pg=_hxOpenPage();
-  const cur=_hxToolOpen()?'lineup':pg?pg.k:(ov&&ov.classList.contains('open'))?'home':'table';
+  // Saisonkader belongs to Kader, the Tafel page in Spieltag mode to Spieltag (1.2.133)
+  const tool=_hxToolOpen(),tm=document.getElementById('moTeamMgr');
+  const cur=tool==='moSeasonLineup'?'team':tool?'lineup':pg?((pg.k==='team'&&tm&&tm.dataset.mode==='spieltag')?'lineup':pg.k):(ov&&ov.classList.contains('open'))?'home':'table';
   document.querySelectorAll('#hxNav .hx-item[data-hx]').forEach(b=>{
     const on=b.dataset.hx===cur;
     b.classList.toggle('on',on);
@@ -30147,20 +30173,69 @@ function hxSyncNav(){
 // the season plan when no match is coming up — summer break, a new season
 // without fixtures — instead of a dead end
 function hxOpenLineup(){
-  if(typeof canEdit==='function'&&!canEdit())return;
-  if(findNextMatchIdx()<0&&typeof openSeasonLineup==='function'){
-    openSeasonLineup();
-    document.getElementById('moSeasonLineup')?.classList.add('hx-vianav');
-    return;
-  }
+  if(typeof canEdit==='function'&&!canEdit())return openSpieltagKader();
+  // No match coming up: the Spieltag page says so (Saisonkader lives in Kader now)
+  if(findNextMatchIdx()<0)return openSpieltagKader();
   openNextMatchLineup();
   document.getElementById('moLineup')?.classList.add('hx-vianav');
+}
+// ── Spieltag (1.2.133): one match, two steps — "Kader" (who can come, who
+// goes, Treffpunkt: the Tafel) → "Aufstellung" (who plays where). The step
+// clicked last is where the navigation opens; the first time the Kader.
+// Kader (the navigation item) is the squad over the season: Spieler,
+// Saisonkader, Ziele, Videos.
+const ST_LS='fcf_st_tab';
+function _stTab(){let t='';try{t=localStorage.getItem(ST_LS)||'';}catch(e){}return t==='aufstellung'?'aufstellung':'kader';}
+function hxSpieltag(){
+  const ed=typeof canEdit==='function'&&canEdit();
+  if(ed&&_stTab()==='aufstellung'&&findNextMatchIdx()>=0){openNextMatchLineup();document.getElementById('moLineup')?.classList.add('hx-vianav');hxSyncNav();return;}
+  openSpieltagKader();
+}
+function openSpieltagKader(si){
+  KB.team=UI.currentTeam;KB.season=UI.currentSeason;
+  if(si!=null)KB.si=si;
+  const tm=document.getElementById('moTeamMgr');
+  if(tm&&tm.classList.contains('open')&&tm.dataset.mode==='spieltag'){switchTab('tafel');}
+  else{if(_hxOn())_hxClosePages('moTeamMgr');openTeamMgr('tafel');}
+  if(typeof hxSyncNav==='function')hxSyncNav();
+  if(typeof _mobNavSync==='function'&&typeof _mobCurrentView==='function')_mobNavSync(_mobCurrentView());
+}
+// The two step tabs in the headers of the Tafel page and of Aufstellung
+function stGo(t,user){
+  if(user)try{localStorage.setItem(ST_LS,t);}catch(e){}
+  if(t==='aufstellung'){
+    if(!(typeof canEdit==='function'&&canEdit()))return;
+    const D=cd(),s=D&&KB.si!=null?D.sessions[KB.si]:null;
+    const si=(s&&s.type==='match')?KB.si:findNextMatchIdx();
+    if(si==null||si<0){alert('Kein kommendes Spiel gefunden.');return;}
+    openLineupPlanner(si);document.getElementById('moLineup')?.classList.add('hx-vianav');
+  }else{
+    const lp=document.getElementById('moLineup');let si=null;
+    if(lp&&lp.classList.contains('open')){si=lpState.sessIdx;closeLineupPlanner();if(lp.classList.contains('open'))return;}
+    openSpieltagKader(si);
+  }
+  if(typeof hxSyncNav==='function')hxSyncNav();
+}
+// Kader ⇄ Saisonkader (the Saisonkader is a full-screen tool)
+async function kaderGo(t,user){
+  if(t==='saison'){
+    if(!(typeof canEdit==='function'&&canEdit()))return;
+    if(_hxOn())_hxClosePages('');else closeM('moTeamMgr');
+    openSeasonLineup();document.getElementById('moSeasonLineup')?.classList.add('hx-vianav');
+  }else{
+    const slp=document.getElementById('moSeasonLineup');
+    if(slp&&slp.classList.contains('open')){try{await closeSeasonLineup();}catch(e){console.error(e);}if(slp.classList.contains('open'))return;}
+    if(user)try{localStorage.setItem('fcf_kb_tab',t);}catch(e){}
+    if(_hxOn())_hxClosePages('moTeamMgr');
+    openTeamMgr(t);
+  }
+  if(typeof hxSyncNav==='function')hxSyncNav();
 }
 function hxGo(k){
   const tool=_hxToolOpen();
   if(tool){
     closeUserMenuIfOpen&&closeUserMenuIfOpen();
-    if(k==='lineup'&&tool==='moLineup'){hxSyncNav();return;}
+    if((k==='lineup'&&tool==='moLineup')||(k==='team'&&tool==='moSeasonLineup')){hxSyncNav();return;}
     _hxCloseTools().then(ok=>{if(ok)hxGo(k);else hxSyncNav();});
     return;
   }
@@ -30172,7 +30247,7 @@ function hxGo(k){
     case 'table':homeClose();break;
     case 'cal':openCalendar();break;
     case 'team':openTeamMgr(_kbDefaultTab());break;
-    case 'lineup':hxOpenLineup();break;
+    case 'lineup':hxSpieltag();break;
     case 'stats':openDashboard();break;
     case 'week':openWeekReport();break;
     case 'settings':openSettings();break;
@@ -30347,7 +30422,7 @@ function hxRender(){
   const mi=findNextMatchIdx();
   let html=`<div class="hx-heroimg" aria-hidden="true"></div><div class="hx-wrap">${mtop}
     <div class="hx-top"><div class="hx-hello"><span class="hx-date">${esc(dateTxt)}</span><h1 class="hx-h1">${esc(_hxGreeting())}</h1></div>
-    </div>${_tpOfferHtml()}${_newsCardHtml()}
+    ${_newsTopHtml()}</div>${_tpOfferHtml()}${_newsCardHtml()}
     <div class="hx-grid">`;
   // ── The week card shows this week – or the next one (1.2.126) ──
   // Once every session of this week is over (Sunday after the match), the card
@@ -30754,7 +30829,7 @@ function mobSheetOpen(){
   const ed=(typeof canEdit==='function')&&canEdit();
   const adm=typeof isAdmin==='function'&&isAdmin();
   const groups=[[
-    ['lineup','Aufstellung','hxOpenLineup()',ed],
+    ['lineup','Spieltag','hxSpieltag()',true],
     ['stats','Statistik','openDashboard()',true],
     ['week','Wochenbericht','openWeekReport()',ed],
   ],[
@@ -30793,7 +30868,7 @@ function _mobCurrentView(){
   const home=document.getElementById('homeOverlay');
   if(typeof _hxOn==='function'&&_hxOn()){
     const pg=typeof _hxOpenPage==='function'&&_hxOpenPage();
-    if(pg&&pg.k==='team')return 'team';
+    if(pg&&pg.k==='team'){const tm=document.getElementById('moTeamMgr');return (tm&&tm.dataset.mode==='spieltag')?'more':'team';}
     if(pg&&pg.k==='cal')return 'cal';
     if(pg)return 'more';   // Statistik / Wochenbericht / Einstellungen live behind "Mehr"
   }
@@ -31187,12 +31262,19 @@ function switchTab(t,user){
   if(t==='tafel'&&!_kbOn())t='spieler';
   if(!['tafel','spieler','ziele','videos'].includes(t))t='spieler';
   if(t!=='spieler'&&_multiSelMode&&typeof _msExit==='function')_msExit();
-  const tb=document.getElementById('tbtn-tafel');if(tb)tb.style.display=_kbOn()?'':'none';
+  const ed=typeof canEdit==='function'&&canEdit();
+  const sb=document.getElementById('tbtn-saison');if(sb)sb.style.display=ed?'':'none';
   document.querySelectorAll('#moTeamMgr .tbtn').forEach(b=>{const on=b.dataset.tab===t;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
   ['tafel','spieler','ziele','videos'].forEach(n=>document.getElementById('tab-'+n)?.classList.toggle('active',n===t));
-  if(user&&_kbOn())try{localStorage.setItem('fcf_kb_tab',t);}catch(e){}
-  if(t==='tafel')kbRender();
-  document.getElementById('tmgr-h').textContent='Kader';
+  if(user&&t!=='tafel')try{localStorage.setItem('fcf_kb_tab',t);}catch(e){}
+  // One page, two places (1.2.133): the Tafel is "Spieltag → Kader", the rest is "Kader"
+  const tm=document.getElementById('moTeamMgr'),h=document.getElementById('tmgr-h');
+  if(tm)tm.dataset.mode=t==='tafel'?'spieltag':'kader';
+  if(t==='tafel'){
+    h.innerHTML='<span class="hx-lptabs" role="tablist" aria-label="Spieltag"><button type="button" role="tab" class="on" aria-selected="true">Kader</button>'
+      +(ed?'<button type="button" role="tab" aria-selected="false" onclick="stGo(\'aufstellung\',1)">Aufstellung</button>':'')+'</span>';
+    kbRender();
+  }else h.textContent='Kader';
   if(t==='spieler')renderMgrPlayers();
   if(t==='ziele')zlRenderTab();
   if(t==='videos')vdRenderTab();
@@ -31212,12 +31294,12 @@ function _kbOn(){
 }
 function _kbVisible(){
   const m=document.getElementById('moTeamMgr'),t=document.getElementById('tab-tafel');
+  if(m&&m.dataset.mode&&m.dataset.mode!=='spieltag')return false;
   return !!(m&&t&&m.classList.contains('open')&&t.classList.contains('active'));
 }
 function _kbDefaultTab(){
-  if(!_kbOn())return 'spieler';
   let t='';try{t=localStorage.getItem('fcf_kb_tab')||'';}catch(e){}
-  return ['tafel','spieler','ziele','videos'].includes(t)?t:'tafel';
+  return ['spieler','ziele','videos'].includes(t)?t:'spieler';
 }
 // Before the session: the players' answers; from its start: attendance
 const KB_ST={
@@ -31229,7 +31311,7 @@ const KB_WD=['So','Mo','Di','Mi','Do','Fr','Sa'];
 function _kbList(D,season,future){
   const today=todaySK();
   const a=(D.sessions||[]).map((s,i)=>({s,i,k:(s&&s.date)?_dbSortKey(s.date,season):0})).filter(x=>x.s&&x.k);
-  if(future)return a.filter(x=>x.k>=today).sort((x,y)=>x.k-y.k||String(x.s.time||'').localeCompare(String(y.s.time||''))).slice(0,6);
+  if(future)return a.filter(x=>x.k>=today&&x.s.type==='match').sort((x,y)=>x.k-y.k||String(x.s.time||'').localeCompare(String(y.s.time||''))).slice(0,6);
   // the last five held sessions, oldest first
   return a.filter(x=>x.k<=today&&(typeof sessTookPlace!=='function'||sessTookPlace(x.s,season))).sort((x,y)=>x.k-y.k).slice(-5);
 }
@@ -31246,6 +31328,7 @@ function kbRender(){
   const season=UI.currentSeason,e=escapeHtml;
   if(KB.team!==UI.currentTeam||KB.season!==season){KB.si=null;KB.team=UI.currentTeam;KB.season=season;}
   const ups=_kbList(D,season,true);
+  if(!ups.length){host.innerHTML='<div class="kb-nodata">Gerade ist kein Spiel angesetzt. Spiele legst du im Kalender an.</div>';return;}
   if(KB.si==null||!ups.some(x=>x.i===KB.si)){const m=ups.find(x=>x.s.type==='match');KB.si=m?m.i:(ups[0]?ups[0].i:null);}
   const si=KB.si,s=si!=null?D.sessions[si]:null;
   const roll=!!(s&&typeof _isSessRollCallTime==='function'&&_isSessRollCallTime(si));
@@ -32109,7 +32192,7 @@ function _hxSwitchInTool(same,fn){
     try{
       if(tool==='moSeasonLineup'&&typeof openSeasonLineup==='function'&&canEdit()){
         openSeasonLineup();document.getElementById('moSeasonLineup')?.classList.add('hx-vianav');
-      }else hxOpenLineup();
+      }else hxSpieltag();
     }catch(e){console.error('[switch lineup]',e);}
     if(typeof hxSyncNav==='function')hxSyncNav();
   });
@@ -42345,7 +42428,7 @@ _pubCleanupSchedule();
 <div class="lp-overlay" id="moLineup">
   <!-- Topbar -->
   <div class="lp-topbar">
-    <div class="lp-title"><div class="hx-lptabs" role="tablist" aria-label="Aufstellung"><button type="button" role="tab" class="on" aria-selected="true">Spiel</button><button type="button" role="tab" aria-selected="false" onclick="hxLineupSwitch('season')">Saisonkader</button></div><div class="lp-logo">⚽ Aufstellungsplaner <span id="lp-presence-inline" class="inline-presence"></span></div><div class="lp-sub" id="lp-context-info"></div></div>
+    <div class="lp-title"><div class="hx-lptabs" role="tablist" aria-label="Spieltag"><button type="button" role="tab" aria-selected="false" onclick="stGo('kader',1)">Kader</button><button type="button" role="tab" class="on" aria-selected="true">Aufstellung</button></div><div class="lp-logo">⚽ Aufstellungsplaner <span id="lp-presence-inline" class="inline-presence"></span></div><div class="lp-sub" id="lp-context-info"></div></div>
     <div id="lp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;margin-left:8px;"></div>
     <div class="lp-kind-wrap" style="display:flex;gap:4px;margin-left:10px;align-items:center;" title="Spieltyp bestimmt die Bankgröße">
       <button class="lp-fmt-btn active" id="lp-kind-ms" onclick="lpSetMatchKind('meisterschaft')" title="Meisterschaftsspiel: 7 Bankplätze"><span class="lk-long">Meisterschaft</span><span class="lk-short">M</span> · 7</button>
@@ -42900,7 +42983,7 @@ _pubCleanupSchedule();
 </div>
 <div class="slp-overlay" id="moSeasonLineup">
   <div class="slp-topbar">
-    <div class="lp-title"><div class="hx-lptabs" role="tablist" aria-label="Aufstellung"><button type="button" role="tab" aria-selected="false" onclick="hxLineupSwitch('match')">Spiel</button><button type="button" role="tab" class="on" aria-selected="true">Saisonkader</button></div><div class="slp-logo">📋 Saisonkader-Planer <span id="slp-presence-inline" class="inline-presence"></span></div><div class="slp-sub" id="slp-context-info">Mehrere Spieler pro Position</div></div>
+    <div class="lp-title"><div class="hx-lptabs" role="tablist" aria-label="Kader"><button type="button" role="tab" aria-selected="false" onclick="kaderGo('spieler',1)">Spieler</button><button type="button" role="tab" class="on" aria-selected="true">Saisonkader</button></div><div class="slp-logo">📋 Saisonkader-Planer <span id="slp-presence-inline" class="inline-presence"></span></div><div class="slp-sub" id="slp-context-info">Mehrere Spieler pro Position</div></div>
     <div id="slp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-left:8px;"></div>
     <div style="flex:1;"></div>
     <div id="slp-hint" style="display:none;"></div>
@@ -43129,10 +43212,6 @@ _pubCleanupSchedule();
   <div class="db-header">
     <button type="button" class="hx-back" onclick="closeM('moDashboard')" aria-label="Zurück">‹</button>
     <h3 style="flex:1 1 200px;margin:0;color:var(--bd);">Statistik</h3>
-    <div class="db-header-actions">
-      <select id="db-team-sel" onchange="renderDashboard()" class="db-sel"></select>
-      <select id="db-season-sel" onchange="renderDashboard()" class="db-sel"></select>
-    </div>
   </div>
   <div id="db-content" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 2px 6px;min-height:0;"></div>
 </div></div>

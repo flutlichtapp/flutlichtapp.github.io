@@ -74,8 +74,8 @@ const dlgOpen=p=>p.evaluate(()=>document.getElementById('tplDlg').classList.cont
  ok(o.title==='Rondo 4 gegen 2'&&o.desc==='Vier außen, zwei innen.','Original unverändert');
  ok(await p.evaluate(()=>{tplLibEdit();const x=!document.getElementById('tlSaveNew');tplDlgClose();return x;}),'„Neue Übung“: kein „Als neue Übung speichern“');
  // "Speichern" still replaces
- await p.evaluate(o=>tplLibEdit(o),orig);await p.fill('#tlDesc','Vier außen, zwei innen, 2 Min.');
- await p.click('#tplDlgBox .tpl-btn.pri');await p.waitForTimeout(150);
+ await p.evaluate(o=>tplLibEdit(o),orig);await p.waitForTimeout(150);await p.fill('#tlDesc','Vier außen, zwei innen, 2 Min.');
+ await p.click('#tplDlgBox button:text-is("Speichern")');await p.waitForTimeout(400);
  lib=await L(p);ok(lib.length===3&&lib.find(x=>x.id===orig).desc==='Vier außen, zwei innen, 2 Min.','„Speichern“ ersetzt wie bisher');
  // a block not from the library: saved straight away, no question
  await p.evaluate(()=>{const bl=TPL.plan.blocks;let j=bl.findIndex((b,i)=>i>0&&_tplIsSlot(b));tplSelect(j);tplSetF('title','Abschluss 2 gegen 1');});
