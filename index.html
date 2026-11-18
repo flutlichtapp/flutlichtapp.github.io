@@ -4978,6 +4978,14 @@ body.design-heute .hx-wrap{container:hxw / inline-size;}
   body.design-heute .hx-grid > .hx-card{padding-top:16px;padding-bottom:16px;}
   body.design-heute .hx-a-last .hx-bars{min-height:96px;margin-bottom:8px;}
 }
+/* 1.2.134: still taller than the window — set by _hxFitHome, never on phones */
+body.design-heute .hx-wrap.hx-tight{gap:10px;padding-top:10px !important;padding-bottom:8px;}
+body.design-heute .hx-wrap.hx-tight .hx-h1{font-size:1.75rem !important;}
+body.design-heute .hx-wrap.hx-tight .hx-grid{gap:10px;}
+body.design-heute .hx-wrap.hx-tight .hx-grid > .hx-card{padding-top:12px;padding-bottom:12px;}
+body.design-heute .hx-wrap.hx-tight .hx-a-week .hx-day{padding-top:3px;padding-bottom:3px;}
+body.design-heute .hx-wrap.hx-tight .hx-a-last .hx-bars{min-height:80px;margin-bottom:6px;}
+body.design-heute .hx-wrap.hx-tight .hx-att{gap:6px;}
 @container hxw (max-width:884px){
   body.design-heute .hx-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(230px,.95fr);gap:14px;}
   body.design-heute .hx-hero-head .hx-btns{min-width:140px;}
@@ -7826,8 +7834,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.133'; // v1.2.133: Spieltag (Kader → Aufstellung) und Kader (Spieler, Saisonkader, Ziele, Videos); Neuigkeiten oben in der Übersicht
-const APP_VERSION_LABEL='1.2.133';
+const APP_VERSION='1.2.134'; // v1.2.134: Übersicht passt auf den Bildschirm – „Im Blick behalten“ zeigt so viele Zeilen, wie Platz ist
+const APP_VERSION_LABEL='1.2.134';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -30709,6 +30717,45 @@ function hxRender(){
   }
   html+=`</section></div></div>`;
   el.innerHTML=html;
+  try{_hxFitHome();}catch(e){console.error('[Übersicht] Platz',e);}
+}
+// The Übersicht stays on one screen on a computer (1.2.134). Too tall for the
+// window (a laptop with browser bars is often only 650–700 px high): first
+// less air between and inside the cards (.hx-tight), then fewer rows. A fixed number
+// of "Im Blick behalten" rows was not enough: real rows run to two or three
+// lines ("Max · 3× unentschuldigt gefehlt · seit 4 Wochen …"), and that row of
+// cards set the height. Now rows go behind "Alle n anzeigen" one by one while
+// the page is taller than the window and each step really helps; at least one
+// row stays. Tablets and phones scroll anyway.
+function _hxFitHome(){
+  if(window._hxFlagsAll||innerWidth<1024)return;
+  const sc=document.getElementById('hxHome');if(!sc||!sc.offsetParent)return;
+  const card=sc.querySelector('.hx-a-flags');if(!card)return;
+  const all=(window._hxFlagsList||[]).length;
+  const rows=[...card.querySelectorAll(':scope > .hx-flag')];
+  let over=sc.scrollHeight-sc.clientHeight;
+  // First less air (nothing hidden), then fewer rows
+  const wrap=sc.querySelector('.hx-wrap');
+  if(over>0&&wrap){wrap.classList.add('hx-tight');over=sc.scrollHeight-sc.clientHeight;}
+  if(over<=0||rows.length<2)return;
+  let link=card.querySelector(':scope > .hx-link');
+  const setLink=()=>{
+    const shown=card.querySelectorAll(':scope > .hx-flag').length;
+    if(shown>=all){if(link)link.remove();link=null;return;}
+    if(!link){link=document.createElement('button');link.type='button';link.className='hx-link';link.style.padding='8px 6px 0';link.setAttribute('onclick','hxFlagsOpen()');card.appendChild(link);}
+    link.textContent='Alle '+all+' anzeigen';
+  };
+  while(over>0&&rows.length>1){
+    const r=rows.pop(),next=r.nextSibling;r.remove();setLink();
+    const now=sc.scrollHeight-sc.clientHeight;
+    if(now>=over){card.insertBefore(r,link&&next===null?link:next);setLink();break;}  // this card does not set the height
+    over=now;
+  }
+  window._hxFlagFit=card.querySelectorAll(':scope > .hx-flag').length;
+  // Web fonts change line breaks: measure once more when they are there
+  if(document.fonts&&document.fonts.status!=='loaded'&&!window._hxFitFonts){
+    window._hxFitFonts=1;document.fonts.ready.then(()=>{try{if(sc.offsetParent)hxRender();}catch(e){}});
+  }
 }
 
 // Sessions over in the last 14 days with players still without an entry
@@ -30776,7 +30823,7 @@ function _hxFlagCap(){return (innerWidth>=768&&(innerWidth<=1180||innerHeight<=8
 window.addEventListener('resize',()=>{
   clearTimeout(window._hxCapT);
   window._hxCapT=setTimeout(()=>{
-    if(window._hxFlagCapR!==undefined&&_hxFlagCap()!==window._hxFlagCapR&&typeof hxOn==='function'&&hxOn())hxRender();
+    if(window._hxFlagCapR!==undefined&&typeof hxOn==='function'&&hxOn()){const h=document.getElementById('hxHome');if(_hxFlagCap()!==window._hxFlagCapR||(h&&h.offsetParent))hxRender();}
   },200);
 });
 function _mobNavSync(active){
