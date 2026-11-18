@@ -7868,8 +7868,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.138'; // v1.2.138: Saisonkader mit demselben Kopf wie Kader – „Kader“ und Spieler · Saisonkader · Ziele · Videos
-const APP_VERSION_LABEL='1.2.138';
+const APP_VERSION='1.2.139'; // v1.2.139: Trainingsplaner, Anwesenheit erfassen oder Spielbericht offen + anderer Bildschirm (Suche, Navigation, Demo-Info) – das Werkzeug schließt (speichert) zuerst, statt dass der Bildschirm darunter aufgeht
+const APP_VERSION_LABEL='1.2.139';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -30207,12 +30207,18 @@ function _hxFillPitches(){
 }
 document.addEventListener('DOMContentLoaded',()=>{try{_hxFillPitches();}catch(e){}});
 function _hxToolOpen(){
-  for(const id of ['moSeasonLineup','moLineup']){const el=document.getElementById(id);if(el&&el.classList.contains('open'))return id;}
+  // the Trainingsplaner first: it lies above everything else; Anwesenheit
+  // erfassen and Spielbericht cover the navigation too (1.2.139)
+  if(typeof _tplIsOpen==='function'&&_tplIsOpen())return 'tplOverlay';
+  for(const id of ['moSeasonLineup','moLineup','rcOverlay','sbOverlay']){const el=document.getElementById(id);if(el&&el.classList.contains('open'))return id;}
   return '';
 }
 // Leaves the open tools through their own save checks. Resolves false when
 // the trainer chose to stay (Saisonkader offers "Abbrechen").
 async function _hxCloseTools(){
+  if(typeof _tplIsOpen==='function'&&_tplIsOpen()){try{tplClose();}catch(e){console.error(e);}}   // saves, never asks
+  // Anwesenheit erfassen and Spielbericht save every tap — they just close
+  for(const [id,fn] of [['rcOverlay','rcClose'],['sbOverlay','sbClose']]){const el=document.getElementById(id);if(el&&el.classList.contains('open')&&typeof window[fn]==='function'){try{window[fn]();}catch(e){console.error(e);}}}
   const slp=document.getElementById('moSeasonLineup');
   if(slp&&slp.classList.contains('open')){
     try{await closeSeasonLineup();}catch(e){console.error(e);}
@@ -30233,7 +30239,7 @@ function hxSyncNav(){
   const pg=_hxOpenPage();
   // Saisonkader belongs to Kader, the Tafel page in Spieltag mode to Spieltag (1.2.133)
   const tool=_hxToolOpen(),tm=document.getElementById('moTeamMgr');
-  const cur=tool==='moSeasonLineup'?'team':tool?'lineup':pg?((pg.k==='team'&&tm&&tm.dataset.mode==='spieltag')?'lineup':pg.k):(ov&&ov.classList.contains('open'))?'home':'table';
+  const cur=tool==='moSeasonLineup'?'team':tool==='moLineup'?'lineup':pg?((pg.k==='team'&&tm&&tm.dataset.mode==='spieltag')?'lineup':pg.k):(ov&&ov.classList.contains('open'))?'home':'table';
   document.querySelectorAll('#hxNav .hx-item[data-hx]').forEach(b=>{
     const on=b.dataset.hx===cur;
     b.classList.toggle('on',on);
@@ -32295,6 +32301,7 @@ function _hxSwitchInTool(same,fn){
   const tool=(typeof _hxToolOpen==='function')?_hxToolOpen():'';
   if(!tool)return false;
   if(same)return true;
+  if(tool!=='moLineup'&&tool!=='moSeasonLineup'){_hxCloseTools().then(ok=>{if(ok)fn();});return true;}
   _hxCloseTools().then(ok=>{
     if(!ok)return;
     fn();
@@ -42476,8 +42483,10 @@ function _demoWelcome(){
   setTimeout(()=>{const g=w.querySelector('.dw-go');if(g)g.focus({preventScroll:true});},30);
 }
 function _demoWelcomeClose(){const w=document.getElementById('demoWelcome');if(w)w.classList.remove('open');}
-function _demoTry(k){
+async function _demoTry(k){
   _demoWelcomeClose();
+  // the player view opens in its own tab: an open tool may stay
+  if(k!=='pv'&&typeof _hxToolOpen==='function'&&_hxToolOpen()&&!(await _hxCloseTools()))return;   // 1.2.139
   const nt=_demoNextTraining();
   try{
     if(k==='sess'){if(nt>=0)openSessFromMain(nt);}
