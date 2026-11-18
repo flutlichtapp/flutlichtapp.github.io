@@ -7834,8 +7834,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.134'; // v1.2.134: Übersicht passt auf den Bildschirm – „Im Blick behalten“ zeigt so viele Zeilen, wie Platz ist
-const APP_VERSION_LABEL='1.2.134';
+const APP_VERSION='1.2.135'; // v1.2.135: Im Blick nur „tun“ und „entscheiden“ – Hinschauen in „Wer braucht Aufmerksamkeit?“; kein Belastungssprung; Spielzeit ohne automatisches „dabei“
+const APP_VERSION_LABEL='1.2.135';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -17390,10 +17390,14 @@ function rpePlayedMin(s,p,si){
 function computePlayTime(block,season){
   const S=(block&&block.sessions)||[],P=(block&&block.players)||[];
   const reps=[];
+  const dayMs=k=>{const y=Math.floor(k/10000),m=Math.floor(k/100)%100,d=k%100;return new Date(y,m-1,d).getTime();};
+  const trs=[];
+  S.forEach((s,si)=>{if(s&&s.type==='training'&&s.date&&sessTookPlace(s,season))trs.push({si,t:dayMs(_dbSortKey(s.date,season))});});
   S.forEach((s,si)=>{
     if(!s||s.type!=='match'||!s.date||!sessTookPlace(s,season))return;
     const min=sbMinutes(s);if(!min)return;
-    reps.push({s,si,min,dur:_sbDur(s),st:new Set((_sbRep(s).st)||[]),k:_dbSortKey(s.date,season)});
+    const k=_dbSortKey(s.date,season),t=dayMs(k);
+    reps.push({s,si,min,dur:_sbDur(s),st:new Set((_sbRep(s).st)||[]),k,wk:trs.filter(x=>x.t<t&&x.t>=t-7*864e5).map(x=>x.si)});
   });
   reps.sort((a,b)=>a.k-b.k);
   const rows=[];
@@ -17403,7 +17407,9 @@ function computePlayTime(block,season){
     reps.forEach(x=>{
       if(!_sessCounts(p,x.s,season))return;
       const v=p.s&&p.s[x.si],inRep=Object.prototype.hasOwnProperty.call(x.min,p.name);
-      if(!inRep&&v!==1&&v!==5)return;          // not available: absent, excused, no entry
+      // N counts when it was his own "yes", or he trained that week (1.2.135)
+      const nkAv=v===5&&(!(Array.isArray(p.ay)&&p.ay[x.si]===1)||x.wk.some(i=>p.s&&p.s[i]===1));
+      if(!inRep&&v!==1&&!nkAv)return;          // not available: absent, excused, no entry, an automatic N
       const m=inRep?(+x.min[p.name]||0):0;
       poss+=x.dur;mins+=m;
       if(x.st.has(p.name))starts++;else if(m>0)subs++;else if(v===5)nk++;else bench++;
@@ -17438,7 +17444,7 @@ function dbRenderPlayTimeCard(data){
       +`<span class="pt-last" title="Minuten der letzten ${r.last.length} Spiele: ${r.last.map(x=>x.date+' '+x.m).join(', ')}">${r.last.map(x=>x.m).join(' · ')}</span>`
       +`</button>`;
   }).join('')+'</div>'
-    +'<div class="pt-legend">Anteil: seine Minuten in den Spielen, für die er zur Verfügung stand (da, oder zugesagt und nicht im Kader). Rechts: die letzten 3 Spiele. Orange: zusammen weniger als ein Drittel.</div></div>';
+    +'<div class="pt-legend">Anteil: seine Minuten in den Spielen, für die er zur Verfügung stand (da; oder nicht im Kader, obwohl er selbst zugesagt hatte oder in der Woche davor im Training war). Rechts: die letzten 3 Spiele. Orange: zusammen weniger als ein Drittel.</div></div>';
   return h;
 }
 function sbResult(s){
@@ -19717,6 +19723,11 @@ function sessSetPlayerMinutes(si,pi,val){
 // warning sign for soft-tissue injuries; chronically low load flags players
 // who are drifting out of the squad's rhythm.
 const LOAD_SPIKE_PCT=30;
+// 1.2.135: off. A player's weekly load is the sum of his own ratings; while
+// players rate now and then, "+300 % zur Vorwoche" only says he rated three
+// sessions this week and one the week before. Back on with the load analysis,
+// once rating is a habit (fahrplan: Phase 4, Teil 2).
+const LOAD_HINTS_ON=false;
 function computeLoadMatrix(data,weeks){
   const {block,season,players}=data;
   weeks=weeks||6;
@@ -19837,14 +19848,14 @@ function dbRenderLoadCard(data){
     if(b>0)lastLoads.push(b);
     if(a>0&&b>0){
       const chg=Math.round((b-a)/a*100);
-      if(chg>=LOAD_SPIKE_PCT)spikes.push({name:v.name,a,b,chg});
+      if(LOAD_HINTS_ON&&chg>=LOAD_SPIKE_PCT)spikes.push({name:v.name,a,b,chg});
     }
   });
   lastLoads.sort((x,y)=>x-y);
   const median=lastLoads.length?lastLoads[Math.floor(lastLoads.length/2)]:0;
   rows.forEach(([pi,v])=>{
     const b=v.row[last]?v.row[last].load:0;
-    if(median>0&&b<median*0.6)quiet.push({name:v.name,load:b,median});
+    if(LOAD_HINTS_ON&&median>0&&b<median*0.6)quiet.push({name:v.name,load:b,median});
   });
   const maxLoad=Math.max(1,...rows.flatMap(([,v])=>v.row.map(c=>c.load)));
   let html='<div class="db-section"><div class="db-h" style="display:flex;align-items:center;gap:8px;">'
@@ -19872,15 +19883,15 @@ function dbRenderLoadCard(data){
     html+='<div class="load-row"><span class="load-nm">'+escapeHtml(v.name)+'</span>';
     v.row.forEach((c,i)=>{
       const prevC=i>0?v.row[i-1].load:0;
-      const spike=(prevC>0&&c.load>0&&((c.load-prevC)/prevC*100)>=LOAD_SPIKE_PCT);
+      const spike=LOAD_HINTS_ON&&(prevC>0&&c.load>0&&((c.load-prevC)/prevC*100)>=LOAD_SPIKE_PCT);
       const inten=c.load?Math.max(.12,c.load/maxLoad):0;
       const style=c.load?`background:rgba(22,89,184,${inten.toFixed(2)});color:${inten>.55?'#fff':'var(--gd)'};`:'';
       html+=`<span class="load-c${spike?' spike':''}" style="${style}" title="${c.rated}/${c.possible} bewertet">${c.load||'\u2013'}</span>`;
     });
     html+='</div>';
   });
-  html+='</div><div class="load-note">Load = Bewertung \u00d7 Minuten. Grau = keine R\u00fcckmeldung. '
-    +'Rahmen = Anstieg \u00fcber '+LOAD_SPIKE_PCT+'% zur Vorwoche.</div></div>';
+  html+='</div><div class="load-note">Load = Bewertung \u00d7 Minuten. Grau = keine R\u00fcckmeldung.'
+    +(LOAD_HINTS_ON?' Rahmen = Anstieg \u00fcber '+LOAD_SPIKE_PCT+'% zur Vorwoche.':'')+'</div></div>';
   return html;
 }
 // Everyone a session's rating concerns, in three groups: rated, says he was
@@ -24271,7 +24282,7 @@ function dbRenderWeekReportSection(data){
     const unans=own.filter(x=>!x.held&&stat(p,x.si)===3).length;
     if(unans)flags.push({pi,p,cls:'warn',ic:'❔',t:unans+' Termin'+(unans>1?'e':'')+' nicht beantwortet'});
     const lNow=loadOf(p,held),lPrev=loadOf(p,prevHeld);
-    if(lPrev>0&&lNow>lPrev*(1+LOAD_SPIKE_PCT/100))
+    if(LOAD_HINTS_ON&&lPrev>0&&lNow>lPrev*(1+LOAD_SPIKE_PCT/100))
       flags.push({pi,p,cls:'warn',ic:'📈',t:'Belastung +'+Math.round((lNow/lPrev-1)*100)+'% zur Vorwoche'});
     const phy=own.filter(x=>Array.isArray(p.physio)&&p.physio[x.si]===true);
     if(phy.length)flags.push({pi,p,cls:'info',ic:'🧑‍⚕️',t:'Physio: '+phy.map(x=>x.s.date).join(', ')});
@@ -24342,7 +24353,7 @@ function dbRenderWeekReportSection(data){
     const max=Math.max(1,...loads.map(x=>x.now));
     html+='<div class="wr2-sec wr2s-load"><div class="db-h">💪 Belastung <span class="db-h-sub">(sRPE · Minuten × Anstrengung)</span></div>';
     html+='<div class="wr2-load">'+loads.filter(x=>x.now>0).sort((a,b)=>b.now-a.now).map(x=>{
-      const ch=x.pr>0?Math.round((x.now/x.pr-1)*100):null;
+      const ch=(LOAD_HINTS_ON&&x.pr>0)?Math.round((x.now/x.pr-1)*100):null;
       const hot=ch!=null&&ch>LOAD_SPIKE_PCT;
       return `<div class="wr2-lrow" ${open(x.pi)}><span class="wr2-lnm">${esc(nm(x.p))}</span>
         <span class="wr2-lbar"><span style="width:${Math.round(x.now/max*100)}%" class="${hot?'hot':''}"></span></span>
@@ -24514,6 +24525,9 @@ function _attCompute(D,season){
         why.push({l:3,k:'drop',t:'Letzte 4 Wochen '+c.aW+' von '+tW+' dabei'+(c.eW?' ('+c.eW+'× entschuldigt)':'')+', davor '+Math.round(c.aB/tB*100)+' %'});
       }
     }
+    // 2b. (1.2.135, from Im Blick) unexcused twice or more in four weeks —
+    // unless a run or "comes less" already says it
+    if(c.fW>=2&&!why.some(w=>w.k==='run'||w.k==='drop'))why.push({l:3,k:'unent',t:c.fW+'× unentschuldigt gefehlt in den letzten 4 Wochen'});
     if(nB<6&&(c.aB+c.fB+c.eB+c.aW+c.fW+c.eW)>0)few.push(p);
     // 3. back after two weeks or more
     let prevA=null,gap=0,gapP=false,ret=null;
@@ -24531,7 +24545,7 @@ function _attCompute(D,season){
     if(weak>=2)why.push({l:2,k:'perf',t:weak+'× schwacher Einsatz in den letzten 4 Wochen'});
     // 5. Spielzeit: the same rule as Im Blick
     const r=pt&&pt.rows.find(x=>x.pi===pi);
-    if(r&&r.low&&r.last[2]&&r.last[2].k>=pk)why.push({l:2,k:'play',t:'Die letzten 3 Spiele dabei, zusammen '+r.lm+' von '+r.lp+' Min. gespielt'});
+    if(r&&r.low&&r.last[2]&&r.last[2].k>=pk)why.push({l:2,k:'play',t:'In den letzten 3 Spielen, für die er da war, zusammen '+r.lm+' von '+r.lp+' Min. gespielt'});
     cand.push({p,pi,why,seq});
   });
   // Back the same day, three or more (after the holidays): one row, not four
@@ -30599,26 +30613,20 @@ function hxRender(){
   }
   D.players.forEach((p,pi)=>{
     if(!p)return;
-    let miss=0;
-    S.forEach((s,si)=>{if(s&&s.date&&inDays(s,-28,-1)&&sessTookPlace(s,season)&&_sessCounts(p,s,season)&&p.s&&p.s[si]===0)miss++;});
-    if(miss>=2)flags.push({lv:3,dot:'#C9373E',who:nm(p),what:miss+'× unentschuldigt gefehlt (4 Wochen)',on:`openPlayerFromMain(${pi})`});
-    let now=0,prev=0;
-    S.forEach((s,si)=>{
-      if(!s||!s.date||!sessTookPlace(s,season)||!_sessCounts(p,s,season))return;   // not in a pause / Probetraining (1.2.56)
-      const l=(typeof rpeLoad==='function')?rpeLoad(s,p,si):null;if(typeof l!=='number')return;
-      if(inDays(s,-6,0))now+=l;else if(inDays(s,-13,-7))prev+=l;
-    });
-    if(prev>0&&now>prev*(1+LOAD_SPIKE_PCT/100))flags.push({lv:3,dot:'#E0912F',who:nm(p),what:'Belastung +'+Math.round((now/prev-1)*100)+' % zur Vorwoche',on:`openPlayerFromMain(${pi})`});
     S.forEach((s,si)=>{if(s&&s.date&&inDays(s,0,7)&&Array.isArray(p.physio)&&p.physio[si]===true)flags.push({lv:4,due:_rpeStartMs(s),dot:'#1659B8',who:nm(p),what:'Physio '+_hxWhen(sk(s)),on:`openPlayerFromMain(${pi})`});});
   });
-  // Spielzeit (1.2.58): there for the last 3 matches, under a third of the
-  // minutes — as long as the last of them is recent
+  // "To watch" (1.2.135, Artem 18.11.: 18 rows, 12 of them unexcused absences,
+  // load jumps and playing time): one row; the players are in Statistik →
+  // "Wer braucht Aufmerksamkeit?" (absences, comes less, back, Einsatz,
+  // Spielzeit). Im Blick keeps what asks for a deed or a decision.
   try{
-    const pt=computePlayTime(D,season);
-    const d2=new Date();d2.setDate(d2.getDate()-21);
-    const rk=d2.getFullYear()*10000+(d2.getMonth()+1)*100+d2.getDate();
-    pt.rows.forEach(r=>{if(r.low&&r.last[2].k>=rk)flags.push({lv:3,dot:'#E0912F',who:nm(r.p),what:'die letzten 3 Spiele dabei, zusammen '+r.lm+' von '+r.lp+' Min. gespielt',on:`openPlayerFromMain(${r.pi})`});});
-  }catch(e){console.error('[Spielzeit]',e);}
+    if(typeof canEdit==='function'&&canEdit()&&_attShow({block:D,season})){
+      const A=_attCompute(D,season);
+      const n=A.rows.reduce((a,r)=>a+(r.group?r.group.length:1),0);
+      if(n){const lmax=Math.max(...A.rows.map(r=>r.l||1));
+        flags.push({lv:3,dot:ATT_DOT[lmax]||'#E0912F',who:'Wer braucht Aufmerksamkeit?',what:n+' Spieler · in der Statistik',on:"hxGo('stats')"});}
+    }
+  }catch(e){console.error('[Aufmerksamkeit]',e);}
   // Verein (1.2.66): name, and the contact the data-protection page names
   try{
     if(typeof isAdmin==='function'&&isAdmin()){
