@@ -5142,7 +5142,48 @@ body.design-heute #moLineup .lp-statsbar{display:none;}
 }
 body.design-heute #moLineup .lp-bank-h{color:var(--hx-muted) !important;letter-spacing:.5px !important;text-transform:none !important;font-size:.8rem !important;}
 body.design-heute .lp-out{background:var(--hx-card2);color:var(--hx-ink);}
-body.design-heute .lp-out-h{color:var(--hx-muted);}   /* team and season stand in the navigation */
+body.design-heute .lp-out-h{color:var(--hx-muted);}
+/* 1.2.142 Saisonkader as Aufstellung: plan card, pitch card, players right */
+.slp-pcard{display:contents;}
+.slp-leg2,.slp-clear{display:none;}
+body.design-heute .slp-pcard{display:flex;}
+body.design-heute #moSeasonLineup .slp-body{gap:16px;padding:16px max(40px,calc((100% - 1320px) / 2 + 40px)) 20px;box-sizing:border-box;}
+body.design-heute .slp-gcard .kb-head{gap:6px;}
+body.design-heute .slp-gaps b{font-family:inherit;font-size:.86rem;font-weight:700;}
+body.design-heute .slp-leg2{display:flex;justify-content:center;gap:16px;padding:8px 12px 12px;font-size:.78rem;color:var(--hx-muted);flex-shrink:0;}
+body.design-heute .slp-leg2 span{display:inline-flex;align-items:center;gap:6px;}
+body.design-heute .slp-leg2 i{width:12px;height:12px;border-radius:50%;display:inline-block;box-sizing:border-box;}
+body.design-heute .slp-leg2 i.e{border:2px dashed #9AA8BD;}
+body.design-heute .slp-leg2 i.o{border:2px solid var(--ac,#F2C230);}
+body.design-heute .slp-leg2 i.t{border:2px solid #27ae60;}
+body.design-heute .slp-pcard .lp-ptools #slp-fmt-btns :is(select,button):not(.active){background-color:var(--hx-field) !important;border:1px solid var(--hx-line) !important;color:var(--hx-ink) !important;}
+body.design-heute .slp-pcard .lp-ptools #slp-fmt-btns{margin-left:0 !important;}
+body.design-heute .slp-pcard .lp-ptools select.slp-fmt-sel:not([multiple]):not([size]):not(#hxs-none){background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234E5D7C' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;}
+body.design-heute .slp-pcard .lp-ptools #slp-conf-toggle-lbl{color:var(--hx-ink) !important;}
+body.design-heute .slp-pcard .slp-pitch-col{flex:1;}
+body.design-heute #moSeasonLineup .slp-roster-col{width:300px;border:none;border-radius:20px;box-shadow:var(--hx-shadow);background:var(--hx-card);}
+body.design-heute #moSeasonLineup .slp-roster-col-head{border-bottom:1px solid var(--hx-line);padding:14px 14px 10px;}
+body.design-heute .slp-roster-col-title{display:flex;justify-content:space-between;align-items:baseline;font-size:.95rem !important;font-weight:800 !important;letter-spacing:0 !important;text-transform:none !important;color:var(--hx-ink) !important;margin-bottom:8px;}
+body.design-heute .slp-roster-col-title span{font-size:.8rem;font-weight:600;color:var(--hx-muted);}
+body.design-heute #moSeasonLineup .slp-roster-col-list{padding:8px 10px;}
+body.design-heute #moSeasonLineup .slp-roster-col-avatar{display:none;}
+body.design-heute #moSeasonLineup .slp-roster-col-card{padding:6px 10px;border-radius:10px;margin-bottom:4px;}
+body.design-heute #moSeasonLineup .slp-roster-col-card.assigned{background:color-mix(in srgb,#27ae60 8%,var(--hx-field));border-color:color-mix(in srgb,#27ae60 35%,var(--hx-line));}
+body.design-heute #moSeasonLineup .slp-roster-col-name{font-weight:700;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+body.design-heute #moSeasonLineup .slp-roster-col-info{display:flex;flex-direction:row;align-items:center;gap:8px;min-width:0;flex:1;}
+body.design-heute #moSeasonLineup .slp-roster-col-meta{display:contents;}
+body.design-heute #moSeasonLineup .slp-roster-col-meta .nr{order:-1;font-family:var(--hx-num);font-weight:800;color:var(--hx-muted);min-width:26px;flex-shrink:0;}
+body.design-heute #moSeasonLineup .slp-roster-col-name{flex:1;}
+body.design-heute #moSeasonLineup .slp-roster-col-meta > :not(.nr){order:1;flex-shrink:0;}
+body.design-heute .lp-gsave #slp-saves-list{font-size:.8rem !important;color:var(--hx-muted) !important;text-align:center !important;padding:0 !important;}
+/* the drag hint only where the tool row has room */
+@media(max-width:1440px){body.design-heute .lp-ptools .lp-hint{display:none;}}
+body.design-heute .slp-clear{display:block;padding:10px 12px 12px;border-top:1px solid var(--hx-line);flex-shrink:0;}
+body.design-heute .slp-clear button{width:100%;height:34px;border-radius:999px;background:#FDECEA;border:1px solid #F3C6BF;color:var(--hx-bad,#B42318);font:600 .8rem 'Barlow',sans-serif;cursor:pointer;}
+body.design-heute.hxk-dk .lp-out-st.bad{background:var(--hk-bad-bg);color:var(--hk-bad);}
+body.design-heute.hxk-dk .lp-out-st.warn{background:var(--hk-warn-bg);color:var(--hk-warn);}
+body.design-heute.hxk-dk .lp-open-t{background:var(--hk-card2);color:var(--hk-muted);}
+body.design-heute.hxk-dk .slp-clear button{background:var(--hk-bad-bg);border-color:color-mix(in srgb,var(--hk-bad) 40%,var(--hk-card));color:var(--hk-bad);}   /* team and season stand in the navigation */
 @media(min-width:768px){
   /* the pages measure from their box minus 2×40px, the tools from the full width: 1240 + 80 */
   body.design-heute :is(.lp-topbar,.slp-topbar),body.design-heute .hx-toolrow{padding-left:max(40px,calc((100% - 1320px) / 2 + 40px)) !important;padding-right:max(40px,calc((100% - 1320px) / 2 + 40px)) !important;}
@@ -5158,6 +5199,8 @@ body.design-heute .lp-out-h{color:var(--hx-muted);}   /* team and season stand i
   body.design-heute .lp-pcard{flex:0 0 auto;border-radius:18px;}
   body.design-heute .lp-pmain{flex-direction:column;}
   body.design-heute #moLineup .lp-sidebar{width:100% !important;border-radius:18px;}
+  body.design-heute #moSeasonLineup .slp-body{padding:12px;gap:12px;}
+  body.design-heute .slp-dhint{display:none;}
   body.design-heute .hx-toolrow :is(.lp-spacer,div[style*="flex:1"]){display:none;}
   body.design-heute #moLineup .lp-topbar{padding-bottom:12px !important;}
   body.design-heute .lp-topbar .lp-title{justify-content:flex-start !important;padding-top:6px;box-sizing:border-box;}
@@ -7030,7 +7073,7 @@ body.design-heute.hxk-dk{
 /* dark-page schemes: cards a step lighter than the page */
 body.design-heute.hxk-dark.hxs-flutlicht{--hk-base:var(--hx-page);--hk-lift:8%;}
 body.design-heute.hxk-dk :is(.hx-card,.set-nav,.set-pane,#cal-content,
-  #moDashboard :is(.db-kpi,.db-card,.db-rank-col),#db-content > .db-section,.lp-sidebar,.slp-sidebar,.slp-roster-col,.lp-statsbar,.slp-popup,
+  #moDashboard :is(.db-kpi,.db-card,.db-rank-col),#db-content > .db-section,.lp-sidebar,.slp-sidebar,.slp-roster-col,.lp-statsbar,.slp-popup,.lp-gcard,.lp-pcard,
   #moTeamMgr .tpanel.active,#mobNav,#mobSheet .ms-panel,.table-wrap,.mxp-row,.hxl-sess,.ma-sess-head,.ma-card,.mo:not(.hx-page) > .mob,
   #moWeekReport .wr2-sec,.wr2-grid .wr2-nm,.tpl-col,.tpl-gcard,.tst-kpi,.tpl-dlg,.tst-tip,.hk-isle){
   --tp-card:var(--hk-card);--tp-soft:var(--hk-card2);--tp-chip:var(--hk-card2);--tp-line:var(--hk-line);--tp-line2:var(--hk-line);
@@ -7927,8 +7970,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.141'; // v1.2.141: Aufstellung wie Tafel – oben die Karte des Spiels (Spiel wählen, Speichern, Varianten), Feld und Spieler als Karten, Spieler mit Status
-const APP_VERSION_LABEL='1.2.141';
+const APP_VERSION='1.2.142'; // v1.2.142: Saisonkader wie Aufstellung – oben die Karte des Plans (eingeteilt, Lücken, Speichern), Feld und Spieler als Karten, Spieler rechts
+const APP_VERSION_LABEL='1.2.142';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -41819,7 +41862,19 @@ function slpRender(){
 
   // Update stats in sidebar
   const statsEl=document.getElementById('slp-kader-stats');
-  if(statsEl)statsEl.textContent=`${assigned_total} / ${total} Spieler eingeteilt`;
+  const active=players.filter(p=>p&&!_pGone(p)).length;
+  if(statsEl)statsEl.textContent=`${assigned_total} von ${active} Spielern eingeteilt · ${UI.currentTeam} · Saison ${UI.currentSeason}`;
+  const fr=document.getElementById('slp-free');if(fr)fr.textContent=Math.max(0,active-assigned_total)+' frei';
+  // 1.2.142: gaps at a glance — positions nobody or only one player covers
+  const gapsEl=document.getElementById('slp-gaps');
+  if(gapsEl){
+    const lbl=x=>{const m={};x.forEach(l=>{m[l]=(m[l]||0)+1;});return Object.keys(m).map(l=>m[l]>1?l+' ×'+m[l]:l).join(', ');};
+    const empty=slots.filter(sl=>!(slpState.slots[sl.id]||[]).length).map(sl=>sl.lbl);
+    const one=slots.filter(sl=>(slpState.slots[sl.id]||[]).length===1).map(sl=>sl.lbl);
+    gapsEl.innerHTML=!assigned_total?'<span>Noch niemand eingeteilt – Spieler auf die Positionen ziehen</span>':(empty.length||one.length)
+      ?(empty.length?`<span><i class="bad"></i>Leer: <b>${escapeHtml(lbl(empty))}</b></span>`:'')+(one.length?`<span><i class="warn"></i>Nur 1 Spieler: <b>${escapeHtml(lbl(one))}</b></span>`:'')
+      :'<span><i class="ok"></i>Jede Position mindestens doppelt besetzt</span>';
+  }
   // Render draggable roster
   if(typeof slpRenderRoster==='function')slpRenderRoster();
 }
@@ -42285,7 +42340,7 @@ function slpRenderSaves(){
   const cur=plans.find(p=>p.id===slpState.currentId);
   if(cur){
     const t=new Date(cur.savedAt).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-    el.innerHTML=`✓ Zuletzt gespeichert: ${t}`;
+    el.innerHTML=`Gespeichert ${t}`;
   } else if(!plans.length){
     el.innerHTML='Noch nicht gespeichert';
   } else {
@@ -43197,34 +43252,24 @@ _pubCleanupSchedule();
     <div class="lp-spacer"></div>
     <button class="slp-close-btn" id="slp-close-btn" onclick="closeSeasonLineup()" aria-label="Schließen"><span class="fb-long">✕ Schließen</span><span class="fb-short">✕</span></button>
   </div>
-  <div class="hx-toolrow slp-toolrow">
+  <div class="lp-gcard slp-gcard" id="slp-gcard">
+    <div class="kb-top">
+      <div class="kb-head"><div class="kb-ttl" id="slp-gtitle">Saisonkader</div><div class="kb-meta" id="slp-kader-stats"></div><div class="kb-leg slp-gaps" id="slp-gaps"></div></div>
+      <div class="lp-gsave"><button class="lp-save-btn" onclick="slpSave()">Kaderplan speichern</button><div id="slp-saves-list"></div></div>
+    </div>
+  </div>
+  <div class="slp-body">
+    <div class="lp-pcard slp-pcard">
+    <div class="lp-ptools">
     <div id="slp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-left:8px;"></div>
     <div style="flex:1;"></div>
     <div id="slp-hint" style="display:none;"></div>
     <input type="checkbox" id="slp-conf-toggle" onchange="slpToggleConfirmations(this.checked)" style="cursor:pointer;margin:0 4px 0 0;width:14px;height:14px;vertical-align:middle;"/>
     <span id="slp-conf-toggle-lbl" style="font-size:.75rem;color:rgba(255,255,255,.95);font-weight:600;margin-right:6px;user-select:none;cursor:pointer;" onclick="const _t=document.getElementById('slp-conf-toggle');_t.checked=!_t.checked;slpToggleConfirmations(_t.checked);" title="Grün mit ✓ = für die Saison bestätigt, gelb = noch nicht spielberechtigt">Status</span>
     <button class="slp-close-btn" id="slp-status-btn" title="Status verwalten" aria-label="Status verwalten" onclick="slpOpenStatusList()" style="display:none;background:rgba(232,200,64,0.15);border-color:rgba(232,200,64,0.4);color:#e8c840;"><span class="fb-long">📋 Status verwalten</span><span class="fb-short">📋</span></button>
-  </div>
-  <div class="slp-body">
-    <div class="slp-roster-col" id="slp-roster-col">
-      <div class="slp-roster-col-head">
-        <div class="slp-roster-col-title">🎽 Spieler-Roster</div>
-        <div class="slp-roster-col-sub">Ziehe einen Spieler auf einen Slot</div>
-        <div class="slp-roster-col-filter" id="slp-roster-filter">
-          <button data-filter="all" class="active" onclick="slpSetRosterFilter('all')">Alle</button>
-          <button data-filter="unassigned" onclick="slpSetRosterFilter('unassigned')">Frei</button>
-          <button data-filter="assigned" onclick="slpSetRosterFilter('assigned')">Zugeteilt</button>
-        </div>
-        <div class="slp-roster-col-filter" id="slp-roster-sort" style="margin-top:4px;">
-          <span class="slp-sort-label" title="Sortieren">⇅</span>
-          <button data-sort="nr" class="active" onclick="slpSetRosterSort('nr')" title="Nach Trikot-Nummer">#</button>
-          <button data-sort="name" onclick="slpSetRosterSort('name')" title="Nach Name (A–Z)">A–Z</button>
-          <button data-sort="pos" onclick="slpSetRosterSort('pos')" title="Nach Position (TW → ST)">Pos</button>
-          <button data-sort="slots" onclick="slpSetRosterSort('slots')" title="Nach Slot-Anzahl (zugeteilt zuerst)">Slots</button>
-        </div>
-      </div>
-      <div id="slp-roster-list" class="slp-roster-col-list"></div>
+      <span class="lp-hint slp-dhint">Spieler auf eine Position ziehen oder Position antippen</span>
     </div>
+    <div class="lp-pmain">
     <div class="slp-pitch-col">
       <svg id="slp-pitch" class="slp-pitch-svg" viewBox="0 0 340 525" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
@@ -43276,28 +43321,28 @@ _pubCleanupSchedule();
         <g id="slp-slots"></g>
       </svg>
     </div>
-    <div class="slp-sidebar">
-      <div class="slp-sb-top">
-        <div class="slp-sb-label">Gespeicherte Kaderpläne</div>
-        <button class="slp-save-btn" style="width:100%;margin-bottom:8px;padding:7px;" onclick="slpSave()">💾 Kaderplan speichern</button>
-        <div id="slp-saves-list" style="font-size:.65rem;color:rgba(255,255,255,.7);text-align:center;padding:4px 0;"></div>
-      </div>
-      <div class="slp-legend">
-        <div id="slp-kader-stats" style="font-size:.76rem;font-weight:700;color:#e8c840;margin-bottom:8px;">0 / 0 Spieler eingeteilt</div>
-        <div class="slp-sb-label" style="margin-bottom:10px;">Legende</div>
-        <div class="slp-legend-row"><div class="slp-legend-dot" style="border:2px dashed rgba(255,255,255,.3);background:transparent;"></div> Keine Spieler</div>
-        <div class="slp-legend-row"><div class="slp-legend-dot" style="background:rgba(7,30,72,0.85);border:2px solid #e8c840;"></div> 1 Spieler</div>
-        <div class="slp-legend-row"><div class="slp-legend-dot" style="background:rgba(7,30,72,0.85);border:2px solid #27ae60;"></div> 2+ Spieler</div>
-        <div style="margin-top:14px;font-size:.7rem;color:rgba(255,255,255,.7);line-height:1.6;">
-          <b>Zuweisen:</b><br>
-          🖱️ Klick auf Slot → Popup öffnet sich<br>
-          ✋ <b>Ziehen</b> aus Roster → Slot zum Hinzufügen<br><br>
-          Zahlen auf dem Slot = Anzahl der zugeteilten Spieler.
-        </div>
-        <button onclick="slpClearAll()" style="width:100%;margin-top:14px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.25);color:#ff9080;border-radius:7px;padding:5px;font-family:'Barlow',sans-serif;font-size:.73rem;font-weight:600;cursor:pointer;">🗑 Gesamten Plan leeren</button>
-      </div>
     </div>
-
+    <div class="slp-leg2" aria-hidden="true"><span><i class="e"></i>leer</span><span><i class="o"></i>1 Spieler</span><span><i class="t"></i>2 und mehr</span></div>
+    </div>
+    <div class="slp-roster-col" id="slp-roster-col">
+      <div class="slp-roster-col-head">
+        <div class="slp-roster-col-title">Spieler <span id="slp-free"></span></div>
+                <div class="slp-roster-col-filter" id="slp-roster-filter">
+          <button data-filter="all" class="active" onclick="slpSetRosterFilter('all')">Alle</button>
+          <button data-filter="unassigned" onclick="slpSetRosterFilter('unassigned')">Frei</button>
+          <button data-filter="assigned" onclick="slpSetRosterFilter('assigned')">Zugeteilt</button>
+        </div>
+        <div class="slp-roster-col-filter" id="slp-roster-sort" style="margin-top:4px;">
+          <span class="slp-sort-label" title="Sortieren">⇅</span>
+          <button data-sort="nr" class="active" onclick="slpSetRosterSort('nr')" title="Nach Trikot-Nummer">#</button>
+          <button data-sort="name" onclick="slpSetRosterSort('name')" title="Nach Name (A–Z)">A–Z</button>
+          <button data-sort="pos" onclick="slpSetRosterSort('pos')" title="Nach Position (TW → ST)">Pos</button>
+          <button data-sort="slots" onclick="slpSetRosterSort('slots')" title="Nach Slot-Anzahl (zugeteilt zuerst)">Slots</button>
+        </div>
+      </div>
+      <div id="slp-roster-list" class="slp-roster-col-list"></div>
+      <div class="slp-clear"><button type="button" onclick="slpClearAll()">Gesamten Plan leeren</button></div>
+    </div>
   </div>
   <!-- Slot popup (positioned by JS) -->
   <div class="slp-popup" id="slp-popup" style="display:none;" onclick="event.stopPropagation()">

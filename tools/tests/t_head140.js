@@ -5,7 +5,7 @@
 // same size, same height; the tool controls (game line, schema, Bearbeiten,
 // Meisterschaft/Testspiel, Status) in a row below the header, not in it.
 // Tablets 768–999 px: the tools cover the navigation (as before), not compared.
-// 1.2.141: in Aufstellung the controls moved on into the pitch card (.lp-ptools).
+// 1.2.141/1.2.142: in Aufstellung and Saisonkader the controls moved on into the pitch card (.lp-ptools).
 // node tools/tests/t_head140.js [index.html]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
@@ -44,7 +44,7 @@ const near=(a,b,d)=>a&&b&&Math.abs(a.l-b.l)<=d&&Math.abs(a.t-b.t)<=d&&a.fs===b.f
   ok(k1p&&k2p&&Math.abs(k1p.l-k2p.l)<=(ph?16:3)&&Math.abs(k1p.t-k2p.t)<=(ph?16:3),tag+'Kader: Reiter an derselben Stelle '+JSON.stringify([k1p,k2p]));
   r=await p.evaluate(()=>{const top=document.querySelector('#moSeasonLineup .slp-topbar');const vis=e=>!!(e&&e.offsetParent);
     const inTop=['#slp-fmt-btns','#slp-conf-toggle','#slp-status-btn','#slp-context-info'].filter(s=>{const e=document.querySelector(s);return e&&top.contains(e)&&vis(e);});
-    const row=document.querySelector('#moSeasonLineup .slp-toolrow');if(!row)return {inTop:inTop.concat('keine Zeile'),fmt:false,tog:false,over:0};return {inTop,fmt:row.contains(document.getElementById('slp-fmt-btns'))&&vis(document.getElementById('slp-fmt-btns')),tog:vis(document.getElementById('slp-conf-toggle')),over:row.scrollWidth-row.clientWidth};});
-  ok(!r.inTop.length&&r.fmt&&r.tog&&r.over<=0,tag+'Saisonkader: Schema und Status in der Zeile darunter, nichts davon im Kopf '+JSON.stringify(r.inTop));
+    const row=document.querySelector('#moSeasonLineup .slp-pcard .lp-ptools')||document.querySelector('#moSeasonLineup .slp-toolrow');if(!row)return {inTop:inTop.concat('keine Zeile'),fmt:false,tog:false,over:0};return {inTop,fmt:row.contains(document.getElementById('slp-fmt-btns'))&&vis(document.getElementById('slp-fmt-btns')),tog:vis(document.getElementById('slp-conf-toggle')),over:row.scrollWidth-row.clientWidth};});
+  ok(!r.inTop.length&&r.fmt&&r.tog&&r.over<=0,tag+'Saisonkader: Schema und Status unter dem Kopf (seit 1.2.142 in der Karte des Felds), nichts davon im Kopf '+JSON.stringify(r.inTop));
   ok(!errs.length,tag+'keine Fehler'+(errs.length?': '+errs[0]:''));await c.close();}
  await b.close();console.log(fails?fails+' FAILED':'all passed');process.exit(fails?1:0);})();
