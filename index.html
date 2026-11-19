@@ -5098,7 +5098,51 @@ body.design-heute .hx-toolrow .lp-sub{color:var(--hx-ink);font-size:.92rem;font-
 body.design-heute .hx-toolrow .lp-hint{color:var(--hx-muted);font-size:.8rem;}
 body.design-heute .hx-toolrow #slp-conf-toggle-lbl{color:var(--hx-ink) !important;}
 body.design-heute .hx-toolrow .lp-spacer{flex:1 1 auto;}
-body.design-heute .slp-topbar .slp-sub{display:none !important;}   /* team and season stand in the navigation */
+body.design-heute .slp-topbar .slp-sub{display:none !important;}
+/* 1.2.141 Aufstellung as the other pages: game card on top, then the pitch
+   card and the players card, in the same 1240px column */
+.lp-gcard,.lp-pcard,.lp-pmain{display:contents;}
+.lp-ptools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.lp-out-h{font-size:.78rem;font-weight:700;margin:12px 2px 6px;opacity:.8;}
+.lp-out{margin:0;display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:7px;margin-bottom:3px;opacity:.6;font-size:.72rem;}
+.lp-out-nr{width:18px;text-align:center;font-weight:800;}
+.lp-out-nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;}
+.lp-out-st,.lp-open-t{font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:7px;}
+.lp-out-st.bad{background:#FDECEA;color:#B42318;}
+.lp-out-st.warn{background:#FEF0DC;color:#9A5506;}
+.lp-open-t{background:#EEF1F6;color:#4E5D7C;}
+body.design-heute .lp-gcard{display:block;flex-shrink:0;background:var(--hx-card);border-radius:20px;box-shadow:var(--hx-shadow);padding:16px 18px;margin:16px max(40px,calc((100% - 1320px) / 2 + 40px)) 0;}
+body.design-heute .lp-gcard .kb-days[hidden]{display:none;}
+body.design-heute .lp-gsave{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:220px;}
+body.design-heute .lp-gsave .lp-save-btn{width:100%;height:44px;border-radius:12px;background:var(--hx-yellow);border:none;color:var(--hx-on-acc,var(--hx-ink));font:700 .95rem 'Barlow',sans-serif;cursor:pointer;}
+body.design-heute .lp-gsave #lp-saves-list{font-size:.8rem;color:var(--hx-muted);text-align:center;}
+body.design-heute .lp-gcard .lp-var-bar{margin:14px -18px -16px;padding:10px 18px;border-top:1px solid var(--hx-line);border-bottom:none;border-radius:0 0 20px 20px;background:transparent;}
+body.design-heute #moLineup .lp-body{gap:16px;padding:16px max(40px,calc((100% - 1320px) / 2 + 40px)) 20px;box-sizing:border-box;}
+body.design-heute .lp-pcard{display:flex;flex-direction:column;flex:1;min-width:0;background:var(--hx-card);border-radius:20px;box-shadow:var(--hx-shadow);overflow:hidden;}
+body.design-heute .lp-ptools{padding:12px 16px;border-bottom:1px solid var(--hx-line);flex-shrink:0;}
+body.design-heute .lp-ptools .lp-spacer{flex:1 1 auto;}
+body.design-heute .lp-ptools select.lp-fmt-sel:not([multiple]):not([size]):not(#hxs-none){background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234E5D7C' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;}
+body.design-heute .lp-ptools .lp-hint{color:var(--hx-muted);font-size:.8rem;}
+body.design-heute .lp-ptools :is(.lp-fmt-btn):not(.active),body.design-heute .lp-ptools #lp-fmt-btns :is(select,button):not(.active){background-color:var(--hx-field) !important;border:1px solid var(--hx-line) !important;color:var(--hx-ink) !important;}
+body.design-heute .lp-ptools :is(#lp-fmt-btns,.lp-kind-wrap){margin-left:0 !important;}
+body.design-heute .lp-pmain{display:flex;flex:1;min-height:0;}
+body.design-heute #moLineup .lp-sidebar{width:300px;border:none;border-radius:20px;box-shadow:var(--hx-shadow);background:var(--hx-card);}
+body.design-heute .lp-pl-h{display:flex;justify-content:space-between;align-items:baseline;padding:14px 14px 8px !important;font-size:.95rem !important;letter-spacing:0 !important;text-transform:none !important;color:var(--hx-ink) !important;font-weight:800;}
+body.design-heute .lp-pl-h span{font-size:.8rem;font-weight:600;color:var(--hx-muted);}
+body.design-heute .lp-pl-h b{font-family:var(--hx-num);font-weight:800;font-size:1rem;color:var(--hx-ink);}
+body.design-heute #moLineup .lp-statsbar{display:none;}
+/* low laptop windows: a slimmer game card leaves the pitch its height */
+@media(min-width:768px) and (max-height:780px){
+  body.design-heute .lp-gcard{padding:10px 16px;margin-top:12px;}
+  body.design-heute .lp-gcard .kb-day{height:54px;width:52px;}
+  body.design-heute .lp-gcard .kb-ttl{font-size:1.25rem;}
+  body.design-heute .lp-gsave .lp-save-btn{height:40px;}
+  body.design-heute #moLineup .lp-body{padding-top:12px;padding-bottom:12px;gap:12px;}
+  body.design-heute .lp-ptools{padding:8px 14px;}
+}
+body.design-heute #moLineup .lp-bank-h{color:var(--hx-muted) !important;letter-spacing:.5px !important;text-transform:none !important;font-size:.8rem !important;}
+body.design-heute .lp-out{background:var(--hx-card2);color:var(--hx-ink);}
+body.design-heute .lp-out-h{color:var(--hx-muted);}   /* team and season stand in the navigation */
 @media(min-width:768px){
   /* the pages measure from their box minus 2×40px, the tools from the full width: 1240 + 80 */
   body.design-heute :is(.lp-topbar,.slp-topbar),body.design-heute .hx-toolrow{padding-left:max(40px,calc((100% - 1320px) / 2 + 40px)) !important;padding-right:max(40px,calc((100% - 1320px) / 2 + 40px)) !important;}
@@ -5108,6 +5152,12 @@ body.design-heute .slp-topbar .slp-sub{display:none !important;}   /* team and s
 @media(max-width:767px){
   body.design-heute .slp-kh{font-size:1.6rem;line-height:38px;}
   body.design-heute .hx-toolrow{padding:10px 12px 10px 16px;min-height:0;border-bottom:none;}
+  body.design-heute .lp-gcard{margin:12px 12px 0;padding:14px;border-radius:18px;}
+  body.design-heute .lp-gsave{min-width:0;flex:1 1 100%;}
+  body.design-heute #moLineup .lp-body{padding:12px;gap:12px;}
+  body.design-heute .lp-pcard{flex:0 0 auto;border-radius:18px;}
+  body.design-heute .lp-pmain{flex-direction:column;}
+  body.design-heute #moLineup .lp-sidebar{width:100% !important;border-radius:18px;}
   body.design-heute .hx-toolrow :is(.lp-spacer,div[style*="flex:1"]){display:none;}
   body.design-heute #moLineup .lp-topbar{padding-bottom:12px !important;}
   body.design-heute .lp-topbar .lp-title{justify-content:flex-start !important;padding-top:6px;box-sizing:border-box;}
@@ -7877,8 +7927,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.140'; // v1.2.140: eine Kopfzeile für Seiten und Werkzeuge – Aufstellung und Saisonkader: Titel und Reiter an derselben Stelle wie Kader/Tafel, Schema und Co. in einer Zeile darunter
-const APP_VERSION_LABEL='1.2.140';
+const APP_VERSION='1.2.141'; // v1.2.141: Aufstellung wie Tafel – oben die Karte des Spiels (Spiel wählen, Speichern, Varianten), Feld und Spieler als Karten, Spieler mit Status
+const APP_VERSION_LABEL='1.2.141';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -39931,9 +39981,7 @@ function openLineupPlanner(sessIdx){
   if(ctxEl){
     if(lpState.sessIdx!==null){
       const D=cd();const s=D&&D.sessions[lpState.sessIdx];
-      const opp=s&&s.label?s.label:'unbekannter Gegner';
-      const ha=s&&s.homeAway==='home'?'🏠 Heim':'🚌 Auswärts';
-      ctxEl.innerHTML=`${UI.currentTeam} · ${s?s.date:''} · ${ha} vs ${opp}`;
+      _lpGameCard();
     } else {
       ctxEl.textContent=`${UI.currentTeam} · Saison ${UI.currentSeason}`;
     }
@@ -40107,13 +40155,36 @@ function _lvBar(){
   el.style.display='flex';
   el.innerHTML=h;
 }
+// The game card (1.2.141): the same head as the Tafel — match days to switch,
+// what and when, how many can play — so Kader ⇄ Aufstellung keeps its top
+function _lpGameCard(){
+  const D=cd(),season=UI.currentSeason,si=lpState.sessIdx,s=D&&si!=null?D.sessions[si]:null;
+  const e=escapeHtml,t=document.getElementById('lp-gtitle'),m=document.getElementById('lp-context-info'),lg=document.getElementById('lp-gleg'),dd=document.getElementById('lp-gdays');
+  if(!s){if(t)t.textContent='Aufstellung';if(m)m.textContent=UI.currentTeam+' · Saison '+season;if(lg)lg.innerHTML='';if(dd)dd.innerHTML='';return;}
+  const d=_hxDate(_dbSortKey(s.date,season));
+  if(t)t.textContent=s.label?'Spiel gegen '+s.label:'Spiel';
+  if(m)m.textContent=[KB_WD[d.getDay()]+' '+d.getDate()+'.'+(d.getMonth()+1)+'.',s.time||'',s.homeAway==='home'?'Heim':(s.homeAway==='away'?'Auswärts':''),s.location||''].filter(Boolean).join(' · ');
+  if(lg){const c=_hxCounts(D,si,season);const parts=[['ok',c.yes,_ywFor(s)],['warn',c.exc,'entschuldigt'],['bad',c.no,'abgesagt'],['open',c.open,'offen']];
+    lg.innerHTML=parts.filter(p=>p[1]).map(p=>`<span><i class="${p[0]}"></i><b>${p[1]}</b> ${p[2]}</span>`).join('');}
+  if(dd){const ups=_kbList(D,season,true);if(!ups.some(x=>x.i===si))ups.unshift({s,i:si,k:_dbSortKey(s.date,season)});
+    dd.innerHTML=ups.length>1?ups.map(x=>{const q=_hxDate(x.k);return `<button type="button" class="kb-day m${x.i===si?' on':''}" onclick="lpPickGame(${x.i})" aria-pressed="${x.i===si}"><span>${KB_WD[q.getDay()]}</span><b>${q.getDate()}</b><i>Spiel</i></button>`;}).join(''):'';
+    dd.hidden=ups.length<2;}
+}
+// Another match from the game card: leave this one through its own check
+function lpPickGame(si){
+  if(si===lpState.sessIdx)return;
+  const lp=document.getElementById('moLineup'),via=lp&&lp.classList.contains('hx-vianav');
+  closeLineupPlanner();if(lp&&lp.classList.contains('open'))return;
+  KB.si=si;openLineupPlanner(si);if(via)lp.classList.add('hx-vianav');
+  if(typeof hxSyncNav==='function')hxSyncNav();
+}
 // Sidebar: one's own variant – title, save button, state, "festlegen"
 function _lvSide(){
   const el=document.getElementById('lp-saves-list'),ti=document.getElementById('lp-sb-title'),bt=document.getElementById('lp-save-btn');
   if(!el)return;
   const ml=_lvMl(),me=_lvMe(),vars=_lvVars(ml),src=_lvSrc(ml),others=_lvOthers(ml),mv=me&&vars[me.k];
   if(ti)ti.textContent=others.length?'Meine Variante':'Aufstellung';
-  if(bt)bt.textContent=others.length?'💾 Meine Variante speichern':'💾 Aufstellung speichern';
+  if(bt)bt.textContent=others.length?'Meine Variante speichern':'Aufstellung speichern';
   const e=escapeHtml,dirty=_lpIsDirty();
   let t;
   if(dirty)t='Geändert – noch nicht gespeichert';
@@ -40130,7 +40201,7 @@ function _lvSide(){
 function _lvSideReset(){
   const ti=document.getElementById('lp-sb-title'),bt=document.getElementById('lp-save-btn'),bar=document.getElementById('lp-var-bar');
   if(ti)ti.textContent='Gespeicherte Aufstellungen';
-  if(bt)bt.textContent='💾 Aufstellung speichern';
+  if(bt)bt.textContent='Aufstellung speichern';
   if(bar){bar.style.display='none';bar.innerHTML='';}
 }
 function _lvPaint(){
@@ -40802,11 +40873,18 @@ function lpRenderSubs(){
       return `<div${nik?' class="lp-nik"':''} style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:${bg};border:1px solid ${_disc?'rgba(192,57,43,.45)':'rgba(255,255,255,.07)'};border-radius:7px;margin-bottom:3px;">
         <span style="font-family:'Bebas Neue';color:var(--ac);font-size:.85rem;width:18px;text-align:center;">${p.nr||'–'}</span>
         <span style="font-size:.72rem;font-weight:600;color:#fff;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${getDisplayName(p)}</span>
-        ${nik?'<span class="lp-nik-t">nicht im Kader</span>':''}${guestBadge}${discBadge}
+        ${nik?'<span class="lp-nik-t">nicht im Kader</span>':''}${(!isGuest&&!inSlot&&inSub<0&&sessIdx!=null&&p.s&&(p.s[sessIdx]==null||p.s[sessIdx]===3))?'<span class="lp-open-t">offen</span>':''}${guestBadge}${discBadge}
         <span class="lp-card-pos1" style="background:${bcol.split(';')[0]};${bcol.split(';')[1]};font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:7px;">${p.pos}</span>
         ${status}
       </div>`;
-    }).join('');
+    }).join('')+(()=>{
+      // 1.2.141: who cannot play stays visible — greyed, at the end
+      if(sessIdx==null)return '';
+      const out=[...players.keys()].filter(i=>players[i]&&!_lpOff(players[i],sessIdx)&&players[i].s&&(players[i].s[sessIdx]===0||players[i].s[sessIdx]===2));
+      if(!out.length)return '';
+      return '<h4 class="lp-out-h">Nicht dabei</h4>'+out.map(i=>{const q=players[i];const no=q.s[sessIdx]===0;
+        return `<p class="lp-out"><span class="lp-out-nr">${q.nr||'–'}</span><span class="lp-out-nm">${escapeHtml(getDisplayName(q))}</span><span class="lp-out-st ${no?'bad':'warn'}">${no?'Abgesagt':'Entschuldigt'}</span></p>`;}).join('');
+    })();
   }
 }
 
@@ -42559,17 +42637,14 @@ _pubCleanupSchedule();
     <div class="lp-spacer"></div>
     <button class="lp-close-btn" onclick="closeLineupPlanner()" aria-label="Schließen"><span class="fb-long">✕ Schließen</span><span class="fb-short">✕</span></button>
   </div>
-  <div class="hx-toolrow lp-toolrow">
-    <div class="lp-sub" id="lp-context-info"></div>
-    <div id="lp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;margin-left:8px;"></div>
-    <div class="lp-kind-wrap" style="display:flex;gap:4px;margin-left:10px;align-items:center;" title="Spieltyp bestimmt die Bankgröße">
-      <button class="lp-fmt-btn active" id="lp-kind-ms" onclick="lpSetMatchKind('meisterschaft')" title="Meisterschaftsspiel: 7 Bankplätze"><span class="lk-long">Meisterschaft</span><span class="lk-short">M</span> · 7</button>
-      <button class="lp-fmt-btn" id="lp-kind-test" onclick="lpSetMatchKind('test')" title="Testspiel: 10 Bankplätze"><span class="lk-long">Testspiel</span><span class="lk-short">T</span> · 10</button>
+  <div class="lp-gcard" id="lp-gcard">
+    <div class="kb-top">
+      <div class="kb-days" id="lp-gdays" role="group" aria-label="Spiel wählen"></div>
+      <div class="kb-head"><div class="kb-ttl" id="lp-gtitle"></div><div class="kb-meta" id="lp-context-info"></div><div class="kb-leg" id="lp-gleg"></div></div>
+      <div class="lp-gsave"><button class="lp-save-btn" id="lp-save-btn" onclick="lpSave()">Aufstellung speichern</button><div id="lp-saves-list"></div></div>
     </div>
-    <div class="lp-spacer"></div>
-    <div class="lp-hint" id="lp-hint">Slot wählen → Spieler klicken</div>
+    <div id="lp-var-bar" class="lp-var-bar" style="display:none;"></div>
   </div>
-  <div id="lp-var-bar" class="lp-var-bar" style="display:none;"></div>
   <div id="lp-unavail-bar" class="lp-unavail-bar" style="display:none;"></div>
   <!-- Separate strip: "cannot play today" and "not eligible this week" are
        different facts, and one line for both would hide which is which. -->
@@ -42585,6 +42660,17 @@ _pubCleanupSchedule();
     <button class="slp-popup-close" onclick="lpClosePopup()">Schließen</button>
   </div>
   <div class="lp-body">
+    <div class="lp-pcard">
+    <div class="lp-ptools">
+    <div id="lp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;margin-left:8px;"></div>
+    <div class="lp-kind-wrap" style="display:flex;gap:4px;margin-left:10px;align-items:center;" title="Spieltyp bestimmt die Bankgröße">
+      <button class="lp-fmt-btn active" id="lp-kind-ms" onclick="lpSetMatchKind('meisterschaft')" title="Meisterschaftsspiel: 7 Bankplätze"><span class="lk-long">Meisterschaft</span><span class="lk-short">M</span> · 7</button>
+      <button class="lp-fmt-btn" id="lp-kind-test" onclick="lpSetMatchKind('test')" title="Testspiel: 10 Bankplätze"><span class="lk-long">Testspiel</span><span class="lk-short">T</span> · 10</button>
+    </div>
+    <div class="lp-spacer"></div>
+    <div class="lp-hint" id="lp-hint">Slot wählen → Spieler klicken</div>
+    </div>
+    <div class="lp-pmain">
     <!-- Pitch SVG (vertical, attack top) -->
     <div class="lp-pitch-col" style="flex:1;">
       <svg id="lp-pitch" class="lp-pitch-svg" viewBox="0 0 340 525" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
@@ -42639,27 +42725,19 @@ _pubCleanupSchedule();
     </div>
     <!-- Substitutes column (circles next to pitch) -->
     <div id="lp-subs-col" style="width:130px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:12px 5px;background:rgba(0,0,0,.18);border-left:1px solid rgba(255,255,255,.05);overflow-y:auto;">
-      <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:10px;">🔄 Bank</div>
+      <div class="lp-bank-h" style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:10px;">Bank</div>
       <div id="lp-subs-circles" style="display:flex;flex-direction:column;gap:8px;align-items:center;width:100%;" class="lp-subs-circles"></div>
+    </div>
+    </div>
     </div>
     <!-- Sidebar -->
     <div class="lp-sidebar">
-      <div class="lp-sb-top">
-        <div class="lp-sb-label" id="lp-sb-title">Gespeicherte Aufstellungen</div>
-        <button class="lp-save-btn" style="width:100%;margin-bottom:8px;padding:7px;" id="lp-save-btn" onclick="lpSave()">💾 Aufstellung speichern</button>
-        <div id="lp-saves-list" style="font-size:.65rem;color:rgba(255,255,255,.7);text-align:center;padding:4px 0;"></div>
-      </div>
-      <div class="lp-sb-label2">🧑‍🤝‍🧑 Spieler</div>
+      <div id="lp-sb-title" hidden></div>
+      <div class="lp-sb-label2 lp-pl-h">Spieler <span><b id="lp-st-placed">0</b> gesetzt · <b id="lp-st-total">0</b> verfügbar</span></div>
       <div id="lp-kader-list" style="padding:0 8px 6px;flex:1;overflow-y:auto;"></div>
       <div id="lp-subs-area" style="padding:0 8px 4px;max-height:100px;overflow-y:auto;"></div>
       <div style="padding:6px 10px;border-top:1px solid rgba(255,255,255,.07);">
-        <button onclick="lpClearAll()" style="width:100%;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.25);color:#ff9080;border-radius:7px;padding:5px;font-family:'Barlow',sans-serif;font-size:.73rem;font-weight:600;cursor:pointer;">🗑 Aufstellung leeren</button>
-      </div>
-      <div class="lp-statsbar">
-        <div class="lp-stat"><span class="sv" id="lp-st-placed">0</span><span class="sk">gesetzt</span></div>
-        <div style="width:1px;height:24px;background:rgba(255,255,255,.1);margin:0 3px;"></div>
-        <div class="lp-stat"><span class="sv" id="lp-st-total">0</span><span class="sk">Spieler</span></div>
-        <div style="flex:1;"></div>
+        <button onclick="lpClearAll()" style="width:100%;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.25);color:#ff9080;border-radius:7px;padding:5px;font-family:'Barlow',sans-serif;font-size:.73rem;font-weight:600;cursor:pointer;">Aufstellung leeren</button>
       </div>
     </div>
   </div>

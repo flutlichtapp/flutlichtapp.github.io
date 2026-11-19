@@ -5,6 +5,7 @@
 // same size, same height; the tool controls (game line, schema, Bearbeiten,
 // Meisterschaft/Testspiel, Status) in a row below the header, not in it.
 // Tablets 768–999 px: the tools cover the navigation (as before), not compared.
+// 1.2.141: in Aufstellung the controls moved on into the pitch card (.lp-ptools).
 // node tools/tests/t_head140.js [index.html]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
@@ -24,14 +25,14 @@ const near=(a,b,d)=>a&&b&&Math.abs(a.l-b.l)<=d&&Math.abs(a.t-b.t)<=d&&a.fs===b.f
   const t2=await box(p,'#moLineup .hx-lptabs button'),h2=await box(p,'#moLineup .lp-topbar');
   ok(near(t1,t2,3),tag+'Spieltag: „Kader | Aufstellung“ an derselben Stelle, gleich groß '+JSON.stringify([t1,t2]));
   ok(h1&&h2&&Math.abs(h1.h-h2.h)<=2,tag+'Spieltag: Kopf gleich hoch ('+(h1&&h1.h)+'/'+(h2&&h2.h)+')');
-  let r=await p.evaluate(()=>{const top=document.querySelector('#moLineup .lp-topbar'),row=document.querySelector('#moLineup .lp-toolrow');const vis=e=>!!(e&&e.offsetParent);
+  let r=await p.evaluate(()=>{const top=document.querySelector('#moLineup .lp-topbar'),row=document.querySelector('#moLineup .lp-ptools')||document.querySelector('#moLineup .lp-toolrow');const vis=e=>!!(e&&e.offsetParent);
     if(!row)return {inTop:['keine Zeile'],inRow:[],below:false,over:0,arrow:false};
     const inTop=['#lp-fmt-btns','.lp-kind-wrap','#lp-context-info','#lp-hint'].filter(s=>{const e=document.querySelector('#moLineup '+s);return e&&top.contains(e);});
     const inRow=['#lp-fmt-btns','.lp-kind-wrap'].filter(s=>{const e=document.querySelector('#moLineup '+s);return e&&row.contains(e)&&vis(e);});
     const rr=row.getBoundingClientRect(),tr=top.getBoundingClientRect();
     const sel=row.querySelector('select');const arrow=sel?getComputedStyle(sel).backgroundImage:'';
     return {inTop,inRow,below:Math.round(rr.top)>=Math.round(tr.bottom)-1,over:row.scrollWidth-row.clientWidth,arrow:/stroke='%234E5D7C'/.test(arrow)||/stroke=%27%234E5D7C/.test(arrow)};});
-  ok(!r.inTop.length&&r.inRow.length===2&&r.below,tag+'Aufstellung: Schema, Bearbeiten, Meisterschaft/Testspiel in der Zeile unter dem Kopf '+JSON.stringify(r.inTop));
+  ok(!r.inTop.length&&r.inRow.length===2&&r.below,tag+'Aufstellung: Schema, Bearbeiten, Meisterschaft/Testspiel unter dem Kopf (seit 1.2.141 in der Karte des Felds) '+JSON.stringify(r.inTop));
   ok(r.over<=0,tag+'Aufstellung: Zeile passt in die Breite');
   if(!ph)ok(r.arrow,tag+'Aufstellung: Schema-Auswahl mit dunklem Pfeil auf hellem Grund');
   // Kader (page) → Saisonkader (tool)
