@@ -5156,6 +5156,18 @@ body.design-heute .slp-leg2 i{width:12px;height:12px;border-radius:50%;display:i
 body.design-heute .slp-leg2 i.e{border:2px dashed #9AA8BD;}
 body.design-heute .slp-leg2 i.o{border:2px solid var(--ac,#F2C230);}
 body.design-heute .slp-leg2 i.t{border:2px solid #27ae60;}
+body.design-heute .slp-leg2-lv{color:var(--hx-muted);}
+body.design-heute .slp-leg2-lv b{color:var(--hx-ink);}
+.slp-lv{display:inline-flex;gap:2px;padding:2px;border-radius:999px;background:rgba(255,255,255,.08);flex-shrink:0;}
+.slp-lv button{border:none;background:transparent;color:rgba(255,255,255,.7);font:600 .66rem 'Barlow',sans-serif;padding:3px 7px;border-radius:999px;cursor:pointer;}
+.slp-lv button.on{background:#F2C230;color:#14213D;}
+body.design-heute .slp-lv{background:var(--hx-card2);}
+body.design-heute .slp-lv button{color:var(--hx-muted);}
+body.design-heute .slp-lv button.on{background:var(--hx-solid,#14213D);color:var(--hx-on-solid,#fff);}
+.lp-fromslp[hidden]{display:none !important;}
+body.design-heute .lp-fromslp{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--hx-line);background:var(--hx-field);color:var(--hx-ink);font:700 .8rem 'Barlow',sans-serif;cursor:pointer;}
+body.design-heute .lp-fromslp:hover{border-color:var(--hx-ink2);}
+@media (max-width:767px){body.design-heute .lp-ptools .lp-fromslp{flex:1 1 100%;}}
 body.design-heute .slp-pcard .lp-ptools #slp-fmt-btns :is(select,button):not(.active){background-color:var(--hx-field) !important;border:1px solid var(--hx-line) !important;color:var(--hx-ink) !important;}
 body.design-heute .slp-pcard .lp-ptools #slp-fmt-btns{margin-left:0 !important;}
 body.design-heute .slp-pcard .lp-ptools select.slp-fmt-sel:not([multiple]):not([size]):not(#hxs-none){background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234E5D7C' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;}
@@ -7976,8 +7988,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.143'; // v1.2.143: Telefon – Aufstellung und Saisonkader aus der Navigation sind Seiten: untere Navigation bleibt, kein ✕
-const APP_VERSION_LABEL='1.2.143';
+const APP_VERSION='1.2.144'; // v1.2.144: Saisonkader – Stammposition / kann auch / lernt statt Reihenfolge; Lücken zählen nur Stamm und kann auch; „Aus dem Saisonkader“ in der Aufstellung
+const APP_VERSION_LABEL='1.2.144';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -31647,6 +31659,52 @@ function kbRender(){
 // with a goalkeeper; players who keep the training rule and come regularly
 // first; the rest goes on the bench.
 // Nothing is saved — the trainer looks it over and saves in the planner.
+function _slpLatestPlan(){
+  const ts=UI.currentTeam+'__'+UI.currentSeason;
+  return (G.seasonLineups||[]).filter(p=>p&&p.teamSeason===ts&&p.slots&&Object.values(p.slots).some(a=>Array.isArray(a)&&a.length))
+    .sort((a,b)=>(b.savedAt||0)-(a.savedAt||0))[0]||null;
+}
+function lpFromSeason(){
+  const D=cd(),si=lpState.sessIdx,s=D&&si!=null&&D.sessions[si];
+  if(!s||!(typeof canEdit==='function'&&canEdit()))return;
+  const plan=_slpLatestPlan();
+  if(!plan){alert('Es gibt noch keinen gespeicherten Saisonkader.');return;}
+  const season=UI.currentSeason,P=D.players;
+  const join=(p,ss)=>typeof _sessAfterJoin!=='function'||_sessAfterJoin(p,ss,season);
+  const rollNow=typeof _isSessRollCallTime==='function'&&_isSessRollCallTime(si);
+  const okV=rollNow?[1]:[4,1];
+  const q=(!rollNow&&!_sqStarted(s,season))?_sqOf(s):null;
+  const can=pi=>{const p=P[pi];return !!p&&join(p,s)&&(q?(q.p.includes(p.name)&&![0,2,5].includes(p.s&&p.s[si])):okV.includes(p.s&&p.s[si]));};
+  // trainings of the last 4 weeks before the match
+  const mk=_dbSortKey(s.date,season),from=mk-28;
+  const tr=(D.sessions||[]).map((ss,i)=>({ss,i})).filter(x=>x.ss&&x.ss.type!=='match'&&(typeof sessTookPlace!=='function'||sessTookPlace(x.ss,season))&&(()=>{const k=_dbSortKey(x.ss.date,season);return k<mk&&k>=from;})());
+  const att=pi=>{const p=P[pi];let a=0,n=0;tr.forEach(x=>{if(!join(p,x.ss))return;const v=p.s&&p.s[x.i];if(v===1||v===0||v===2){n++;if(v===1)a++;}});return n?a/n:0;};
+  const disc=pi=>{try{return typeof lpDisciplineState==='function'&&lpDisciplineState(pi)?1:0;}catch(e){return 0;}};
+  const psl=fmtSlots(plan.formation,plan.customSlots);
+  const lineSlots=fmtSlots(lpState.formation,lpState.customSlots);
+  const used=new Set([...Object.values(lpState.slots),...lpState.subs].filter(v=>typeof v==='number'));
+  const cand=sl=>{const out=[];psl.forEach(ps=>{if(ps.lbl!==sl.lbl&&!(Array.isArray(sl.pos)&&Array.isArray(ps.pos)&&ps.pos[0]===sl.pos[0]))return;(plan.slots[ps.id]||[]).forEach(pi=>{if(P[pi]&&!out.some(o=>o.pi===pi))out.push({pi,l:_slpLv(P[pi],ps)});});});return out;};
+  let placed=0;const open=[];
+  // Passes, as in the auto-fill: whoever breaks the training rule comes after
+  // everyone who does not; within that Stammposition before "kann auch";
+  // "lernt" never goes into the Startelf by itself.
+  [[0,'s'],[0,'k'],[1,'s'],[1,'k']].forEach(([dv,lv])=>lineSlots.forEach(sl=>{
+    if(lpState.slots[sl.id]!==undefined)return;
+    const c=cand(sl).filter(x=>x.l===lv&&!used.has(x.pi)&&can(x.pi)&&disc(x.pi)===dv);
+    c.forEach(x=>{x.a=att(x.pi);});
+    c.sort((a,b)=>(b.a-a.a)||((+P[a.pi].nr||999)-(+P[b.pi].nr||999)));
+    if(c[0]){lpState.slots[sl.id]=c[0].pi;used.add(c[0].pi);placed++;}
+  }));
+  lineSlots.forEach(sl=>{if(lpState.slots[sl.id]===undefined)open.push(sl.lbl);});
+  // bench: the others of the plan who can play, who trained more first
+  const rest=[...new Set(Object.values(plan.slots).flat())].filter(pi=>typeof pi==='number'&&!used.has(pi)&&can(pi)).map(pi=>({pi,a:att(pi),d:disc(pi)}));
+  rest.sort((a,b)=>(a.d-b.d)||(b.a-a.a));
+  let bench=0;rest.forEach(x=>{if(lpState.subs.length>=lpMaxSubs())return;lpState.subs.push(x.pi);used.add(x.pi);bench++;});
+  lpRender();
+  if(typeof showSaveFlash==='function')showSaveFlash(placed||bench
+    ?`Aus dem Saisonkader: ${placed} in der Startelf, ${bench} auf der Bank${open.length?' · offen: '+open.join(', '):''} · noch nicht gespeichert`
+    :'Aus dem Saisonkader ist niemand verfügbar',5000);
+}
 function kbLineup(){
   const D=cd();const si=KB.si;const s=D&&D.sessions&&D.sessions[si];
   if(!s||s.type!=='match'||!(typeof canEdit==='function'&&canEdit()))return;
@@ -40216,6 +40274,7 @@ function _lvBar(){
 // The game card (1.2.141): the same head as the Tafel — match days to switch,
 // what and when, how many can play — so Kader ⇄ Aufstellung keeps its top
 function _lpGameCard(){
+  const fb=document.getElementById('lp-fromslp');if(fb)fb.hidden=!_slpLatestPlan()||(typeof canEdit==='function'&&!canEdit());
   const D=cd(),season=UI.currentSeason,si=lpState.sessIdx,s=D&&si!=null?D.sessions[si]:null;
   const e=escapeHtml,t=document.getElementById('lp-gtitle'),m=document.getElementById('lp-context-info'),lg=document.getElementById('lp-gleg'),dd=document.getElementById('lp-gdays');
   if(!s){if(t)t.textContent='Aufstellung';if(m)m.textContent=UI.currentTeam+' · Saison '+season;if(lg)lg.innerHTML='';if(dd)dd.innerHTML='';return;}
@@ -41715,6 +41774,28 @@ function slpGetPlans(){
   return G.seasonLineups.filter(p=>p.teamSeason===key);
 }
 function slpAllPlans(){if(!G.seasonLineups)G.seasonLineups=[];return G.seasonLineups;}
+// Level of a player on a position (1.2.144, Artem 19.11.: „да“): Stammposition,
+// kann auch, lernt. It says something about the player and the position, not
+// about him against the others — who starts is still decided every week
+// (1.2.81). Stored with the player per position label (p.slv, trainer-only:
+// not in PV_ME); without an entry it follows the profile position.
+const SLP_LV={s:'Stammposition',k:'kann auch',l:'lernt'};
+function _slpLv(p,sl){
+  if(!p||!sl)return 'k';
+  const m=p.slv&&p.slv[sl.lbl];
+  if(m==='s'||m==='k'||m==='l')return m;
+  return ((Array.isArray(sl.pos)&&sl.pos[0]===p.pos)||sl.lbl===p.pos)?'s':'k';
+}
+function _slpSlot(id){return fmtSlots(slpState.formation,slpState.customSlots).find(x=>x.id===id)||(FORMATIONS[slpState.formation]||[]).find(x=>x.id===id);}
+// Who really covers a position: Stammposition and kann auch, not who learns it
+function _slpCover(sl){const P=(cd()||{}).players||[];return (slpState.slots[sl.id]||[]).filter(pi=>P[pi]&&_slpLv(P[pi],sl)!=='l').length;}
+function slpSetLv(slotId,pi,lv){
+  if(typeof canEdit==='function'&&!canEdit())return;
+  const D=cd(),p=D&&D.players&&D.players[pi],sl=_slpSlot(slotId);
+  if(!p||!sl||!SLP_LV[lv])return;
+  const nx=Object.assign({},p.slv||{});nx[sl.lbl]=lv;p.slv=nx;
+  snap();saveG();slpRender();slpRenderPopup(slotId);
+}
 
 function slpSetFormation(f){
   const oldSlots=FORMATIONS[slpState.formation]||[];
@@ -41775,9 +41856,9 @@ function slpRender(){
 
   svg.innerHTML=slots.map(slot=>{
     const assigned=slpState.slots[slot.id]||[];
-    const count=assigned.length;
+    const count=assigned.length,cover=_slpCover(slot);
     const isSel=slpState.openSlot===slot.id;
-    const ringColor=count===0?'rgba(255,255,255,.3)':lpCircleColor(count);
+    const ringColor=count===0?'rgba(255,255,255,.3)':cover===0?'#E0912F':lpCircleColor(cover);
     const fillColor=count===0?'#35814C':'color-mix(in srgb, var(--surface-mid) 85%, transparent)';
     const dashArr=count===0?'stroke-dasharray="4 3"':'';
     const gFilter=isSel?'filter="url(#glowGold)"':'';
@@ -41786,7 +41867,10 @@ function slpRender(){
     // First 2 names larger (starters), 3-5 smaller (depth). Full list available via popup click.
     const confEnabled=slpIsConfEnabled()&&!slpSeasonStarted();
     const MAX_VISIBLE=4;
-    const allAssigned=assigned.map(pi=>players[pi]).filter(Boolean);
+    // 1.2.144: grouped by level (Stammposition, kann auch, lernt) — equal within
+    const lvOf=pi=>_slpLv(players[pi],slot);
+    const shown=assigned.filter(pi=>players[pi]).map((pi,o)=>({pi,o,l:lvOf(pi)})).sort((a,b)=>('skl'.indexOf(a.l)-'skl'.indexOf(b.l))||(a.o-b.o));
+    const allAssigned=shown.map(x=>players[x.pi]);
     const visible=allAssigned.slice(0,MAX_VISIBLE);
     const overflowCount=Math.max(0,allAssigned.length-MAX_VISIBLE);
     let backdropHtml='';
@@ -41834,11 +41918,11 @@ function slpRender(){
     }
     const nameLines=visible.map((p,i)=>{
       const nm=lpFullName(p,14);
-      const pi=assigned[i];
-      // Same colour too — a brighter first name would keep implying a ranking
-      // even with the size and weight equalised.
-      const col='rgba(255,255,255,.92)';
-      const fw=weightFor(i);
+      const pi=shown[i].pi,lv=shown[i].l;
+      // Same colour for everyone of a level — the level shows, no ranking:
+      // Stammposition white, kann auch softer, lernt italic and softest
+      const col=lv==='s'?'rgba(255,255,255,.95)':lv==='k'?'rgba(255,255,255,.72)':'rgba(255,255,255,.55)';
+      const fw=lv==='s'?700:lv==='k'?500:500;
       const fs=fontFor(i);
       const yPos=R+18+i*LINE_H;
       const confirmed=confEnabled?slpIsPlayerConfirmed(pi):false;
@@ -41848,9 +41932,9 @@ function slpRender(){
       // When conf mode disabled - center align; when enabled - left align with reserved check space
       let nameTxt;
       if(confEnabled){
-        nameTxt=`<text data-pi="${pi}" x="${nameStartX}" y="${yPos}" text-anchor="start" font-family="'Barlow',sans-serif" font-size="${fs}" font-weight="${fw}" fill="${textColor}">${nm}</text>`;
+        nameTxt=`<text data-pi="${pi}" x="${nameStartX}" y="${yPos}" text-anchor="start" font-family="'Barlow',sans-serif" font-size="${fs}" font-weight="${fw}"${lv==='l'?' font-style="italic"':''} fill="${textColor}">${nm}</text>`;
       } else {
-        nameTxt=`<text data-pi="${pi}" x="0" y="${yPos}" text-anchor="middle" font-family="'Barlow',sans-serif" font-size="${fs}" font-weight="${fw}" fill="${textColor}">${nm}</text>`;
+        nameTxt=`<text data-pi="${pi}" x="0" y="${yPos}" text-anchor="middle" font-family="'Barlow',sans-serif" font-size="${fs}" font-weight="${fw}"${lv==='l'?' font-style="italic"':''} fill="${textColor}">${nm}</text>`;
       }
       // Check mark - placed in the reserved space to the LEFT of name
       let checkTxt='';
@@ -41884,8 +41968,8 @@ function slpRender(){
   const gapsEl=document.getElementById('slp-gaps');
   if(gapsEl){
     const lbl=x=>{const m={};x.forEach(l=>{m[l]=(m[l]||0)+1;});return Object.keys(m).map(l=>m[l]>1?l+' ×'+m[l]:l).join(', ');};
-    const empty=slots.filter(sl=>!(slpState.slots[sl.id]||[]).length).map(sl=>sl.lbl);
-    const one=slots.filter(sl=>(slpState.slots[sl.id]||[]).length===1).map(sl=>sl.lbl);
+    const empty=slots.filter(sl=>!_slpCover(sl)).map(sl=>sl.lbl);
+    const one=slots.filter(sl=>_slpCover(sl)===1).map(sl=>sl.lbl);
     gapsEl.innerHTML=!assigned_total?'<span>Noch niemand eingeteilt – Spieler auf die Positionen ziehen</span>':(empty.length||one.length)
       ?(empty.length?`<span><i class="bad"></i>Leer: <b>${escapeHtml(lbl(empty))}</b></span>`:'')+(one.length?`<span><i class="warn"></i>Nur 1 Spieler: <b>${escapeHtml(lbl(one))}</b></span>`:'')
       :'<span><i class="ok"></i>Jede Position mindestens doppelt besetzt</span>';
@@ -42037,7 +42121,7 @@ function slpClickSlot(e,slotId){
 function slpRenderPopup(slotId){
   const D=cd();
   const players=(D&&D.players)||[];
-  const slot=(FORMATIONS[slpState.formation]||[]).find(s=>s.id===slotId);
+  const slot=_slpSlot(slotId);
   if(!slot)return;
   const assigned=slpState.slots[slotId]||[];
   const allAssigned=new Set(Object.values(slpState.slots).flat());
@@ -42045,7 +42129,7 @@ function slpRenderPopup(slotId){
   const titleEl=document.getElementById('slp-popup-title');
   if(titleEl)titleEl.textContent=slot.lbl+' – Spieler zuweisen';
   
-  // Assigned players (priority order)
+  // Assigned players with their level (1.2.144: no order any more)
   const assignedEl=document.getElementById('slp-popup-assigned');
   if(assignedEl){
     if(!assigned.length){
@@ -42056,9 +42140,7 @@ function slpRenderPopup(slotId){
         return `<div class="slp-assigned-row">
           <span class="nr">${p.nr||'–'}</span>
           <span class="name ${_slpSbCls(pi)}">${getDisplayName(p)}</span>
-          <span class="prio">#${i+1}</span>
-          ${i>0?`<span class="up-btn" onclick="slpMovePrio('${slotId}',${i},-1)" title="Priorität erhöhen">▲</span>`:'<span style="width:18px"></span>'}
-          ${i<assigned.length-1?`<span class="up-btn" onclick="slpMovePrio('${slotId}',${i},1)" title="Priorität senken">▼</span>`:'<span style="width:18px"></span>'}
+          <span class="slp-lv" role="group" aria-label="Stufe">${['s','k','l'].map(k=>`<button type="button" class="${_slpLv(p,slot)===k?'on':''}" onclick="slpSetLv('${slotId}',${pi},'${k}')" title="${SLP_LV[k]}">${k==='s'?'Stamm':k==='k'?'kann':'lernt'}</button>`).join('')}</span>
           <span class="del-btn" onclick="slpRemoveFromSlot('${slotId}',${i})">✕</span>
         </div>`;
       }).join('');
@@ -42344,6 +42426,8 @@ function slpSave(){
   snap();saveG();slpRenderSaves();showSaveFlash('✓ Kaderplan gespeichert');
   // Refresh status snapshot: anything in G is now persisted, so future diff is "since this save"
   if(typeof _slpRefreshStatusSnapshot==='function')_slpRefreshStatusSnapshot();
+  // The field layout is saved too, so it is the new baseline for the close check (1.2.144).
+  _slpSlotSnapshot=_slpCaptureSlotSnapshot();
 }
 
 function slpRenderSaves(){
@@ -42732,6 +42816,7 @@ _pubCleanupSchedule();
   <div class="lp-body">
     <div class="lp-pcard">
     <div class="lp-ptools">
+      <button type="button" class="lp-fromslp" id="lp-fromslp" onclick="lpFromSeason()" hidden>Aus dem Saisonkader</button>
     <div id="lp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;margin-left:8px;"></div>
     <div class="lp-kind-wrap" style="display:flex;gap:4px;margin-left:10px;align-items:center;" title="Spieltyp bestimmt die Bankgröße">
       <button class="lp-fmt-btn active" id="lp-kind-ms" onclick="lpSetMatchKind('meisterschaft')" title="Meisterschaftsspiel: 7 Bankplätze"><span class="lk-long">Meisterschaft</span><span class="lk-short">M</span> · 7</button>
@@ -43337,7 +43422,7 @@ _pubCleanupSchedule();
       </svg>
     </div>
     </div>
-    <div class="slp-leg2" aria-hidden="true"><span><i class="e"></i>leer</span><span><i class="o"></i>1 Spieler</span><span><i class="t"></i>2 und mehr</span></div>
+    <div class="slp-leg2" aria-hidden="true"><span><i class="e"></i>leer</span><span><i class="o"></i>1 Spieler</span><span><i class="t"></i>2 und mehr</span><span class="slp-leg2-lv"><b>Stamm</b> · kann auch · <em>lernt</em></span></div>
     </div>
     <div class="slp-roster-col" id="slp-roster-col">
       <div class="slp-roster-col-head">
