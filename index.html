@@ -5288,6 +5288,12 @@ body.design-heute .hxv-block{border-bottom:none !important;padding-bottom:4px !i
 @media(min-width:1000px){
   body.design-heute :is(#moLineup,#moSeasonLineup).hx-vianav :is(.lp-close-btn,#slp-close-btn){display:none !important;}
 }
+/* 1.2.143 phone: from the navigation they are pages — bar visible, no ✕ */
+@media(max-width:767px){
+  body.design-heute :is(#moLineup,#moSeasonLineup).hx-vianav{bottom:var(--mob-nav-h,62px) !important;}
+  body.design-heute :is(#moLineup,#moSeasonLineup).hx-vianav :is(.lp-close-btn,#slp-close-btn){display:none !important;}
+  body.design-heute #mobSheet{z-index:810;}
+}
 /* Pitch exactly as in the Trainingsplaner (_dgBg('full')), turned upright and
    scaled into the lineup's 340×525 frame; the old markings are hidden */
 .hx-grass{display:none;}
@@ -7970,8 +7976,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.142'; // v1.2.142: Saisonkader wie Aufstellung – oben die Karte des Plans (eingeteilt, Lücken, Speichern), Feld und Spieler als Karten, Spieler rechts
-const APP_VERSION_LABEL='1.2.142';
+const APP_VERSION='1.2.143'; // v1.2.143: Telefon – Aufstellung und Saisonkader aus der Navigation sind Seiten: untere Navigation bleibt, kein ✕
+const APP_VERSION_LABEL='1.2.143';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -29692,6 +29698,9 @@ function homeEligible(){
 // Drives the fixed bottom bar. Every entry reuses the SAME functions the
 // desktop toolbar calls — this is a different surface, not a parallel app.
 function mobNav(what){
+  if(what!=='more'&&typeof _hxToolOpen==='function'&&_hxToolOpen()){
+    _hxCloseTools().then(ok=>{if(ok&&!_hxToolOpen())mobNav(what);});return;
+  }
   if(_hxOn()&&what!=='more'){_hxClosePanels('');_hxClosePages(what==='team'?'moTeamMgr':what==='cal'?'moCalendar':'');}
   switch(what){
     case 'home': mobSheetClose(); if(typeof homeOpen==='function')homeOpen(); break;
@@ -31095,11 +31104,17 @@ function _mobCurrentView(){
 function _mobNavVisibility(){
   const nav=document.getElementById('mobNav');
   if(!nav)return;
+  const isOpen=el=>el&&(el.classList.contains('open')||el.style.display==='flex');
   const blocking=['moLineup','moSeasonLineup','rcOverlay','sbOverlay'].some(id=>{
     const el=document.getElementById(id);
-    return el&&(el.classList.contains('open')||el.style.display==='flex');
+    return isOpen(el)&&!el.classList.contains('hx-vianav');   // 1.2.143: from the navigation → a page
   })||document.body.classList.contains('player-mode');
   nav.style.visibility=blocking?'hidden':'';
+  if(!blocking){
+    const lp=document.getElementById('moLineup'),slp=document.getElementById('moSeasonLineup');
+    const v=isOpen(slp)?'team':isOpen(lp)?'more':'';   // Spieltag lives behind "Mehr"
+    if(v)['home','list','cal','team','more'].forEach(k=>{const b=document.getElementById('mn-'+k);if(b)b.classList.toggle('on',k===v);});
+  }
 }
 setInterval(_mobNavVisibility,400);
 // Publish the real nav height (it includes its own safe-area padding, so this
