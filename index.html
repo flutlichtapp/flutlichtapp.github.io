@@ -5300,6 +5300,16 @@ body.design-heute .hxv-block{border-bottom:none !important;padding-bottom:4px !i
 @media(min-width:1000px){
   body.design-heute :is(#moLineup,#moSeasonLineup).hx-vianav :is(.lp-close-btn,#slp-close-btn){display:none !important;}
 }
+/* 1.2.145 phone: the tool scrolls as a whole, the pitch takes the full width */
+@media (max-width:767px){
+  body.design-heute :is(#moLineup,#moSeasonLineup){overflow-y:auto !important;overflow-x:hidden !important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+  body.design-heute :is(#moLineup,#moSeasonLineup)>*{flex-shrink:0 !important;}
+  body.design-heute #moLineup .lp-body,body.design-heute #moSeasonLineup .slp-body{flex:none !important;overflow:visible !important;min-height:auto !important;}
+  body.design-heute :is(#moLineup,#moSeasonLineup) :is(.lp-pcard,.lp-pmain,.lp-pitch-col,.slp-pitch-col){flex:none !important;min-height:auto !important;overflow:visible !important;}
+  body.design-heute #moLineup .lp-sidebar{flex:none !important;overflow:visible !important;min-height:auto !important;height:auto !important;}
+  body.design-heute :is(#moLineup,#moSeasonLineup) :is(.lp-pitch-col,.slp-pitch-col){width:100% !important;box-sizing:border-box;padding:8px 6px 6px !important;}
+  body.design-heute :is(.lp-pitch-svg,.slp-pitch-svg){display:block;width:100% !important;height:auto !important;max-height:none !important;aspect-ratio:340/525;}
+}
 /* 1.2.143 phone: from the navigation they are pages — bar visible, no ✕ */
 @media(max-width:767px){
   body.design-heute :is(#moLineup,#moSeasonLineup).hx-vianav{bottom:var(--mob-nav-h,62px) !important;}
@@ -7988,8 +7998,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.144'; // v1.2.144: Saisonkader – Stammposition / kann auch / lernt statt Reihenfolge; Lücken zählen nur Stamm und kann auch; „Aus dem Saisonkader“ in der Aufstellung
-const APP_VERSION_LABEL='1.2.144';
+const APP_VERSION='1.2.145'; // v1.2.145: Telefon – Aufstellung und Saisonkader scrollen als Ganzes, das Feld nutzt die ganze Breite
+const APP_VERSION_LABEL='1.2.145';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
