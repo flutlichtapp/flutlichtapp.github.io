@@ -6,6 +6,8 @@
 // Meisterschaft/Testspiel, Status) in a row below the header, not in it.
 // Tablets 768–999 px: the tools cover the navigation (as before), not compared.
 // 1.2.141/1.2.142: in Aufstellung and Saisonkader the controls moved on into the pitch card (.lp-ptools).
+// 1.2.148: Spieltag has no "Kader | Aufstellung" steps any more — its title "Spieltag"
+// is compared with the title of the Kader page.
 // node tools/tests/t_head140.js [index.html]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
@@ -18,12 +20,13 @@ const near=(a,b,d)=>a&&b&&Math.abs(a.l-b.l)<=d&&Math.abs(a.t-b.t)<=d&&a.fs===b.f
   const c=await b.newContext({viewport:{width:vp[0],height:vp[1]}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   await p.clock.install({time:NOW});await p.goto('file://'+HTML);await p.waitForTimeout(600);
   await p.evaluate(`(${setupTrainer.toString()})({})`);
-  // Spieltag: Kader (Tafel page) → Aufstellung (tool)
-  await p.evaluate(()=>{localStorage.setItem('fcf_st_tab','kader');hxGo('lineup');});await p.waitForTimeout(600);
-  const t1=await box(p,'#tmgr-h .hx-lptabs button'),h1=await box(p,'#moTeamMgr .mob > div:first-child');
-  await p.evaluate(()=>stGo('aufstellung',1));await p.waitForTimeout(800);
-  const t2=await box(p,'#moLineup .hx-lptabs button'),h2=await box(p,'#moLineup .lp-topbar');
-  ok(near(t1,t2,3),tag+'Spieltag: „Kader | Aufstellung“ an derselben Stelle, gleich groß '+JSON.stringify([t1,t2]));
+  // Spieltag (1.2.148: opens the pitch, title "Spieltag") — the title where
+  // the pages have theirs (Kader), same size, header just as high
+  await p.evaluate(()=>hxGo('team'));await p.waitForTimeout(600);
+  const t1=await box(p,'#tmgr-h'),h1=await box(p,'#moTeamMgr .mob > div:first-child');
+  await p.evaluate(()=>hxGo('lineup'));await p.waitForTimeout(800);
+  const t2=await box(p,'#moLineup #lp-htitle'),h2=await box(p,'#moLineup .lp-topbar');
+  ok(near(t1,t2,3),tag+'Spieltag: Titel an derselben Stelle wie „Kader“, gleich groß '+JSON.stringify([t1,t2]));
   ok(h1&&h2&&Math.abs(h1.h-h2.h)<=2,tag+'Spieltag: Kopf gleich hoch ('+(h1&&h1.h)+'/'+(h2&&h2.h)+')');
   let r=await p.evaluate(()=>{const top=document.querySelector('#moLineup .lp-topbar'),row=document.querySelector('#moLineup .lp-ptools')||document.querySelector('#moLineup .lp-toolrow');const vis=e=>!!(e&&e.offsetParent);
     if(!row)return {inTop:['keine Zeile'],inRow:[],below:false,over:0,arrow:false};

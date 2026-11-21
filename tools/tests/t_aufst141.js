@@ -4,6 +4,7 @@
 // status ("offen"), who cannot play listed at the end instead of missing.
 // 1.2.146: from 1280 px wide "Nicht dabei" stands in the column left of the
 // pitch, narrower at the end of the player list.
+// 1.2.148: Spieltag opens the pitch; the Tafel is opened directly for the comparison.
 // node tools/tests/t_aufst141.js [index.html]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
@@ -34,7 +35,9 @@ const st=p=>p.evaluate(()=>{const lp=document.getElementById('moLineup'),D=cd();
   const c=await b.newContext({viewport:{width:vp[0],height:vp[1]}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   await p.clock.install({time:NOW});await p.goto('file://'+HTML);await p.waitForTimeout(600);
   await p.evaluate(`(${setupTrainer.toString()})({})`);await p.evaluate(`(${prep.toString()})()`);
-  await p.evaluate(()=>{localStorage.setItem('fcf_st_tab','kader');hxGo('lineup');});await p.waitForTimeout(600);
+  // 1.2.148: the navigation opens the pitch straight away; the Tafel (still for
+  // "Nur ansehen" and without a match) is opened directly to compare the cards
+  await p.evaluate(()=>{openSpieltagKader();});await p.waitForTimeout(600);
   const tafel=await p.evaluate(()=>({ttl:(document.querySelector('#kbBoard .kb-ttl')||{}).textContent,days:[...document.querySelectorAll('#kbBoard .kb-day')].map(x=>x.textContent.replace(/\s+/g,'')+(x.classList.contains('on')?'*':''))}));
   await p.evaluate(()=>stGo('aufstellung',1));await p.waitForTimeout(900);
   let r=await st(p);
@@ -46,7 +49,8 @@ const st=p=>p.evaluate(()=>{const lp=document.getElementById('moLineup'),D=cd();
   ok(r.open1.length===1&&/Ben/.test(r.open1[0]),tag+'ohne Antwort: „offen“ beim Spieler');
   ok(r.out.length===2&&r.out.some(x=>/Max.*Abgesagt/.test(x))&&r.out.some(x=>/Leon.*Entschuldigt/.test(x))&&!r.outDiv&&r.outWhere===(vp[0]>=1280?'Spalte':'Liste'),tag+'„Nicht dabei“: Abgesagt und Entschuldigt sichtbar, nicht als normale Zeile (in der '+r.outWhere+')');
   ok(!r.emoji,tag+'keine Emojis in den Überschriften und Knöpfen');
-  if(!ph)ok(r.pitchH>=(vp[1]<760?380:520),tag+'Feld hoch genug ('+r.pitchH+' px)');
+  // 1.2.148: the squad line in the game card costs the pitch ~17 px (520 → 500)
+  if(!ph)ok(r.pitchH>=(vp[1]<760?370:500),tag+'Feld hoch genug ('+r.pitchH+' px)');
   // another match from the card
   if(!ph){
     await p.click('#lp-gdays .kb-day:nth-child(2)');await p.waitForTimeout(900);

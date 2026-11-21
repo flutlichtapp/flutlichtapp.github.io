@@ -4,6 +4,9 @@
 // eigenen Mannschafts-/Saisonwechsel, Wochenbericht „Auffällig diese Woche“.
 // Artem 18.11.: „со всем согласен“; „опять не влазит Übersicht … маленький скрол“.
 // 1.2.138: im Saisonkader-Kopf alle vier (Spieler · Saisonkader · Ziele · Videos), nicht nur zwei.
+// 1.2.148 (Artem 21.11.: „я за D“): Spieltag öffnet gleich das Feld, Kopf „Spieltag“,
+// keine Schritte „Kader | Aufstellung“ mehr; die Tafel nur noch für „Nur ansehen“ und
+// ohne kommendes Spiel (Titel „Spieltag“). Neue Neuigkeit statt der vom 18.11.
 // node tools/tests/t_spieltag133.js [index.html] [shotdir]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 const out=process.argv[3]||'';
@@ -30,25 +33,23 @@ const J=JSON.stringify;
  {const {p,c,errs}=await open(b);
   const items=await p.evaluate(()=>[...document.querySelectorAll('#hxNav .hx-item')].map(x=>x.textContent.trim()));
   ok(items.includes('Spieltag')&&!items.includes('Aufstellung'),'Navigation: „Spieltag“ statt „Aufstellung“');
-  await p.evaluate(()=>hxGo('lineup'));await p.waitForTimeout(500);
-  let r=await st(p);
-  ok(r.page==='spieltag'&&r.nav==='Spieltag'&&J(r.head)===J(['Kader*','Aufstellung'])&&!r.pills.length,'Spieltag öffnet beim ersten Mal „Kader“ (Tafel): Kopf „Kader | Aufstellung“, keine Reiterleiste');
-  ok(r.days.length>=2&&r.days.every(d=>/Spiel/.test(d)),'Tafel nur mit Spielen ('+r.days.length+')');
-  if(out)await p.screenshot({path:out+'/spieltag133_kader.png'});
-  const m2=await p.evaluate(()=>{const D=cd();const i=D.sessions.findIndex(s=>s.date==='So 15.11');kbPick(i);return i;});
-  await p.click('#tmgr-h .hx-lptabs button:has-text("Aufstellung")');await p.waitForTimeout(600);
-  r=await st(p);
-  ok(r.tool==='moLineup'&&r.lpSi===m2&&r.nav==='Spieltag'&&J(r.lp)===J(['Kader','Aufstellung*']),'„Aufstellung“: dasselbe Spiel (So 15.11), Kopf „Kader | Aufstellung“');
-  ok(await p.evaluate(()=>localStorage.getItem('fcf_st_tab')==='aufstellung'),'zuletzt benutzter Schritt gemerkt');
-  if(out)await p.screenshot({path:out+'/spieltag133_aufstellung.png'});
-  await p.click('#moLineup .hx-lptabs button:has-text("Kader")');await p.waitForTimeout(500);
-  r=await st(p);
-  ok(!r.tool&&r.page==='spieltag'&&r.kbSi===m2&&r.nav==='Spieltag','„Kader“ im Kopf der Aufstellung: zurück zur Tafel, dasselbe Spiel');
-  // remembered step: Spieltag opens straight on the lineup
-  await p.evaluate(()=>{localStorage.setItem('fcf_st_tab','aufstellung');hxGo('home');});await p.waitForTimeout(300);
   await p.evaluate(()=>hxGo('lineup'));await p.waitForTimeout(600);
+  let r=await st(p);
+  const ttl=()=>p.evaluate(()=>{const h=document.getElementById('lp-htitle');return h?h.innerText.trim():'';});
+  ok(r.tool==='moLineup'&&r.nav==='Spieltag'&&(await ttl())==='Spieltag'&&!r.lp.length&&!r.head.length,'Spieltag öffnet gleich das Feld: Kopf „Spieltag“, kein Schritt „Kader“');
+  ok(await p.evaluate(()=>document.getElementById('moLineup').classList.contains('hx-vianav')),'… als Seite aus der Navigation');
+  const gd=await p.evaluate(()=>[...document.querySelectorAll('#lp-gdays .kb-day')].map(x=>x.textContent.replace(/\s+/g,' ').trim()));
+  ok(gd.length>=2&&gd.every(d=>/Spiel/.test(d)),'Spielauswahl nur mit Spielen ('+gd.length+')');
+  if(out)await p.screenshot({path:out+'/spieltag148.png'});
+  const m2=await p.evaluate(()=>cd().sessions.findIndex(s=>s.date==='So 15.11'));
+  await p.evaluate(i=>lpPickGame(i),m2);await p.waitForTimeout(600);
   r=await st(p);
-  ok(r.tool==='moLineup'&&r.nav==='Spieltag','zuletzt „Aufstellung“: Spieltag öffnet die Aufstellung');
+  ok(r.tool==='moLineup'&&r.lpSi===m2&&r.nav==='Spieltag'&&(await ttl())==='Spieltag','anderes Spiel (So 15.11): bleibt die Seite „Spieltag“');
+  // as a tool (from a match card): "Aufstellung" with ✕
+  await p.evaluate(()=>{closeLineupPlanner();});await p.waitForTimeout(300);
+  await p.evaluate(()=>{openLineupPlanner(findNextMatchIdx());});await p.waitForTimeout(500);
+  ok((await ttl())==='Aufstellung'&&!(await p.evaluate(()=>document.getElementById('moLineup').classList.contains('hx-vianav'))),'aus einer Spielkarte geöffnet: „Aufstellung“ (Werkzeug)');
+  await p.evaluate(()=>{closeLineupPlanner();});await p.waitForTimeout(300);
   // Kader: Spieler · Saisonkader · Ziele · Videos
   await p.evaluate(()=>hxGo('team'));await p.waitForTimeout(600);
   r=await st(p);
@@ -68,15 +69,15 @@ const J=JSON.stringify;
   r=await p.evaluate(()=>{const t=document.getElementById('moWeekReport').textContent;return {a:/Auffällig diese Woche/.test(t),b:/Im Blick behalten/.test(t)};});
   ok(r.a&&!r.b,'Wochenbericht: „Auffällig diese Woche“ statt „Im Blick behalten“');
   // the news entry goes to the Spieltag
-  r=await p.evaluate(()=>({id:APP_NEWS[0].id,old:APP_NEWS.some(n=>n.id==='20261117-1'),go:APP_NEWS[0].go&&APP_NEWS[0].go[1]}));
-  ok(r.id==='20261118-1'&&!r.old&&r.go==='hxSpieltag()','Neuigkeit „Spieltag …“ ersetzt die vom 17.11.');
+  r=await p.evaluate(()=>({id:APP_NEWS[0].id,old:APP_NEWS.some(n=>n.id==='20261117-1'||n.id==='20261118-1'),go:APP_NEWS[0].go&&APP_NEWS[0].go[1]}));
+  ok(r.id==='20261121-1'&&!r.old&&r.go==='hxSpieltag()','Neuigkeit „Spieltag: Aufstellung und Kader auf einem Blatt“ ersetzt die vom 18.11.');
   ok(!errs.length,'keine Fehler'+(errs.length?': '+errs[0]:''));await c.close();}
 
  // ── "Nur ansehen": the Tafel, nothing to change
  {const {p,c,errs}=await open(b,{cu:{name:'Gast',role:'viewer',teams:['U19']}});
   await p.evaluate(()=>{localStorage.setItem('fcf_st_tab','aufstellung');hxGo('lineup');});await p.waitForTimeout(500);
   let r=await st(p);
-  ok(r.page==='spieltag'&&J(r.head)===J(['Kader*'])&&!r.tool,'„Nur ansehen“: Spieltag zeigt die Tafel, ohne Reiter „Aufstellung“');
+  ok(r.page==='spieltag'&&!r.head.length&&!r.tool&&(await p.evaluate(()=>document.getElementById('tmgr-h').textContent.trim()))==='Spieltag','„Nur ansehen“: Spieltag zeigt die Tafel, Titel „Spieltag“, ohne Reiter');
   await p.evaluate(()=>hxGo('team'));await p.waitForTimeout(400);
   r=await st(p);
   ok(J(r.pills)===J(['Spieler','Ziele','Videos']),'„Nur ansehen“: Kader ohne „Saisonkader“');
@@ -86,7 +87,7 @@ const J=JSON.stringify;
  {const {p,c,errs}=await open(b,{time:new Date('2026-11-25T10:00:00+01:00').getTime()});
   await p.evaluate(()=>{localStorage.setItem('fcf_st_tab','aufstellung');hxGo('lineup');});await p.waitForTimeout(500);
   const r=await p.evaluate(()=>({t:document.getElementById('kbBoard').textContent,tool:_hxToolOpen()}));
-  ok(/Gerade ist kein Spiel angesetzt/.test(r.t)&&!r.tool,'kein Spiel mehr angesetzt: Spieltag sagt es (statt leerer Aufstellung)');
+  ok(/Gerade ist kein Spiel angesetzt/.test(r.t)&&!r.tool&&(await p.evaluate(()=>document.getElementById('tmgr-h').textContent.trim()))==='Spieltag','kein Spiel mehr angesetzt: Spieltag sagt es (statt leerer Aufstellung)');
   ok(!errs.length,'ohne Spiel: keine Fehler'+(errs.length?': '+errs[0]:''));await c.close();}
 
  // ── Übersicht: the news in the head, no scrolling on computers
@@ -97,7 +98,7 @@ const J=JSON.stringify;
       inHead:!!(top&&top.closest('.hx-top'))};});
   ok(r.over<=0&&r.top&&!r.card&&r.inHead,`Übersicht ${w}×${h} mit Neuigkeit: ohne Scrollen, Neuigkeit oben neben der Begrüßung (${r.over})`);
   if(w===1536&&h===730){
-    ok(/^Neu: Spieltag: erst der Kader, dann die Aufstellung/.test(r.t),'Text: „Neu: Spieltag: erst der Kader, dann die Aufstellung …“');
+    ok(/^Neu: Spieltag: Aufstellung und Kader auf einem Blatt/.test(r.t),'Text: „Neu: Spieltag: Aufstellung und Kader auf einem Blatt …“');
     if(out)await p.screenshot({path:out+'/spieltag133_uebersicht.png'});
     await p.click('#hxHome .hx-nwtop-go');await p.waitForTimeout(300);
     const o=await p.evaluate(()=>document.getElementById('moNews').classList.contains('open'));
@@ -118,9 +119,9 @@ const J=JSON.stringify;
   r=await p.evaluate(()=>[...document.querySelectorAll('#ms-areas .ms-row')].map(x=>x.textContent.trim()));
   ok(r.includes('Spieltag')&&!r.includes('Aufstellung'),'Handy, „Mehr“: „Spieltag“');
   await p.click('#ms-areas .ms-row:has-text("Spieltag")');await p.waitForTimeout(600);
-  r=await p.evaluate(()=>({mode:document.getElementById('moTeamMgr').dataset.mode,more:document.getElementById('mn-more').classList.contains('on'),team:document.getElementById('mn-team').classList.contains('on'),
-    fit:[...document.querySelectorAll('#tmgr-h .hx-lptabs button')].every(e=>e.getBoundingClientRect().right<=innerWidth)}));
-  ok(r.mode==='spieltag'&&r.more&&!r.team&&r.fit,'Handy: Spieltag über „Mehr“, unten „Mehr“ markiert, Kopf passt');
+  r=await p.evaluate(()=>({tool:_hxToolOpen(),via:document.getElementById('moLineup').classList.contains('hx-vianav'),more:document.getElementById('mn-more').classList.contains('on'),team:document.getElementById('mn-team').classList.contains('on'),
+    fit:document.getElementById('lp-htitle').getBoundingClientRect().right<=innerWidth,t:document.getElementById('lp-htitle').innerText.trim()}));
+  ok(r.tool==='moLineup'&&r.via&&r.more&&!r.team&&r.fit&&r.t==='Spieltag','Handy: Spieltag über „Mehr“ öffnet das Feld, unten „Mehr“ markiert, Kopf passt');
   if(out)await p.screenshot({path:out+'/spieltag133_phone.png'});
   await p.evaluate(()=>mobNav('team'));await p.waitForTimeout(500);
   r=await p.evaluate(()=>({mode:document.getElementById('moTeamMgr').dataset.mode,team:document.getElementById('mn-team').classList.contains('on'),

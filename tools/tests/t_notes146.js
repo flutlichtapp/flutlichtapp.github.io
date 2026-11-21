@@ -47,10 +47,12 @@ const where=p=>p.evaluate(()=>{const par=id=>{const e=document.getElementById(id
   await p.evaluate(()=>lpFromSeason());await p.waitForTimeout(400);
   r=await where(p);
   const exp=wide?'Spalte':'oben';
-  ok(r.ers===exp&&r.disc===exp&&r.sq===exp&&r.un===exp,tag+'Hinweise '+exp+' (Ersatz '+r.ers+', Trainingsregel '+r.disc+', Kader '+r.sq+')');
+  // 1.2.148: „Kader noch nicht veröffentlicht“ stands in the game card, not as a note
+  ok(r.ers===exp&&r.disc===exp&&r.sq===exp&&r.un===exp,tag+'Hinweise '+exp+' (Ersatz '+r.ers+', Trainingsregel '+r.disc+')');
+  ok(/Kader noch nicht veröffentlicht/.test(await p.evaluate(()=>document.getElementById('lp-gsq').textContent)),tag+'„Kader noch nicht veröffentlicht“ in der Spielkarte');
   ok(r.out===(wide?'Spalte':'Liste'),tag+'„Nicht dabei“ in der '+r.out);
-  const vis=await p.evaluate(()=>['lp-ers-bar','lp-disc-bar','lp-sq-bar'].map(id=>{const e=document.getElementById(id);return id+':'+(e.offsetParent&&e.getBoundingClientRect().height>10?1:0);}).join(','));
-  ok(!/:0/.test(vis),tag+'Ersatz, Trainingsregel und Kader sichtbar ('+vis+')');
+  const vis=await p.evaluate(()=>['lp-ers-bar','lp-disc-bar'].map(id=>{const e=document.getElementById(id);return id+':'+(e.offsetParent&&e.getBoundingClientRect().height>10?1:0);}).join(','));
+  ok(!/:0/.test(vis),tag+'Ersatz und Trainingsregel sichtbar ('+vis+')');
   if(wide){
     ok(!r.empty&&r.pitchH>=h0-15,tag+'Feld behält seine Höhe trotz drei Hinweisen ('+r.pitchH+' / ohne Hinweise '+h0+'; früher mit Streifen oben ~430)');
     // the column does not run under the pitch: left of it, inside the card

@@ -5,6 +5,8 @@
 // Trainerliste steht in den Einstellungen; ändern kann sie der Admin.
 // Seit 1.2.133 (18.11.) ist die Tafel „Spieltag → Kader“ (nur Spiele) und der
 // Saisonkader ein Reiter in Kader – Wege und Erwartungen hier angepasst.
+// Seit 1.2.148 öffnet Spieltag gleich das Feld; die Tafel (für „Nur ansehen“ und ohne
+// kommendes Spiel) wird hier direkt geöffnet – die Kader-Logik ist dieselbe.
 // node tools/tests/t_kader132.js [index.html] [shotdir]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 const out=process.argv[3]||'';
@@ -16,7 +18,7 @@ const open=async(b,o)=>{o=o||{};const c=await b.newContext({viewport:o.vp||{widt
   if(o.cu)await p.evaluate(cu=>{CU=Object.assign({loginAt:Date.now()},cu);},o.cu);
   if(o.tab)await p.evaluate(t=>localStorage.setItem('fcf_kb_tab',t),o.tab);
   return {p,c,errs};};
-const kader=async p=>{await p.evaluate(()=>{document.getElementById('homeOverlay').style.display='';hxRender();hxGo('lineup');});await p.waitForTimeout(400);};
+const kader=async p=>{await p.evaluate(()=>{document.getElementById('homeOverlay').style.display='';hxRender();openSpieltagKader();});await p.waitForTimeout(400);};
 const board=p=>p.evaluate(()=>{const h=document.getElementById('kbBoard');
   const btn=[...h.querySelectorAll('.kb-acts button')].map(b=>({t:b.textContent.trim(),alt:b.classList.contains('alt')}));
   const sq=h.querySelector('.kb-sq');
