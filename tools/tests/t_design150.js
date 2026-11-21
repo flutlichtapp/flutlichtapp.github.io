@@ -5,6 +5,7 @@
 // ("6er", not "6ER" that read as "GER"), the bench as seats ("8 Leon", empty
 // "+"), and in the list a small token for where a player stands instead of
 // ⚽ / 🔄 SUB. The Saisonkader shares the pitch.
+// 1.2.151: the bench rows stand under their own heading „Bank“ (t_klar151).
 // node tools/tests/t_design150.js [index.html]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
@@ -30,7 +31,7 @@ const hit=(a,b)=>a[0]<b[2]-1&&b[0]<a[2]-1&&a[1]<b[3]-1&&b[1]<a[3]-1;
   const art=await p.evaluate(()=>{const g=document.querySelector('#lp-pitch .hx-grass');const ids=[...document.querySelectorAll('[id]')].map(e=>e.id);
     const col=document.querySelector('#moLineup .lp-pitch-col'),svg=document.getElementById('lp-pitch').getBoundingClientRect(),cr=col.getBoundingClientRect();
     return {stripes:g?g.querySelectorAll('.hx-stripes > rect').length:0,clip:!!g&&!!g.querySelector('clipPath'),dupIds:(m=>m.length-new Set(m).size)(ids.filter(i=>/-(clip|vig|g[1-4])$/.test(i))),
-      stage:/gradient/.test(getComputedStyle(col).backgroundImage),inside:svg.left>=cr.left-1&&svg.right<=cr.right+1&&svg.top>=cr.top-1&&svg.bottom<=cr.bottom+1};});
+      stage:/gradient/.test(getComputedStyle(col).backgroundImage+getComputedStyle(col.parentElement).backgroundImage),inside:svg.left>=cr.left-1&&svg.right<=cr.right+1&&svg.top>=cr.top-1&&svg.bottom<=cr.bottom+1};});
   ok(art.stripes===5&&art.clip,tag+'Feld: zehn Streifen (fünf dunkle), abgerundet');
   ok(art.dupIds===0,tag+'Feld und Saisonkader-Feld: eigene IDs für Licht und Rand');
   ok(art.stage&&art.inside,tag+'Feld auf der Bühne im Vereinsblau');
@@ -83,12 +84,14 @@ const hit=(a,b)=>a[0]<b[2]-1&&b[0]<a[2]-1&&a[1]<b[3]-1&&b[1]<a[3]-1;
   await p.evaluate(()=>lpSetMatchKind('meisterschaft'));await p.waitForTimeout(200);
   // ── list
   const li=await p.evaluate(()=>{const rows=[...document.querySelectorAll('#lp-kader-list > div')];const P=cd().players;
-    const xi=rows.filter(r=>r.querySelector('.lp-st-xi')),sb=rows.filter(r=>r.querySelector('.lp-st-sub'));
+    const xi=rows.filter(r=>r.querySelector('.lp-st-xi'));
+    // 1.2.151: the bench is its own section („Bank“) — rows under that heading, no „Bank“ chip any more
+    const sb=[];let sec='';[...document.querySelectorAll('#lp-kader-list > *')].forEach(e=>{if(e.matches('h4.lp-sec-h'))sec=e.textContent.split(' ')[0];else if(e.tagName==='DIV'&&sec==='Bank')sb.push(e);});
     const sameNoPos=xi.every(r=>{const l=r.querySelector('.lp-st-xi').textContent.toLowerCase(),pc=r.querySelector('.lp-card-pos1');return pc?pc.textContent.toLowerCase()!==l:true;});
     const xiStyle=xi[0]?getComputedStyle(xi[0].querySelector('.lp-st-xi')):null;
-    return {xi:xi.length,sb:sb.map(r=>r.querySelector('.lp-st-sub').textContent),emoji:/[⚽🔄]/u.test(document.getElementById('lp-kader-list').textContent),sameNoPos,
+    return {xi:xi.length,sb:sb.map(r=>r.querySelector('.lp-st-sub')?'Chip':'Bank'),emoji:/[⚽🔄]/u.test(document.getElementById('lp-kader-list').textContent),sameNoPos,
       bg:xiStyle?xiStyle.backgroundColor:'',fg:xiStyle?xiStyle.color:''};});
-  ok(li.xi>=9&&li.sb.length===2&&li.sb.every(t=>t==='Bank'),tag+'Liste: Startelf und Bank markiert ('+li.xi+'/'+li.sb.length+')');
+  ok(li.xi>=9&&li.sb.length===2&&li.sb.every(t=>t==='Bank'),tag+'Liste: Startelf markiert, Bank als eigener Abschnitt ('+li.xi+'/'+li.sb.length+')');
   ok(!li.emoji,tag+'Liste: kein ⚽ / 🔄');
   ok(li.sameNoPos,tag+'Liste: auf eigener Position nur die Marke, kein doppeltes „RV RV“');
   ok(dk?li.bg==='rgb(242, 194, 48)':(li.bg==='rgb(14, 35, 80)'&&li.fg==='rgb(242, 194, 48)'),tag+'Liste: Marke '+(dk?'gelb (Nacht)':'blau mit gelber Schrift'));

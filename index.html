@@ -5419,6 +5419,74 @@ body.design-heute #moLineup > :is(#lp-unavail-bar,#lp-disc-bar){margin:12px max(
   body.design-heute #moLineup #lp-subs-col .lp-seat{height:40px !important;padding:0 8px;gap:6px;}
   body.design-heute #moLineup > :is(#lp-unavail-bar,#lp-disc-bar){margin:10px 12px 0;}
 }
+/* ── 1.2.151 the column left of the pitch: three blocks with headings ── */
+@media(min-width:1280px){
+  body.design-heute :is(.lp-notes,.slp-notes){gap:14px;}
+  body.design-heute .lp-nh,body.design-heute .lp-notes .lp-out-h,body.design-heute .slp-notes-h,body.design-heute .lp-notes .lp-todo-h{margin:0 0 2px !important;font:700 .8rem 'Barlow',sans-serif !important;letter-spacing:0;text-transform:none;color:var(--hx-ink2) !important;opacity:1 !important;}
+  body.design-heute.hxk-dk :is(.lp-nh,.slp-notes-h),body.design-heute.hxk-dk .lp-notes :is(.lp-out-h,.lp-todo-h){color:var(--hk-muted) !important;}
+  body.design-heute .lp-ntop{gap:8px;padding-bottom:14px;}
+  /* counts: the same as „Nicht dabei“ below and „verfügbar“ in the list */
+  body.design-heute .lp-ntop #lp-gleg{display:none !important;}
+  /* Meisterschaft | Testspiel as one switch, as high as the schema */
+  body.design-heute .lp-ntop .lp-kind-wrap{display:grid !important;grid-template-columns:1fr 1fr;gap:0 !important;padding:3px;border-radius:10px;background:var(--hx-field);border:1px solid var(--hx-line);box-sizing:border-box;}
+  body.design-heute .lp-ntop .lp-kind-wrap .lp-fmt-btn{height:30px;border:none !important;border-radius:7px !important;background:transparent !important;color:var(--hx-ink2) !important;font:600 .8rem 'Barlow',sans-serif !important;box-shadow:none !important;}
+  body.design-heute .lp-ntop .lp-kind-wrap .lp-fmt-btn.active{background:var(--hx-nav) !important;color:#fff !important;}
+  body.design-heute.hxk-dk .lp-ntop .lp-kind-wrap{background:var(--hk-card2);border-color:var(--hk-line);}
+  body.design-heute.hxk-dk .lp-ntop .lp-kind-wrap .lp-fmt-btn{color:var(--hk-muted) !important;}
+  body.design-heute.hxk-dk .lp-ntop .lp-kind-wrap .lp-fmt-btn.active{background:color-mix(in srgb,var(--hk-ink) 18%,var(--hk-card)) !important;color:var(--hk-ink) !important;}
+  body.design-heute .lp-ntop .lk-n{display:none;}
+  /* the hint only while nothing is placed */
+  body.design-heute #moLineup:not(.lp-empty) .lp-ntop .lp-ptools .lp-hint{display:none !important;}
+  body.design-heute #moSeasonLineup:not(.slp-empty) .lp-ntop .slp-dhint{display:none !important;}
+  body.design-heute .lp-ntop .lp-hint{font-style:normal !important;}
+  /* the column's cards: one shape */
+  body.design-heute .lp-notes :is(.lp-unavail-bar,.lp-disc-bar){display:block !important;padding:10px 12px !important;}
+  body.design-heute .lp-notes .lp-todo-first{margin-bottom:-10px;}
+}
+/* "Zu klären" rows (all widths, Heute) */
+body.design-heute :is(#lp-unavail-bar,#lp-disc-bar):has(.lp-todo-r){display:block;}
+body.design-heute .lp-todo-h{margin:0 0 6px;font:700 .8rem 'Barlow',sans-serif;color:var(--hx-ink2);}
+body.design-heute .lp-todo-h b{display:inline-grid;place-items:center;min-width:18px;height:18px;margin-left:4px;padding:0 5px;box-sizing:border-box;border-radius:9px;background:#F2C230;color:#0E2350;font:800 .72rem/1 'Barlow',sans-serif;vertical-align:1px;}
+body.design-heute .lp-todo-r{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 0;border-top:1px solid rgba(154,85,6,.14);}
+body.design-heute .lp-todo-h + .lp-todo-r{border-top:none;padding-top:2px;}
+body.design-heute .lp-todo-t{flex:1 1 180px;min-width:0;font:500 .8rem/1.4 'Barlow',sans-serif;color:var(--hx-ink);}
+body.design-heute .lp-todo-t b{font-weight:700;}
+body.design-heute .lp-todo-t::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:1px;background:#E9A21F;}
+body.design-heute .lp-todo-r.bad .lp-todo-t::before{background:#D93A2B;}
+body.design-heute .lp-todo-b{min-height:28px !important;height:auto;padding:3px 12px !important;border-radius:999px !important;background:#fff !important;border:1px solid #E5C58F !important;color:#7A4304 !important;font:600 .75rem 'Barlow',sans-serif !important;cursor:pointer;margin-left:auto;}
+body.design-heute .lp-todo-b:hover{border-color:#7A4304 !important;}
+body.design-heute .lp-notes .lp-todo-b{margin-left:15px;}
+body.design-heute .lp-todo-cont .lp-todo-h{display:none;}
+body.design-heute .lp-todo-cont .lp-todo-h + .lp-todo-r{border-top:1px solid rgba(154,85,6,.14);padding-top:8px;}
+body.design-heute.hxk-dk .lp-todo-cont .lp-todo-h + .lp-todo-r{border-top-color:var(--hk-line);}
+body.design-heute #moLineup .lp-todo-first{border-bottom-left-radius:0 !important;border-bottom-right-radius:0 !important;border-bottom:none !important;padding-bottom:0 !important;}
+body.design-heute #moLineup .lp-todo-cont{margin-top:0 !important;border-top-left-radius:0 !important;border-top-right-radius:0 !important;border-top:none !important;padding-top:0 !important;}
+body.design-heute.hxk-dk .lp-todo-h{color:var(--hk-muted);}
+body.design-heute.hxk-dk .lp-todo-t{color:var(--hk-ink);}
+body.design-heute.hxk-dk .lp-todo-r{border-top-color:var(--hk-line);}
+body.design-heute.hxk-dk .lp-todo-b{background:var(--hk-card) !important;border-color:var(--hk-line) !important;color:var(--hk-ink) !important;}
+/* the rule on the pitch and the bench: an amber mark (abgesagt keeps red) */
+#lp-slots .lp-tk-rule{fill:#F5B83D;stroke:#fff;stroke-width:1.2;}
+#lp-slots .lp-tk-rule-t{font:800 10px 'Barlow',sans-serif;fill:#0E2350;}
+.lp-rule-dot{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#F5B83D;color:#0E2350;font:800 .66rem/16px 'Barlow',sans-serif;text-align:center;border:1.2px solid #fff;}
+/* the list: Startelf, Bank, Noch frei (1.2.151) */
+.lp-sec-h{display:flex;align-items:baseline;gap:8px;margin:16px 2px 6px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);font:800 .9rem 'Barlow',sans-serif;color:#fff;}
+.lp-sec-h:first-child{margin-top:2px;padding-top:0;border-top:none;}
+.lp-sec-h span{font-weight:500;font-size:.76rem;opacity:.85;}
+.lp-sec-h + .lp-line-h{margin-top:4px;}
+body.design-heute .lp-sec-h{color:var(--hx-ink);border-top-color:var(--hx-line);}
+body.design-heute .lp-sec-h span{color:var(--hx-muted);}
+body.design-heute .lp-sec-h span b{color:var(--hx-ink);font-weight:700;}
+body.design-heute.hxk-dk .lp-sec-h{color:var(--hk-ink);border-top-color:var(--hk-line);}
+body.design-heute.hxk-dk .lp-sec-h span,body.design-heute.hxk-dk .lp-sec-h span b{color:var(--hk-muted);}
+/* „Nicht dabei“ at the end of the list (phone, narrow windows): a section like the others */
+body.design-heute #lp-kader-list .lp-out-h{margin:16px 2px 6px;padding-top:12px;border-top:1px solid var(--hx-line);font:800 .9rem 'Barlow',sans-serif;color:var(--hx-ink);opacity:1;}
+body.design-heute.hxk-dk #lp-kader-list .lp-out-h{border-top-color:var(--hk-line);color:var(--hk-ink);}
+/* phone: one surface under pitch and bench (two gradients left a seam) */
+@media(max-width:767px){
+  body.design-heute #moLineup .lp-pmain{background:radial-gradient(60% 160px at 50% 0,rgba(255,220,140,.12),transparent 70%),linear-gradient(180deg,var(--lp-stage),var(--lp-stage2));}
+  body.design-heute #moLineup .lp-pmain > :is(.lp-pitch-col,#lp-subs-col){background:transparent !important;}
+}
 /* 1.2.149 calmer: one yellow (Speichern); Meisterschaft/Testspiel neutral */
 body.design-heute .lp-kind-wrap .lp-fmt-btn.active{background:var(--hx-nav) !important;color:#fff !important;border-color:var(--hx-nav) !important;}
 body.design-heute.hxk-dk .lp-kind-wrap .lp-fmt-btn.active{background:color-mix(in srgb,var(--hk-ink) 18%,var(--hk-card)) !important;color:var(--hk-ink) !important;border-color:var(--hk-line) !important;}
@@ -8247,8 +8315,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.150'; // v1.2.150: Spieltag schöner – das Feld unter Flutlicht, Spieler als Marken mit Namensschild, die Bank als Sitzreihe, ruhigere Liste
-const APP_VERSION_LABEL='1.2.150';
+const APP_VERSION='1.2.151'; // v1.2.151: Spalte links geordnet (Aufstellung, Zu klären, Nicht dabei), Klartext statt „F“/„1×U“, Telefon: „Mehr“ schließt Saisonkader/Aufstellung, eine Fläche unter Feld und Bank
+const APP_VERSION_LABEL='1.2.151';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -31324,6 +31392,13 @@ function mobPickSeason(v){
   mobSheetClose();
   if(typeof showSaveFlash==='function')showSaveFlash('Saison: '+v);
 }
+// 1.2.151: a page from the "Mehr" sheet — through the navigation, so an open
+// Saisonkader or Aufstellung is closed first (asking about unsaved changes)
+function _msGo(k){
+  if(typeof hxOn==='function'&&hxOn()&&typeof hxGo==='function'){hxGo(k);return;}
+  const f={lineup:'hxSpieltag',stats:'openDashboard',week:'openWeekReport',settings:'openSettings'}[k];
+  if(f&&typeof window[f]==='function')window[f]();
+}
 function mobSheetOpen(){
   const sh=document.getElementById('mobSheet');
   if(!sh)return;
@@ -31353,13 +31428,13 @@ function mobSheetOpen(){
   const ed=(typeof canEdit==='function')&&canEdit();
   const adm=typeof isAdmin==='function'&&isAdmin();
   const groups=[[
-    ['lineup','Spieltag','hxSpieltag()',true],
-    ['stats','Statistik','openDashboard()',true],
-    ['week','Wochenbericht','openWeekReport()',ed],
+    ['lineup','Spieltag',"_msGo('lineup')",true],
+    ['stats','Statistik',"_msGo('stats')",true],
+    ['week','Wochenbericht',"_msGo('week')",ed],
   ],[
     ['activity','Aktivität','hxActivity(null,event)',adm],
     ['links','Links','hxLinks(null,event)',!!((G&&G.quickLinks&&G.quickLinks.length)||adm)],
-    ['settings','Einstellungen','openSettings()',true],
+    ['settings','Einstellungen',"_msGo('settings')",true],
   ]].map(g=>g.filter(r=>r[3])).filter(g=>g.length);
   const areas=document.getElementById('ms-areas');
   if(areas){
@@ -40971,6 +41046,10 @@ function lpRender(){
     else{
       const nameOf=r=>{const D=cd();const p=D&&D.players&&D.players[r];return p?(getDisplayName?getDisplayName(p):p.name):'?';};
       discEl.style.display='flex';
+      if(typeof hxOn==='function'&&hxOn()){
+        discEl.innerHTML='<p class="lp-todo-h">Zu klären <b></b></p>'+hits.map(u=>`<div class="lp-todo-r rule" title="${escapeHtml(u.d.details.join(', '))}"><span class="lp-todo-t"><b>${escapeHtml(nameOf(u.ref))}</b> ${escapeHtml(u.d.reason.replace(/(\d)x /,'$1× '))} – Trainingsregel.</span>`
+          +`<button type="button" class="lp-un-chip lp-disc-chip lp-todo-b" onclick="lpClearUnavail('${u.where}','${u.where==='slot'?u.slot:u.idx}')">${u.where==='slot'?'Vom Feld nehmen':'Von der Bank nehmen'}</button></div>`).join('');
+      }else
       discEl.innerHTML='<span class="lp-un-h lp-disc-h">\u26a0 Trainingsregel nicht erf\u00fcllt:</span>'
         +hits.map(u=>`<button class="lp-un-chip lp-disc-chip"
              onclick="lpClearUnavail('${u.where}','${u.where==='slot'?u.slot:u.idx}')"
@@ -40980,12 +41059,17 @@ function lpRender(){
   }
   _lpSqBar();
   _lpErsBar();
+  setTimeout(_lpTodoJoin,0);
   const warnEl=document.getElementById('lp-unavail-bar');
   if(warnEl){
     const un=lpUnavailInLineup();
     if(!un.length){warnEl.style.display='none';warnEl.innerHTML='';}
     else{
       warnEl.style.display='flex';
+      if(typeof hxOn==='function'&&hxOn()){
+        warnEl.innerHTML='<p class="lp-todo-h">Zu klären <b></b></p>'+un.map(u=>`<div class="lp-todo-r ${u.state==='F'?'bad':'warn'}"><span class="lp-todo-t"><b>${escapeHtml(u.name)}</b> ${u.state==='F'?'hat abgesagt':'ist entschuldigt'}, steht aber ${u.where==='slot'?'auf dem Feld':'auf der Bank'}.</span>`
+          +`<button type="button" class="lp-un-chip lp-todo-b" onclick="lpClearUnavail('${u.where}','${u.where==='slot'?u.slot:u.idx}')">${u.where==='slot'?'Vom Feld nehmen':'Von der Bank nehmen'}</button></div>`).join('');
+      }else
       warnEl.innerHTML='<span class="lp-un-h">\u26a0\ufe0f Nicht verf\u00fcgbar:</span>'
         +un.map(u=>`<button class="lp-un-chip" onclick="lpClearUnavail('${u.where}','${u.where==='slot'?u.slot:u.idx}')"
              title="${u.state==='F'?'Abgesagt':'Entschuldigt'} \u2014 Platz freir\u00e4umen">
@@ -40994,6 +41078,7 @@ function lpRender(){
   }
   // Update stats: gesetzt = main + subs; Spieler = visible (available) count + guests
   const placed=Object.values(lpState.slots).filter(v=>v!==undefined).length+lpState.subs.filter(s=>s!==undefined).length;
+  document.getElementById('moLineup')?.classList.toggle('lp-empty',placed===0);   // 1.2.151: the hint only then
   const sessIdxStat=lpState.sessIdx;
   const isUnavailStat=(pi)=>{
     if(_lpOff(players[pi],sessIdxStat))return true;
@@ -41013,14 +41098,27 @@ function lpRender(){
   try{_lvPaint();}catch(e){console.warn('[Varianten]',e);}
   try{if(lpState.sessIdx!=null)_lpGameCard();}catch(e){console.warn('[Spielkarte]',e);}
   try{_lpNotesSync();}catch(e){console.warn('[Hinweise]',e);}
+  try{_lpTodoJoin();}catch(e){}
+}
+function _lpTodoJoin(){
+  const a=document.getElementById('lp-unavail-bar'),b=document.getElementById('lp-disc-bar');if(!a||!b)return;
+  const va=a.style.display!=='none'&&!!a.innerHTML,vb=b.style.display!=='none'&&!!b.innerHTML;
+  const n=(va?a.querySelectorAll('.lp-todo-r').length:0)+(vb?b.querySelectorAll('.lp-todo-r').length:0);
+  a.classList.toggle('lp-todo-first',va&&vb);b.classList.toggle('lp-todo-cont',va&&vb);
+  [a,b].forEach(el=>{const h=el.querySelector('.lp-todo-h b');if(h)h.textContent=n;});
 }
 
 // 1.2.150: a player is a token — club navy, white ring, the number in lamp
 // yellow — with the name on a dark tag, which reads over lines and stripes.
 // An empty position recedes: a smaller dark-glass ring with its name.
+function _lpDiscOn(ref){
+  // the Trainingsregel counts for matches only (as the "Zu klären" rows)
+  try{const s=cd().sessions[lpState.sessIdx];if(!s||s.type!=='match'||ref==null)return null;return lpDisciplineState(ref);}catch(e){return null;}
+}
 function _lpTokHx(slot,player,isSel,R){
   const e=escapeHtml,xy=_pitchXY(slot),id=slot.id;
   const _un=lpUnavailState(lpState.slots[id]);
+  const _dc=player&&!_un?_lpDiscOn(lpState.slots[id]):null;
   const _unC=_un==='F'?'#FF5A45':'#F39C12';
   let body;
   if(player){
@@ -41039,7 +41137,8 @@ function _lpTokHx(slot,player,isSel,R){
   const mark=_un?`<circle class="lp-tk-un" r="${R}" style="stroke:${_unC}"/>
       <circle cx="${R-3}" cy="${-R+3}" r="7.5" style="fill:${_unC};stroke:#fff;stroke-width:1.2"/>
       <text x="${R-3}" y="${-R+6.5}" text-anchor="middle" font-family="'Barlow',sans-serif" font-size="10" font-weight="700" fill="#fff">!</text>`:'';
-  const t=player?`${slot.lbl}: ${getDisplayName(player)}`:`${slot.lbl} – frei`;
+  const rule=_dc?`<circle class="lp-tk-rule" cx="${R-3}" cy="${-R+3}" r="7.5"/><text class="lp-tk-rule-t" x="${R-3}" y="${-R+6.5}" text-anchor="middle">!</text>`:'';
+  const t=player?`${slot.lbl}: ${getDisplayName(player)}${_dc?' – Trainingsregel: '+_dc.reason:''}`:`${slot.lbl} – frei`;
   return `<g class="lp-slot-g lp-tk-g${player?' filled':''}${isSel?' selected':''}${_un?' lp-unavail':''}"
       ${_un?`data-unavail="${_un}"`:''}
       data-slot="${id}" onclick="lpClickSlot(event,'${id}')"
@@ -41047,7 +41146,7 @@ function _lpTokHx(slot,player,isSel,R){
       onpointerdown="lpPointerDown(event,'${id}')"
       onpointerenter="lpPointerEnter(event,'${id}')"
       oncontextmenu="fmtContextMenu(event,'lp','${id}')"
-      ${isSel?'filter="url(#glowGold)"':''}><title>${e(t)}</title>${body}${mark}${_lvRing(id,R)}</g>`;
+      ${isSel?'filter="url(#glowGold)"':''}><title>${e(t)}</title>${body}${mark}${rule}${_lvRing(id,R)}</g>`;
 }
 
 function lpRenderPopup(slotId){
@@ -41394,7 +41493,7 @@ function lpRenderSubs(){
           onclick="lpClickSubSlot(event,${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();lpClickSubSlot(event,${i});}"
           onpointerdown="lpPointerDown(event,'sub_${i}')" onpointerenter="lpPointerEnter(event,'sub_${i}')">${p
             ?`<b class="lp-seat-nr">${e(String(p.nr||'–'))}</b><span class="lp-seat-nm">${e(lpFullName(p,12))}</span>`
-            :'<span class="lp-seat-add" aria-hidden="true">+</span>'}${_sun?`<span class="lp-unavail-dot" title="${_sun==='F'?'Abgesagt':'Entschuldigt'}" style="background:${_sun==='F'?'#ff5a45':'#f39c12'};">!</span>`:''}</div>`);
+            :'<span class="lp-seat-add" aria-hidden="true">+</span>'}${p&&!_sun&&_lpDiscOn(pi)?`<span class="lp-rule-dot" title="Trainingsregel: ${e(_lpDiscOn(pi).reason)}">!</span>`:''}${_sun?`<span class="lp-unavail-dot" title="${_sun==='F'?'Abgesagt':'Entschuldigt'}" style="background:${_sun==='F'?'#ff5a45':'#f39c12'};">!</span>`:''}</div>`);
         continue;
       }
       subSlots.push(`<div class="lp-sub-circle${p?' filled':''}${isSel?' selected':''}${_sun?' lp-unavail':''}" data-slot="sub_${i}" onclick="lpClickSubSlot(event,${i})"
@@ -41427,20 +41526,34 @@ function lpRenderSubs(){
     const slotIndexById={};
     slotsArr.forEach((s,idx)=>{slotIndexById[s.id]=idx;});
     // Build entries: real players + guests (guests use ref string id)
+    const _grp=typeof hxOn==='function'&&hxOn()&&(Object.values(lpState.slots).some(v=>v!=null)||lpState.subs.some(v=>v!=null));
+    const _placed=new Set([...Object.values(lpState.slots),...lpState.subs].filter(v=>v!=null));
     const entries=[];
     [...players.keys()].forEach(i=>{
       if(!isUnavail(i))entries.push({id:i,p:players[i],isGuest:false});
+      // 1.2.151: the Startelf is the pitch — who is placed but cannot play stays in it, marked
+      else if(_grp&&_placed.has(i)&&players[i])entries.push({id:i,p:players[i],isGuest:false,off:true});
     });
     (lpState.guests||[]).forEach(g=>{
       entries.push({id:g.ref,p:g,isGuest:true});
     });
     if(!entries.length){kaderEl.innerHTML='<div style="padding:10px;font-size:.72rem;color:rgba(255,255,255,.6);">Keine Spieler im Kader</div>';return;}
     // 1.2.148: by line; within a line free → on the pitch → bench → not in the squad
+    // 1.2.151 (Heute): once someone is placed — Startelf in the order of the
+    // schema (Tor, Abwehr left to right, …), Bank, then the free ones by line
+    const _slotLine=sl=>{const q=sl&&sl.pos&&sl.pos[0];const i=SSA_LINES.findIndex(l=>l[1].includes(q));return i<0?4:i;};
+    const _xiRank={};
+    if(_grp)fmtSlots(lpState.formation,lpState.customSlots).slice().sort((a,b)=>(_slotLine(a)-_slotLine(b))||(a.x-b.x)).forEach((sl,i)=>{_xiRank[sl.id]=i;});
     const getEntrySortKey=(entry)=>{
       const id=entry.id,li=_lpLineIx(entry);
       const slotEntry=Object.entries(lpState.slots).find(([k,v])=>v===id);
-      if(slotEntry){const si=slotIndexById[slotEntry[0]];return [li,1, si!==undefined?si:99];}
       const subIdx=lpState.subs.indexOf(id);
+      if(_grp){
+        if(slotEntry)return [0,0,_xiRank[slotEntry[0]]!==undefined?_xiRank[slotEntry[0]]:99];
+        if(subIdx>=0)return [1,0,subIdx];
+        return [2+li,(!entry.isGuest&&sqSet&&!sqSet.has(id))?3:0, posRank(entry.p)];
+      }
+      if(slotEntry){const si=slotIndexById[slotEntry[0]];return [li,1, si!==undefined?si:99];}
       if(subIdx>=0){return [li,2, subIdx];}
       return [li,(!entry.isGuest&&sqSet&&!sqSet.has(id))?3:0, posRank(entry.p)];
     };
@@ -41455,10 +41568,20 @@ function lpRenderSubs(){
     const _dots=pp=>{if(!_held.length)return '';const n=_held.filter(h=>_join(pp,h.s)&&pp.s&&pp.s[h.i]===1).length;
       return `<span class="kb-dots lp-dots" title="Letzte ${_held.length} Termine: ${n}× da" aria-label="Letzte ${_held.length} Termine: ${n}× da">${_held.map(h=>{if(!_join(pp,h.s))return '<i></i>';const v=pp.s&&pp.s[h.i];return `<i class="${v===1?'ok':v===0?'bad':v===2?'warn':''}"></i>`;}).join('')}</span>`;};
     const _lc=_lpLineCounts(),_word=_ss&&typeof _ywFor==='function'?_ywFor(_ss):'verfügbar';
-    const _head=ix=>{const li=_lpLineIx(sorted[ix]);if(ix>0&&_lpLineIx(sorted[ix-1])===li)return '';
-      const nm=li<SSA_LINES.length?SSA_LINES[li][0]:LP_LINE_X[li-SSA_LINES.length];
+    const _lineH=li=>{const nm=li<SSA_LINES.length?SSA_LINES[li][0]:LP_LINE_X[li-SSA_LINES.length];
       return `<h4 class="lp-line-h">${escapeHtml(nm)}${li<SSA_LINES.length&&_ss?` <span><b>${_lc[li].ok}</b> von ${_lc[li].n} ${escapeHtml(_word)}</span>`:''}</h4>`;};
-    kaderEl.innerHTML=sorted.map(({id,p,isGuest},_ix)=>{
+    const _keys=_grp?sorted.map(getEntrySortKey):null;
+    const _gN=g=>_keys.filter(k=>k[0]===g).length;
+    const _head=ix=>{
+      if(_grp){
+        const g=_keys[ix][0],pg=ix>0?_keys[ix-1][0]:-1;if(g===pg)return '';
+        if(g===0)return `<h4 class="lp-sec-h">Startelf <span><b>${_gN(0)}</b> von ${Object.keys(_xiRank).length}</span></h4>`;
+        if(g===1)return `<h4 class="lp-sec-h">Bank <span><b>${_gN(1)}</b> von ${lpMaxSubs()}</span></h4>`;
+        return (pg<2?'<h4 class="lp-sec-h">Noch frei</h4>':'')+_lineH(g-2);
+      }
+      const li=_lpLineIx(sorted[ix]);if(ix>0&&_lpLineIx(sorted[ix-1])===li)return '';
+      return _lineH(li);};
+    kaderEl.innerHTML=sorted.map(({id,p,isGuest,off},_ix)=>{
       let status='';let bg='rgba(255,255,255,.04)';
       const inSlot=Object.entries(lpState.slots).find(([k,v])=>v===id);
       const inSub=lpState.subs.indexOf(id);
@@ -41469,7 +41592,8 @@ function lpRenderSubs(){
           :`<span class="lp-st-xi" style="font-size:.6rem;color:#7dffa0;font-weight:700;">⚽ ${slotInfo?slotInfo.lbl:''}</span>`;
         bg='rgba(39,174,96,.08)';
       } else if(inSub>=0){
-        status=(typeof hxOn==='function'&&hxOn())
+        status=_grp?''
+          :(typeof hxOn==='function'&&hxOn())
           ?`<span class="lp-st-sub lp-stc" title="Bankplatz ${inSub+1}">Bank</span>`
           :`<span class="lp-st-sub" style="font-size:.6rem;color:var(--ac);font-weight:700;">🔄 SUB ${inSub+1}</span>`;
         bg='color-mix(in srgb, var(--ac) 8%, transparent)';
@@ -41485,14 +41609,15 @@ function lpRenderSubs(){
         : '';
       if(_disc)bg='rgba(192,57,43,.12)';
       const nik=!isGuest&&!!sqSet&&!sqSet.has(id);
-      const _rc=[nik?'lp-nik':'',inSlot?'lp-r-xi':inSub>=0?'lp-r-sub':''].filter(Boolean).join(' ');
+      const _rc=[nik?'lp-nik':'',inSlot?'lp-r-xi':inSub>=0?'lp-r-sub':'',off?'lp-r-off':''].filter(Boolean).join(' ');
+      const _offT=off?(u=>u==='E'?'Entschuldigt':u==='F'?'Abgesagt':'Nicht dabei')(lpUnavailState(id)):'';
       // 1.2.150: in the starting eleven on his own position the slot token says it all
       const _xiL=inSlot?(((FORMATIONS[lpState.formation]||[]).find(s=>s.id===inSlot[0])||{}).lbl||''):'';
       const _same=!!(_xiL&&p.pos&&typeof hxOn==='function'&&hxOn()&&_xiL.toLowerCase()===String(p.pos).toLowerCase());
       return _head(_ix)+`<div${_rc?` class="${_rc}"`:''} style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:${bg};border:1px solid ${_disc?'rgba(192,57,43,.45)':'rgba(255,255,255,.07)'};border-radius:7px;margin-bottom:3px;">
         <span style="font-family:'Bebas Neue';color:var(--ac);font-size:.85rem;width:18px;text-align:center;">${p.nr||'–'}</span>
         <span style="font-size:.72rem;font-weight:600;color:#fff;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${getDisplayName(p)}</span>
-        ${nik?'<span class="lp-nik-t">nicht im Kader</span>':''}${(!isGuest&&!inSlot&&inSub<0&&sessIdx!=null&&p.s&&(p.s[sessIdx]==null||p.s[sessIdx]===3))?'<span class="lp-open-t">offen</span>':''}${guestBadge}${discBadge}
+        ${off?`<span class="lp-out-st ${_offT==='Entschuldigt'?'warn':'bad'}">${_offT}</span>`:''}${nik?'<span class="lp-nik-t">nicht im Kader</span>':''}${(!isGuest&&!inSlot&&inSub<0&&sessIdx!=null&&p.s&&(p.s[sessIdx]==null||p.s[sessIdx]===3))?'<span class="lp-open-t">offen</span>':''}${guestBadge}${discBadge}
         ${_same?'':`<span class="lp-card-pos1" style="background:${bcol.split(';')[0]};${bcol.split(';')[1]};font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:7px;">${p.pos}</span>`}
         ${status}${isGuest?'':_dots(p)}
       </div>`;
@@ -42358,6 +42483,7 @@ function slpRender(){
     }
   });
   const assigned_total=new Set(Object.values(slpState.slots).flat().filter(_isValidPi)).size;
+  document.getElementById('moSeasonLineup')?.classList.toggle('slp-empty',assigned_total===0);
   const total=players.length;
   const svg=document.getElementById('slp-slots');
   if(!svg)return;
@@ -43332,15 +43458,15 @@ _pubCleanupSchedule();
       <button type="button" class="lp-fromslp" id="lp-fromslp" onclick="lpFromSeason()" hidden>Aus dem Saisonkader</button>
     <div id="lp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;margin-left:8px;"></div>
     <div class="lp-kind-wrap" style="display:flex;gap:4px;margin-left:10px;align-items:center;" title="Spieltyp bestimmt die Bankgröße">
-      <button class="lp-fmt-btn active" id="lp-kind-ms" onclick="lpSetMatchKind('meisterschaft')" title="Meisterschaftsspiel: 7 Bankplätze"><span class="lk-long">Meisterschaft</span><span class="lk-short">M</span> · 7</button>
-      <button class="lp-fmt-btn" id="lp-kind-test" onclick="lpSetMatchKind('test')" title="Testspiel: 10 Bankplätze"><span class="lk-long">Testspiel</span><span class="lk-short">T</span> · 10</button>
+      <button class="lp-fmt-btn active" id="lp-kind-ms" onclick="lpSetMatchKind('meisterschaft')" title="Meisterschaftsspiel: 7 Bankplätze"><span class="lk-long">Meisterschaft</span><span class="lk-short">M</span><span class="lk-n"> · 7</span></button>
+      <button class="lp-fmt-btn" id="lp-kind-test" onclick="lpSetMatchKind('test')" title="Testspiel: 10 Bankplätze"><span class="lk-long">Testspiel</span><span class="lk-short">T</span><span class="lk-n"> · 10</span></button>
     </div>
     <div class="lp-spacer"></div>
-    <div class="lp-hint" id="lp-hint">Slot wählen → Spieler klicken</div>
+    <div class="lp-hint" id="lp-hint">Position antippen, dann Spieler wählen</div>
     </div><i hidden data-home="lp-ptools"></i>
     <div class="lp-pmain">
     <aside class="lp-notes" id="lp-notes" aria-label="Hinweise zur Aufstellung">
-      <div class="lp-ntop" id="lp-notes-top"></div>
+      <div class="lp-ntop" id="lp-notes-top"><h4 class="lp-nh">Aufstellung</h4></div>
       <div id="lp-notes-mv"></div>
       <div id="lp-out-box"></div>
       <p class="lp-notes-empty">Niemand fehlt – keine Hinweise.</p>
@@ -43885,12 +44011,12 @@ _pubCleanupSchedule();
     <div id="slp-hint" style="display:none;"></div>
     <input type="checkbox" id="slp-conf-toggle" onchange="slpToggleConfirmations(this.checked)" style="cursor:pointer;margin:0 4px 0 0;width:14px;height:14px;vertical-align:middle;"/>
     <span id="slp-conf-toggle-lbl" style="font-size:.75rem;color:rgba(255,255,255,.95);font-weight:600;margin-right:6px;user-select:none;cursor:pointer;" onclick="const _t=document.getElementById('slp-conf-toggle');_t.checked=!_t.checked;slpToggleConfirmations(_t.checked);" title="Grün mit ✓ = für die Saison bestätigt, gelb = noch nicht spielberechtigt">Status</span>
-    <button class="slp-close-btn" id="slp-status-btn" title="Status verwalten" aria-label="Status verwalten" onclick="slpOpenStatusList()" style="display:none;background:rgba(232,200,64,0.15);border-color:rgba(232,200,64,0.4);color:#e8c840;"><span class="fb-long">📋 Status verwalten</span><span class="fb-short">📋</span></button>
+    <button class="slp-close-btn" id="slp-status-btn" title="Status verwalten" aria-label="Status verwalten" onclick="slpOpenStatusList()" style="display:none;background:rgba(232,200,64,0.15);border-color:rgba(232,200,64,0.4);color:#e8c840;"><span class="fb-long">Status verwalten</span><span class="fb-short"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg></span></button>
       <span class="lp-hint slp-dhint">Spieler auf eine Position ziehen oder Position antippen</span>
     </div><i hidden data-home="slp-ptools"></i>
     <div class="lp-pmain">
     <aside class="slp-notes" aria-label="Besetzung und Legende">
-      <div class="lp-ntop" id="slp-notes-top"></div>
+      <div class="lp-ntop" id="slp-notes-top"><h4 class="lp-nh">Kaderplan</h4></div>
       <h4 class="slp-notes-h">Besetzung</h4><div id="slp-notes-gaps"></div>
       <h4 class="slp-notes-h">Legende</h4><div id="slp-notes-leg"></div>
     </aside>
