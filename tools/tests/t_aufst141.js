@@ -2,6 +2,8 @@
 // the Tafel — on top the same game card (match days, what/when, counts),
 // save and variants in it; the pitch and the players as cards; players with
 // status ("offen"), who cannot play listed at the end instead of missing.
+// 1.2.146: from 1280 px wide "Nicht dabei" stands in the column left of the
+// pitch, narrower at the end of the player list.
 // node tools/tests/t_aufst141.js [index.html]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
@@ -18,7 +20,8 @@ const st=p=>p.evaluate(()=>{const lp=document.getElementById('moLineup'),D=cd();
     toolsIn:!!document.querySelector('.lp-pcard .lp-ptools #lp-fmt-btns')&&vis(document.getElementById('lp-fmt-btns')),
     plh:(document.querySelector('.lp-pl-h')||{}).textContent||'',
     open1:[...document.querySelectorAll('#lp-kader-list .lp-open-t')].map(x=>x.closest('div').textContent.replace(/\s+/g,' ').trim()),
-    out:[...document.querySelectorAll('#lp-kader-list .lp-out')].map(x=>x.textContent.replace(/\s+/g,' ').trim()),
+    out:[...document.querySelectorAll('#lp-kader-list .lp-out,#lp-out-box .lp-out')].map(x=>x.textContent.replace(/\s+/g,' ').trim()),
+    outWhere:document.querySelector('#lp-out-box .lp-out')?'Spalte':document.querySelector('#lp-kader-list .lp-out')?'Liste':'',
     outDiv:document.querySelectorAll('#lp-kader-list > div .lp-out-st').length,
     emoji:/[💾🗑🔄🧑🚌🏠]/u.test((document.querySelector('#moLineup .lp-gcard')||{}).textContent+(document.querySelector('#moLineup .lp-sidebar')||{}).textContent+(document.querySelector('#moLineup .lp-pcard')||{}).textContent),
     stats:vis(document.querySelector('#moLineup .lp-statsbar')),
@@ -41,7 +44,7 @@ const st=p=>p.evaluate(()=>{const lp=document.getElementById('moLineup'),D=cd();
   ok(r.saveIn&&r.toolsIn,tag+'Speichern in der Karte des Spiels, Schema in der Karte des Felds');
   ok(/0 gesetzt · \d+ verfügbar/.test(r.plh.replace(/\s+/g,' '))&&!r.stats,tag+'Spieler: „0 gesetzt · n verfügbar“ statt der Kacheln ('+r.plh.replace(/\s+/g,' ').trim()+')');
   ok(r.open1.length===1&&/Ben/.test(r.open1[0]),tag+'ohne Antwort: „offen“ beim Spieler');
-  ok(r.out.length===2&&r.out.some(x=>/Max.*Abgesagt/.test(x))&&r.out.some(x=>/Leon.*Entschuldigt/.test(x))&&!r.outDiv,tag+'„Nicht dabei“: Abgesagt und Entschuldigt sichtbar, nicht als normale Zeile');
+  ok(r.out.length===2&&r.out.some(x=>/Max.*Abgesagt/.test(x))&&r.out.some(x=>/Leon.*Entschuldigt/.test(x))&&!r.outDiv&&r.outWhere===(vp[0]>=1280?'Spalte':'Liste'),tag+'„Nicht dabei“: Abgesagt und Entschuldigt sichtbar, nicht als normale Zeile (in der '+r.outWhere+')');
   ok(!r.emoji,tag+'keine Emojis in den Überschriften und Knöpfen');
   if(!ph)ok(r.pitchH>=(vp[1]<760?380:520),tag+'Feld hoch genug ('+r.pitchH+' px)');
   // another match from the card
