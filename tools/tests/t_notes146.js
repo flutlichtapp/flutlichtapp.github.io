@@ -23,7 +23,7 @@ const where=p=>p.evaluate(()=>{const par=id=>{const e=document.getElementById(id
   // nobody missing yet
   await openLp(p);
   let r=await where(p);
-  if(wide)ok(r.notesW===228&&r.empty,tag+'Spalte da, leer: „Niemand fehlt – keine Hinweise.“');
+  if(wide)ok(r.notesW===236&&r.empty,tag+'Spalte da, leer: „Niemand fehlt – keine Hinweise.“');
   else ok(r.notesW===0,tag+'schmal: keine Spalte');
   const h0=r.pitchH;
   await p.evaluate(()=>closeLineupPlanner());await p.waitForTimeout(300);
@@ -66,7 +66,7 @@ const where=p=>p.evaluate(()=>{const par=id=>{const e=document.getElementById(id
     ok(q.disc==='oben'&&q.sq==='oben'&&q.out==='Liste'&&q.notesW===0,tag+'Fenster auf 1180 verkleinert: Hinweise wieder oben, „Nicht dabei“ in der Liste');
     await p.setViewportSize({width:w,height:h});await p.waitForTimeout(400);
     q=await where(p);
-    ok(q.disc==='Spalte'&&q.out==='Spalte'&&q.notesW===228,tag+'wieder breit: zurück in der Spalte');
+    ok(q.disc==='Spalte'&&q.out==='Spalte'&&q.notesW===236,tag+'wieder breit: zurück in der Spalte');
     // Nacht: the blocks are dark
     const dk=await p.evaluate(()=>{document.body.classList.add('hxk-dk');lpRender();const bg=getComputedStyle(document.getElementById('lp-disc-bar')).backgroundColor;document.body.classList.remove('hxk-dk');lpRender();
       const m=(bg.match(/srgb ([\d.]+) ([\d.]+) ([\d.]+)/)||[]).slice(1).map(x=>+x*255);const n=m.length?m:(bg.match(/[\d.]+/g)||[]).map(Number);return Math.round(n[0]*.299+n[1]*.587+n[2]*.114);});

@@ -8,7 +8,8 @@
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
 const prep=()=>{const D=cd(),P=D.players,i=D.sessions.findIndex(s=>s.date==='So 08.11');const ix=n=>P.findIndex(x=>x.name.startsWith(n));P[ix('Ali')].s[i]=0;P[ix('Luca')].s[i]=2;};
-const card=p=>p.evaluate(()=>{const g=document.getElementById('lp-gsq');return {t:g?g.textContent.replace(/\s+/g,' ').trim():'',btns:g?[...g.querySelectorAll('button')].filter(b=>b.offsetParent).map(b=>b.textContent.trim()):[]};});
+// 1.2.149: the state in #lp-gsq, the button next to "Speichern" (#lp-gsqbtn), Gegner/Matchplan in #lp-glinks
+const card=p=>p.evaluate(()=>{const g=document.getElementById('lp-gsq');return {t:g?g.textContent.replace(/\s+/g,' ').trim():'',btns:[...document.querySelectorAll('#lp-gsqbtn button,#lp-glinks button')].filter(b=>b.offsetParent).map(b=>b.textContent.trim())};});
 (async()=>{const b=await chromium.launch();
  for(const [w,h] of [[1536,864],[360,640]]){
   const ph=w<768,tag=w+'×'+h+': ';
@@ -20,8 +21,8 @@ const card=p=>p.evaluate(()=>{const g=document.getElementById('lp-gsq');return {
     tabs:[...document.querySelectorAll('.hx-lptabs button')].filter(x=>x.offsetParent).length};});
   ok(o.open&&o.via&&o.t==='Spieltag'&&!o.tabs,tag+'Spieltag öffnet das Feld, Titel „Spieltag“, keine Reiter „Kader | Aufstellung“');
   let k=await card(p);
-  ok(/Kader noch nicht veröffentlicht/.test(k.t)&&JSON.stringify(k.btns)===JSON.stringify(['Kader festlegen','Gegner','Matchplan']),tag+'Spielkarte: „Kader noch nicht veröffentlicht“, Kader festlegen, Gegner, Matchplan');
-  const fit=await p.evaluate(()=>{const b=document.querySelector('#lp-gsq .lp-gsq-btn').getBoundingClientRect();return Math.round(b.bottom);});
+  ok(/Kader noch nicht veröffentlicht/.test(k.t)&&JSON.stringify([...k.btns].sort())===JSON.stringify(['Gegner','Kader festlegen','Matchplan']),tag+'Spielkarte: „Kader noch nicht veröffentlicht“, Kader festlegen, Gegner, Matchplan');
+  const fit=await p.evaluate(()=>{const b=document.querySelector('#lp-gsqbtn .lp-gsq-btn').getBoundingClientRect();return Math.round(b.bottom);});
   ok(fit<=h,tag+'„Kader festlegen“ ohne Scrollen sichtbar ('+fit+' px)');
   const gl=await p.evaluate(()=>{const e=document.getElementById('lp-glines');return {vis:!!(e&&e.offsetParent),t:e?[...e.children].map(x=>x.textContent.replace(/\s+/g,' ').trim()):[]};});
   if(ph)ok(gl.vis&&JSON.stringify(gl.t)===JSON.stringify(['Tor 2/2','Abwehr 3/4','Mittelfeld 5/5','Angriff 3/4']),tag+'Telefon: je Linie in der Karte ('+gl.t.join(' · ')+')');
@@ -42,19 +43,19 @@ const card=p=>p.evaluate(()=>{const g=document.getElementById('lp-gsq');return {
   const ord=await p.evaluate(()=>{const out=[];let cur='';[...document.querySelectorAll('#lp-kader-list > *')].forEach(e=>{if(e.tagName==='H4'){cur=e.textContent.split(' ')[0];return;}out.push([cur,/⚽|SUB/.test(e.textContent)?1:0]);});
     return out.every((x,i)=>i===0||out[i-1][0]!==x[0]||out[i-1][1]<=x[1]);});
   ok(ord,tag+'in jeder Linie erst die Freien, dann die Aufgestellten');
-  await p.click('#lp-gsq .lp-gsq-btn');await p.waitForTimeout(600);
+  await p.click('#lp-gsqbtn .lp-gsq-btn');await p.waitForTimeout(600);
   const sel=await p.evaluate(()=>{const P=cd().players;return [...document.querySelectorAll('#sqList input:checked')].map(x=>P[+x.dataset.pi].name).sort();});
   ok(JSON.stringify(sel)===JSON.stringify(sk.names),tag+'„Kader festlegen“: genau Feld und Bank vorausgewählt, ungespeichert ('+sel.length+')');
   await p.evaluate(()=>{sqPublish();});await p.waitForTimeout(700);await p.evaluate(()=>{try{closeM('moSqWa');}catch(e){}});await p.waitForTimeout(300);
   k=await card(p);
-  ok(new RegExp('Kader · '+sk.names.length+' Spieler').test(k.t)&&k.btns[0]==='Kader ändern',tag+'nach dem Veröffentlichen: „'+k.t.slice(0,40)+'…“, „Kader ändern“');
+  ok(new RegExp('Kader · '+sk.names.length+' Spieler').test(k.t)&&k.btns.includes('Kader ändern'),tag+'nach dem Veröffentlichen: „'+k.t.slice(0,40)+'…“, „Kader ändern“');
   const nik=await p.evaluate(n=>{const r=[...document.querySelectorAll('#lp-kader-list > div')].find(x=>x.textContent.includes(n.split(' ')[0]));return !!(r&&r.classList.contains('lp-nik'));},sk.left);
   if(sk.left)ok(nik,tag+'wer verfügbar, aber nicht im Kader ist: grau „nicht im Kader“');
   ok(!(await p.evaluate(()=>{const e=document.getElementById('lp-sq-bar');return !!(e&&e.offsetParent&&/noch nicht veröffentlicht/.test(e.textContent));})),tag+'kein zweiter Hinweis „noch nicht veröffentlicht“');
   if(!ph){
     // Gegner and Matchplan open above the pitch
     for(const [lbl,id] of [['Gegner','moGegner'],['Matchplan','moMp']]){
-      await p.click(`#lp-gsq .lp-glinks button:has-text("${lbl}")`);await p.waitForTimeout(500);
+      await p.click(`#lp-glinks button:has-text("${lbl}")`);await p.waitForTimeout(500);
       const top=await p.evaluate(id=>{const m=document.getElementById(id);if(!m||!m.classList.contains('open'))return false;const b=m.querySelector('.mob').getBoundingClientRect();const e=document.elementFromPoint(b.left+b.width/2,b.top+30);return !!(e&&m.contains(e));},id);
       ok(top,tag+`„${lbl}“ öffnet über dem Feld`);
       await p.evaluate(id=>closeM(id),id);await p.waitForTimeout(300);

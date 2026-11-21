@@ -3415,7 +3415,8 @@ body.design-heute.hxk-dk :is(.lp-unavail-bar,.lp-disc-bar){background:var(--hk-w
   body.design-heute .slp-notes-h{margin:0;font-size:.78rem;font-weight:700;color:var(--hx-muted);}
   body.design-heute.hxk-dk .slp-notes-h{color:var(--hk-muted);}
   body.design-heute .slp-notes .slp-gaps{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin:0 0 8px;font-size:.84rem;line-height:1.4;}
-  body.design-heute .slp-notes .slp-gaps span{display:block;padding-left:15px;text-indent:-15px;}
+  body.design-heute .slp-notes .slp-gaps span{display:block;}
+  body.design-heute .slp-notes .slp-gaps span:has(> i){padding-left:15px;text-indent:-15px;}
   body.design-heute .slp-notes .slp-gaps i{display:inline-block;vertical-align:1px;margin-right:6px;text-indent:0;}
   body.design-heute .slp-notes .slp-leg2{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:8px;padding:0;font-size:.8rem;}
   body.design-heute .slp-notes .slp-leg2-lv{margin-left:0;}
@@ -5347,6 +5348,76 @@ body.design-heute .hxv-block{border-bottom:none !important;padding-bottom:4px !i
    out, so no ✕ (from a match or the start screen it stays and leads back) */
 @media(min-width:1000px){
   body.design-heute :is(#moLineup,#moSeasonLineup).hx-vianav :is(.lp-close-btn,#slp-close-btn){display:none !important;}
+}
+/* 1.2.149 calmer: one yellow (Speichern); Meisterschaft/Testspiel neutral */
+body.design-heute .lp-kind-wrap .lp-fmt-btn.active{background:var(--hx-nav) !important;color:#fff !important;border-color:var(--hx-nav) !important;}
+body.design-heute.hxk-dk .lp-kind-wrap .lp-fmt-btn.active{background:color-mix(in srgb,var(--hk-ink) 18%,var(--hk-card)) !important;color:var(--hk-ink) !important;border-color:var(--hk-line) !important;}
+.lp-gsqbtn:empty{display:none;}
+.lp-glinks[hidden]{display:none;}
+body.design-heute .lp-gsave .lp-gsq-btn{height:40px;padding:0 16px;border-radius:12px;font-size:.86rem;}
+@media (min-width:768px) and (max-width:1279px){
+  body.design-heute #moLineup .lp-gsave .lp-gsq-btn{width:100%;}
+}
+@media (min-width:1280px){
+  /* the game card in one row */
+  body.design-heute #moLineup .lp-gcard{padding:12px 18px;}
+  body.design-heute #moLineup .lp-gcard .kb-top{flex-wrap:nowrap;align-items:center;gap:18px;}
+  body.design-heute #moLineup .lp-gcard .kb-days{flex:0 0 auto;}
+  body.design-heute #moLineup .lp-gcard .kb-day{width:auto;min-width:58px;height:42px;padding:0 10px;flex-direction:row;gap:5px;border-radius:10px;}
+  body.design-heute #moLineup .lp-gcard .kb-day b{font-size:1.15rem;}
+  body.design-heute #moLineup .lp-gcard .kb-day.m i{display:none;}
+  body.design-heute #moLineup .lp-gcard .kb-head{flex:1 1 auto;min-width:0;flex-direction:row;flex-wrap:wrap;align-items:baseline;column-gap:14px;row-gap:2px;}
+  body.design-heute #moLineup .lp-gcard .kb-ttl{flex:1 1 100%;font-size:1.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  body.design-heute #moLineup .lp-gcard .kb-meta{font-size:.82rem;}
+  body.design-heute #moLineup .lp-gsq{margin-top:0;}
+  body.design-heute #moLineup .lp-gsq-t{font-size:.82rem;}
+  body.design-heute #moLineup .lp-gsave{display:grid;grid-template-columns:auto auto;column-gap:8px;row-gap:4px;min-width:0;flex:0 0 auto;align-items:center;}
+  body.design-heute #moLineup .lp-gsave .lp-gsqbtn:empty{display:none;}
+  body.design-heute #moLineup .lp-gsave .lp-save-btn{width:auto;height:40px;padding:0 18px;font-size:.88rem;}
+  body.design-heute #moLineup .lp-gsave #lp-saves-list{grid-column:1 / -1;text-align:right;font-size:.74rem;}
+  /* the tool row and the rarely used bits: top of the column */
+  body.design-heute .lp-ntop{display:flex;flex-direction:column;gap:8px;padding-bottom:12px;margin-bottom:2px;border-bottom:1px solid var(--hx-line);}
+  body.design-heute.hxk-dk .lp-ntop{border-bottom-color:var(--hk-line);}
+  body.design-heute .lp-ntop:empty{display:none;}
+  body.design-heute .lp-ntop .lp-ptools{padding:0 !important;border:0 !important;gap:6px;}
+  body.design-heute .lp-ntop .lp-ptools :is(.lp-spacer,div[style*="flex:1"]){display:none !important;}
+  body.design-heute .lp-ntop .lp-ptools .lp-hint{display:block !important;flex:1 1 100%;font-size:.74rem;margin:2px 0 0;}
+  body.design-heute .lp-ntop .lp-fromslp{flex:1 1 100%;}
+  body.design-heute .lp-ntop .lp-kind-wrap{flex:1 1 100%;}
+  body.design-heute .lp-ntop .lp-kind-wrap{gap:4px !important;}
+  body.design-heute .lp-ntop .lp-kind-wrap .lp-fmt-btn{flex:1 1 0;min-width:0;justify-content:center;padding:0 6px !important;font-size:.74rem !important;white-space:nowrap;}
+  body.design-heute :is(.lp-notes,.slp-notes){flex-basis:236px !important;width:236px !important;}
+  body.design-heute .lp-ntop #lp-gleg{margin-top:2px;flex-direction:column;align-items:flex-start;gap:3px;}
+  body.design-heute .lp-ntop .lp-glinks{display:flex;gap:6px;}
+  body.design-heute .lp-ntop .lp-glinks button{flex:1 1 0;}
+  body.design-heute .lp-ntop #slp-status-btn{background:var(--hx-field) !important;border:1px solid var(--hx-line) !important;color:var(--hx-ink) !important;}
+  body.design-heute.hxk-dk .lp-ntop #slp-status-btn{background:transparent !important;border-color:var(--hk-line) !important;color:var(--hk-ink) !important;}
+  /* Saisonkader: the plan card in one row too */
+  body.design-heute #moSeasonLineup .slp-gcard{padding:12px 18px;}
+  body.design-heute #moSeasonLineup .slp-gcard .kb-top{flex-wrap:nowrap;align-items:center;}
+  body.design-heute #moSeasonLineup .slp-gcard .kb-head{flex:1 1 auto;min-width:0;flex-direction:row;flex-wrap:wrap;align-items:baseline;column-gap:14px;}
+  body.design-heute #moSeasonLineup .slp-gcard .kb-ttl{font-size:1.3rem;}
+  body.design-heute #moSeasonLineup .slp-gcard .lp-gsave{flex-direction:row-reverse;align-items:center;gap:12px;min-width:0;}
+  body.design-heute #moSeasonLineup .slp-gcard .lp-gsave .lp-save-btn{width:auto;height:40px;padding:0 18px;font-size:.88rem;}
+}
+@media (max-width:767px){
+  /* phone: counts per line stay, the general counts go; Kader and Speichern side by side */
+  body.design-heute #moLineup #lp-gleg{display:none;}
+  body.design-heute #moLineup .lp-gsave{display:flex !important;flex-direction:row !important;flex-wrap:wrap;align-items:center;gap:6px 8px !important;}
+  body.design-heute #moLineup .lp-gsave .lp-gsqbtn{display:contents;}
+  body.design-heute #moLineup .lp-gsave .lp-gsq-btn{flex:1 1 auto;}
+  body.design-heute #moLineup .lp-gsave .lp-save-btn{flex:1 1 auto;}
+  body.design-heute #moLineup .lp-gsave #lp-saves-list{flex:1 1 100% !important;text-align:left !important;}
+  body.design-heute #moLineup .lp-gsq-t{flex:0 1 auto !important;}
+  body.design-heute #moLineup .lp-glinks{display:inline-flex;gap:14px;order:2;}
+  body.design-heute #moLineup .lp-gcard .kb-ttl{order:0;}
+  body.design-heute #moLineup .lp-gcard .kb-meta{order:1;}
+  body.design-heute #moLineup #lp-glines{order:3;flex:1 1 100%;}
+  body.design-heute #moLineup .lp-gsq{order:4;flex:1 1 100%;}
+  body.design-heute #moLineup .lp-sv-l{display:none;}
+  body.design-heute #moLineup .lp-save-btn::first-letter{text-transform:uppercase;}
+  body.design-heute #moLineup .lp-glinks button{border:0;padding:0;height:auto;background:none;color:var(--hx-blue);font-size:.8rem;text-decoration:underline;text-underline-offset:2px;}
+  body.design-heute.hxk-dk #moLineup .lp-glinks button{color:var(--hk-ink);}
 }
 /* 1.2.148 Spieltag: title, squad in the game card, players by line */
 .lp-ht-nav,.lp-ht-tool{display:inline;}
@@ -8106,8 +8177,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.148'; // v1.2.148: Spieltag ist ein Blatt – das Feld mit Kader: Kader festlegen in der Spielkarte (aus der Aufstellung vorausgewählt), Spieler nach Linien mit Form, Gegner und Matchplan; keine zweite Seite „Kader“ mehr
-const APP_VERSION_LABEL='1.2.148';
+const APP_VERSION='1.2.149'; // v1.2.149: Spieltag und Saisonkader ruhiger – Spielkarte in einer Zeile, Schema, Spielart, Gegner und Matchplan in der Spalte links, das Feld größer; ein Gelb: Speichern
+const APP_VERSION_LABEL='1.2.149';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -31855,13 +31926,13 @@ function _notesPlace(pairs){
   });
 }
 function _lpNotesSync(){
-  _notesPlace([['lp-ers-bar','lp-notes-mv'],['lp-unavail-bar','lp-notes-mv'],['lp-disc-bar','lp-notes-mv'],['lp-sq-bar','lp-notes-mv']]);
+  _notesPlace([['lp-ptools','lp-notes-top'],['lp-gleg','lp-notes-top'],['lp-glinks','lp-notes-top'],['lp-ers-bar','lp-notes-mv'],['lp-unavail-bar','lp-notes-mv'],['lp-disc-bar','lp-notes-mv'],['lp-sq-bar','lp-notes-mv']]);
   const box=document.getElementById('lp-notes');if(!box)return;
   const mv=[...document.querySelectorAll('#lp-notes-mv > *')].some(el=>el.style.display!=='none');
   const ob=document.getElementById('lp-out-box');
   box.classList.toggle('is-empty',!mv&&!(ob&&ob.innerHTML.trim()));
 }
-function _slpNotesSync(){_notesPlace([['slp-gaps','slp-notes-gaps'],['slp-leg2','slp-notes-leg']]);}
+function _slpNotesSync(){_notesPlace([['slp-ptools','slp-notes-top'],['slp-gaps','slp-notes-gaps'],['slp-leg2','slp-notes-leg']]);}
 if(NOTES_MQ){const _nq=()=>{try{const a=document.getElementById('moLineup'),b=document.getElementById('moSeasonLineup');
   if(a&&a.classList.contains('open')&&typeof lpRender==='function')lpRender();
   if(b&&b.classList.contains('open')&&typeof slpRender==='function')slpRender();}catch(e){}};
@@ -40496,9 +40567,10 @@ function _lpGameCard(){
   const ln=document.getElementById('lp-glines');
   if(ln){const lc=_lpLineCounts();ln.innerHTML=lc.map(l=>`<span>${e(l.name)} <b>${l.ok}/${l.n}</b></span>`).join('');}
   // 1.2.148: the squad — state, "Kader festlegen" (from the pitch), Gegner, Matchplan
-  const gq=document.getElementById('lp-gsq');
-  if(gq){
-    let h='';
+  // 1.2.149: the state here, the button next to "Speichern", Gegner/Matchplan apart
+  const gq=document.getElementById('lp-gsq'),gb=document.getElementById('lp-gsqbtn'),gk=document.getElementById('lp-glinks');
+  {
+    let h='',bt='',lk='';
     if(s.type==='match'){
       const ed=typeof canEdit==='function'&&canEdit()&&!_lvView;
       const started=_sqStarted(s,season),q=started?null:_sqOf(s);
@@ -40507,15 +40579,17 @@ function _lpGameCard(){
           const due=_newsDue(q.t),hm=x=>{const d2=new Date(x);return String(d2.getHours()).padStart(2,'0')+':'+String(d2.getMinutes()).padStart(2,'0');};
           const sent=Date.now()<due?'geht frühestens '+hm(due)+' aufs Handy':'veröffentlicht '+new Date(q.t).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})+' '+hm(q.t);
           h+=`<span class="lp-gsq-t on"><b>Kader · ${q.p.length} Spieler</b> · Treffpunkt ${e(q.meet)}${q.where?', '+e(q.where):''} · ${e(sent)}</span>`;
-          if(ed)h+=`<button type="button" class="lp-gsq-btn alt" onclick="squadOpen(${si})">Kader ändern</button>`;
+          if(ed)bt=`<button type="button" class="lp-gsq-btn alt" onclick="squadOpen(${si})">Kader ändern</button>`;
         }else{
           h+='<span class="lp-gsq-t no">Kader noch nicht veröffentlicht</span>';
-          if(ed)h+=`<button type="button" class="lp-gsq-btn" onclick="squadOpen(${si})" title="Wer auf dem Feld und auf der Bank steht, ist schon ausgewählt">Kader festlegen</button>`;
+          if(ed)bt=`<button type="button" class="lp-gsq-btn" onclick="squadOpen(${si})" title="Wer auf dem Feld und auf der Bank steht, ist schon ausgewählt">Kader festlegen</button>`;
         }
       }
-      h+=`<span class="lp-glinks"><button type="button" onclick="oppOpen(${si})">Gegner</button><button type="button" onclick="mpOpen(${si})">Matchplan</button></span>`;
+      lk=`<button type="button" onclick="oppOpen(${si})">Gegner</button><button type="button" onclick="mpOpen(${si})">Matchplan</button>`;
     }
-    gq.innerHTML=h;gq.hidden=!h;
+    if(gq){gq.innerHTML=h;gq.hidden=!h;}
+    if(gb)gb.innerHTML=bt;
+    if(gk){gk.innerHTML=lk;gk.hidden=!lk;}
   }
   if(dd){const ups=_kbList(D,season,true);if(!ups.some(x=>x.i===si))ups.unshift({s,i:si,k:_dbSortKey(s.date,season)});
     dd.innerHTML=ups.length>1?ups.map(x=>{const q=_hxDate(x.k);return `<button type="button" class="kb-day m${x.i===si?' on':''}" onclick="lpPickGame(${x.i})" aria-pressed="${x.i===si}"><span>${KB_WD[q.getDay()]}</span><b>${q.getDate()}</b><i>Spiel</i></button>`;}).join(''):'';
@@ -40535,7 +40609,7 @@ function _lvSide(){
   if(!el)return;
   const ml=_lvMl(),me=_lvMe(),vars=_lvVars(ml),src=_lvSrc(ml),others=_lvOthers(ml),mv=me&&vars[me.k];
   if(ti)ti.textContent=others.length?'Meine Variante':'Aufstellung';
-  if(bt)bt.textContent=others.length?'Meine Variante speichern':'Aufstellung speichern';
+  if(bt)bt.innerHTML=(others.length?'<span class="lp-sv-l">Meine Variante </span>':'<span class="lp-sv-l">Aufstellung </span>')+'speichern';
   const e=escapeHtml,dirty=_lpIsDirty();
   let t;
   if(dirty)t='Geändert – noch nicht gespeichert';
@@ -43069,8 +43143,8 @@ _pubCleanupSchedule();
   <div class="lp-gcard" id="lp-gcard">
     <div class="kb-top">
       <div class="kb-days" id="lp-gdays" role="group" aria-label="Spiel wählen"></div>
-      <div class="kb-head"><div class="kb-ttl" id="lp-gtitle"></div><div class="kb-meta" id="lp-context-info"></div><div class="kb-leg" id="lp-gleg"></div><div class="kb-leg lp-glines" id="lp-glines"></div><div class="lp-gsq" id="lp-gsq" hidden></div></div>
-      <div class="lp-gsave"><button class="lp-save-btn" id="lp-save-btn" onclick="lpSave()">Aufstellung speichern</button><div id="lp-saves-list"></div></div>
+      <div class="kb-head"><div class="kb-ttl" id="lp-gtitle"></div><div class="kb-meta" id="lp-context-info"></div><div class="kb-leg" id="lp-gleg"></div><i hidden data-home="lp-gleg"></i><div class="kb-leg lp-glines" id="lp-glines"></div><div class="lp-gsq" id="lp-gsq" hidden></div><div class="lp-glinks" id="lp-glinks" hidden></div><i hidden data-home="lp-glinks"></i></div>
+      <div class="lp-gsave"><span class="lp-gsqbtn" id="lp-gsqbtn"></span><button class="lp-save-btn" id="lp-save-btn" onclick="lpSave()">Aufstellung speichern</button><div id="lp-saves-list"></div></div>
     </div>
     <div id="lp-var-bar" class="lp-var-bar" style="display:none;"></div>
   </div>
@@ -43091,7 +43165,7 @@ _pubCleanupSchedule();
   </div>
   <div class="lp-body">
     <div class="lp-pcard">
-    <div class="lp-ptools">
+    <div class="lp-ptools" id="lp-ptools">
       <button type="button" class="lp-fromslp" id="lp-fromslp" onclick="lpFromSeason()" hidden>Aus dem Saisonkader</button>
     <div id="lp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;margin-left:8px;"></div>
     <div class="lp-kind-wrap" style="display:flex;gap:4px;margin-left:10px;align-items:center;" title="Spieltyp bestimmt die Bankgröße">
@@ -43100,9 +43174,10 @@ _pubCleanupSchedule();
     </div>
     <div class="lp-spacer"></div>
     <div class="lp-hint" id="lp-hint">Slot wählen → Spieler klicken</div>
-    </div>
+    </div><i hidden data-home="lp-ptools"></i>
     <div class="lp-pmain">
     <aside class="lp-notes" id="lp-notes" aria-label="Hinweise zur Aufstellung">
+      <div class="lp-ntop" id="lp-notes-top"></div>
       <div id="lp-notes-mv"></div>
       <div id="lp-out-box"></div>
       <p class="lp-notes-empty">Niemand fehlt – keine Hinweise.</p>
@@ -43641,7 +43716,7 @@ _pubCleanupSchedule();
   </div>
   <div class="slp-body">
     <div class="lp-pcard slp-pcard">
-    <div class="lp-ptools">
+    <div class="lp-ptools" id="slp-ptools">
     <div id="slp-fmt-btns" style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-left:8px;"></div>
     <div style="flex:1;"></div>
     <div id="slp-hint" style="display:none;"></div>
@@ -43649,9 +43724,10 @@ _pubCleanupSchedule();
     <span id="slp-conf-toggle-lbl" style="font-size:.75rem;color:rgba(255,255,255,.95);font-weight:600;margin-right:6px;user-select:none;cursor:pointer;" onclick="const _t=document.getElementById('slp-conf-toggle');_t.checked=!_t.checked;slpToggleConfirmations(_t.checked);" title="Grün mit ✓ = für die Saison bestätigt, gelb = noch nicht spielberechtigt">Status</span>
     <button class="slp-close-btn" id="slp-status-btn" title="Status verwalten" aria-label="Status verwalten" onclick="slpOpenStatusList()" style="display:none;background:rgba(232,200,64,0.15);border-color:rgba(232,200,64,0.4);color:#e8c840;"><span class="fb-long">📋 Status verwalten</span><span class="fb-short">📋</span></button>
       <span class="lp-hint slp-dhint">Spieler auf eine Position ziehen oder Position antippen</span>
-    </div>
+    </div><i hidden data-home="slp-ptools"></i>
     <div class="lp-pmain">
     <aside class="slp-notes" aria-label="Besetzung und Legende">
+      <div class="lp-ntop" id="slp-notes-top"></div>
       <h4 class="slp-notes-h">Besetzung</h4><div id="slp-notes-gaps"></div>
       <h4 class="slp-notes-h">Legende</h4><div id="slp-notes-leg"></div>
     </aside>
