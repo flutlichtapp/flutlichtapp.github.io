@@ -40,7 +40,7 @@ const card=p=>p.evaluate(()=>{const g=document.getElementById('lp-gsq');return {
     const rest=P.map((pp,ii)=>ii).filter(ii=>!used.has(ii)&&ok(ii));lpState.subs=[rest[0]];lpRender();
     return {names:[...used,rest[0]].map(i=>P[i].name).sort(),left:P[rest[1]]?P[rest[1]].name:null};});
   // within a line: free players before the placed ones
-  const ord=await p.evaluate(()=>{const out=[];let cur='';[...document.querySelectorAll('#lp-kader-list > *')].forEach(e=>{if(e.tagName==='H4'){cur=e.textContent.split(' ')[0];return;}out.push([cur,/⚽|SUB/.test(e.textContent)?1:0]);});
+  const ord=await p.evaluate(()=>{const out=[];let cur='';[...document.querySelectorAll('#lp-kader-list > *')].forEach(e=>{if(e.tagName==='H4'){cur=e.textContent.split(' ')[0];return;}out.push([cur,e.querySelector('.lp-st-xi,.lp-st-sub')||/⚽|SUB/.test(e.textContent)?1:0]);});
     return out.every((x,i)=>i===0||out[i-1][0]!==x[0]||out[i-1][1]<=x[1]);});
   ok(ord,tag+'in jeder Linie erst die Freien, dann die Aufgestellten');
   await p.click('#lp-gsqbtn .lp-gsq-btn');await p.waitForTimeout(600);

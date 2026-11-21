@@ -5349,6 +5349,76 @@ body.design-heute .hxv-block{border-bottom:none !important;padding-bottom:4px !i
 @media(min-width:1000px){
   body.design-heute :is(#moLineup,#moSeasonLineup).hx-vianav :is(.lp-close-btn,#slp-close-btn){display:none !important;}
 }
+/* ── 1.2.150 Spieltag: the pitch under floodlight ──
+   The stage behind pitch and bench is the club's night blue with warm light
+   from the masts; one bold place, the rest of the page stays calm. */
+body.design-heute{--lp-stage:var(--hx-nav,#0E2350);--lp-stage2:#0A1A3E;}
+body.design-heute.hxk-dk{--lp-stage:#0C1733;--lp-stage2:#070F22;}
+body.design-heute :is(#moLineup .lp-pitch-col,#moSeasonLineup .slp-pitch-col){
+  background:radial-gradient(42% 34% at 10% 0,rgba(255,220,140,.17),transparent 70%),
+             radial-gradient(42% 34% at 90% 0,rgba(255,220,140,.17),transparent 70%),
+             linear-gradient(180deg,var(--lp-stage),var(--lp-stage2));}
+body.design-heute :is(.lp-pitch-svg,.slp-pitch-svg){filter:drop-shadow(0 6px 18px rgba(0,0,0,.35));}
+@media(min-width:768px){
+  body.design-heute #moLineup .lp-pitch-col,body.design-heute #moSeasonLineup .slp-pitch-col{padding:12px 10px !important;}
+}
+/* tokens */
+#lp-slots .lp-tk{fill:#0E2350;stroke:#fff;stroke-width:2;}
+#lp-slots .lp-tk-sh{fill:rgba(0,0,0,.32);stroke:none !important;filter:none !important;}
+#lp-slots .lp-tk-nr{font-family:'Big Shoulders Display','Bebas Neue',sans-serif;font-weight:800;font-size:21px;fill:#F2C230;}
+#lp-slots .lp-tk-tag{fill:rgba(6,14,34,.82);}
+#lp-slots .lp-tk-nm{font-family:'Barlow Condensed','Barlow',sans-serif;font-weight:700;font-size:11px;fill:#fff;letter-spacing:.15px;}
+#lp-slots .lp-tk-empty{fill:rgba(9,24,56,.38);stroke:rgba(255,255,255,.7);stroke-width:1.5;stroke-dasharray:3.5 3;}
+#lp-slots .lp-tk-pos{font-family:'Big Shoulders Display','Bebas Neue',sans-serif;font-weight:800;font-size:13px;fill:#fff;}
+#lp-slots .lp-tk-un{fill:none;stroke-width:3;}
+#lp-slots .lp-tk-g.selected :is(.lp-tk,.lp-tk-empty){stroke:#F2C230;stroke-width:3;stroke-dasharray:none;}
+#lp-slots .lp-tk-g.drop-target :is(.lp-tk,.lp-tk-empty){stroke:#3CC27E;stroke-width:3;stroke-dasharray:none;}
+@media(hover:hover){#lp-slots .lp-tk-g:not(.filled):hover .lp-tk-empty{stroke:#F2C230;stroke-dasharray:none;fill:rgba(9,24,56,.55);}}
+#moLineup.lp-ro #lp-slots .lp-tk-g:hover .lp-tk-empty{stroke:rgba(255,255,255,.7);stroke-dasharray:3.5 3;}
+#slp-slots text.slp-pos{font-family:'Big Shoulders Display','Bebas Neue',sans-serif;font-weight:800;font-size:12px;}
+/* bench: seats in the dugout next to the pitch */
+body.design-heute #moLineup #lp-subs-col{background:linear-gradient(180deg,var(--lp-stage),var(--lp-stage2)) !important;border-left:1px solid rgba(255,255,255,.08) !important;border-top:none !important;width:144px !important;padding:14px 10px !important;align-items:stretch !important;}
+body.design-heute #moLineup #lp-subs-col .lp-bank-h{display:flex;justify-content:space-between;align-items:baseline;color:#fff !important;font:700 .86rem 'Barlow',sans-serif !important;letter-spacing:0 !important;margin:0 2px 10px !important;}
+body.design-heute #moLineup .lp-bank-n{font-weight:600;font-size:.78rem;color:#B6C4DE;}
+body.design-heute #moLineup .lp-bank-n b{font-family:var(--hx-num);font-weight:800;font-size:.95rem;color:#fff;}
+body.design-heute #moLineup #lp-subs-circles{gap:6px !important;align-items:stretch !important;}
+body.design-heute #moLineup #lp-subs-col .lp-seat{position:relative;display:flex !important;align-items:center;gap:8px;width:auto !important;height:38px !important;padding:0 10px;box-sizing:border-box;border-radius:10px !important;cursor:pointer;
+  background:rgba(255,255,255,.04) !important;border:1px dashed rgba(255,255,255,.24) !important;color:rgba(255,255,255,.5);justify-content:center;box-shadow:none;}
+body.design-heute #moLineup #lp-subs-col .lp-seat.filled{justify-content:flex-start;background:#18306A !important;border:1px solid rgba(255,255,255,.14) !important;color:#fff;}
+body.design-heute #moLineup #lp-subs-col .lp-seat.selected{border:1.5px solid #F2C230 !important;box-shadow:0 0 0 3px rgba(242,194,48,.25);}
+body.design-heute #moLineup #lp-subs-col .lp-seat.drop-target{border:1.5px solid #3CC27E !important;}
+body.design-heute #moLineup #lp-subs-col .lp-seat:focus-visible{outline:2px solid #F2C230;outline-offset:2px;}
+@media(hover:hover){body.design-heute #moLineup:not(.lp-ro) #lp-subs-col .lp-seat:not(.filled):hover{border-color:#F2C230 !important;color:#F2C230;}}
+.lp-seat-nr{font-family:var(--hx-num,'Bebas Neue');font-weight:800;font-size:1.1rem;line-height:1;color:#F2C230;min-width:18px;text-align:center;}
+.lp-seat-nm{font:600 .82rem 'Barlow',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.lp-seat-add{font:500 1.15rem/1 'Barlow',sans-serif;}
+body.design-heute #moLineup #lp-subs-col .lp-seat .lp-unavail-dot{top:-5px;right:-5px;}
+/* a narrow window: the pitch is limited by its width there — the bench gives way */
+@media(min-width:768px) and (max-width:1599px){body.design-heute #moLineup #lp-subs-col{width:120px !important;padding:14px 8px !important;}body.design-heute #moLineup #lp-subs-col .lp-seat{padding:0 8px;gap:6px;}}
+/* list: where a player stands */
+body.design-heute #moLineup .lp-stc{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:10px;font:800 .74rem/1 'Big Shoulders Display','Bebas Neue',sans-serif !important;letter-spacing:.2px;flex-shrink:0;}
+body.design-heute #moLineup .lp-st-xi.lp-stc{background:#0E2350;color:#F2C230 !important;}
+body.design-heute #moLineup .lp-st-sub.lp-stc{background:transparent;color:var(--hx-ink) !important;border:1.5px solid var(--hx-ink);font-family:'Barlow',sans-serif !important;font-weight:700 !important;font-size:.68rem !important;}
+body.design-heute.hxk-dk #moLineup .lp-st-xi.lp-stc{background:#F2C230;color:#0E2350 !important;}
+body.design-heute.hxk-dk #moLineup .lp-st-sub.lp-stc{color:var(--hk-ink) !important;border-color:var(--hk-ink);}
+/* the position picker: a heading, not a tracked-out caps label */
+body.design-heute .slp-popup .slp-popup-title{font:800 1rem 'Barlow',sans-serif;letter-spacing:0;text-transform:none;color:var(--hx-ink);margin-bottom:4px;}
+body.design-heute .slp-popup .slp-sb-label{font:600 .78rem 'Barlow',sans-serif !important;letter-spacing:0 !important;text-transform:none !important;}
+body.design-heute.hxk-dk .slp-popup .slp-popup-title{color:var(--hk-ink);}
+/* Saisonkader legend under the pitch: items never break inside */
+body.design-heute .slp-leg2{flex-wrap:wrap;row-gap:6px;}
+body.design-heute .slp-leg2 > span{white-space:nowrap;}
+/* warnings between the cards (phone, narrow windows): cards in the page column */
+body.design-heute #moLineup > :is(#lp-unavail-bar,#lp-disc-bar){margin:12px max(40px,calc((100% - 1320px) / 2 + 40px)) 0;border:1px solid;border-radius:14px;padding:8px 12px;}
+/* phone: the stage frames the full-width pitch, the bench in two columns */
+@media(max-width:767px){
+  body.design-heute :is(#moLineup,#moSeasonLineup) :is(.lp-pitch-col,.slp-pitch-col){padding:10px !important;}
+  body.design-heute #moLineup #lp-subs-col{width:100% !important;flex-direction:column !important;align-items:stretch !important;padding:4px 12px 14px !important;border-left:none !important;gap:0 !important;}
+  body.design-heute #moLineup #lp-subs-col .lp-bank-h{margin:6px 2px 10px !important;}
+  body.design-heute #moLineup #lp-subs-circles{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px !important;overflow:visible !important;padding:0 !important;}
+  body.design-heute #moLineup #lp-subs-col .lp-seat{height:40px !important;padding:0 8px;gap:6px;}
+  body.design-heute #moLineup > :is(#lp-unavail-bar,#lp-disc-bar){margin:10px 12px 0;}
+}
 /* 1.2.149 calmer: one yellow (Speichern); Meisterschaft/Testspiel neutral */
 body.design-heute .lp-kind-wrap .lp-fmt-btn.active{background:var(--hx-nav) !important;color:#fff !important;border-color:var(--hx-nav) !important;}
 body.design-heute.hxk-dk .lp-kind-wrap .lp-fmt-btn.active{background:color-mix(in srgb,var(--hk-ink) 18%,var(--hk-card)) !important;color:var(--hk-ink) !important;border-color:var(--hk-line) !important;}
@@ -8177,8 +8247,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.149'; // v1.2.149: Spieltag und Saisonkader ruhiger – Spielkarte in einer Zeile, Schema, Spielart, Gegner und Matchplan in der Spalte links, das Feld größer; ein Gelb: Speichern
-const APP_VERSION_LABEL='1.2.149';
+const APP_VERSION='1.2.150'; // v1.2.150: Spieltag schöner – das Feld unter Flutlicht, Spieler als Marken mit Namensschild, die Bank als Sitzreihe, ruhigere Liste
+const APP_VERSION_LABEL='1.2.150';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -30512,12 +30582,43 @@ function _hxPageSync(){
 // Lineup pitches in "Heute": the planner's field drawing, rotated 90° and
 // scaled by 525/640 so its length fills the frame (6px grass either side)
 function _hxFillPitches(){
-  if(typeof _dgBg!=='function')return;
-  const s=525/640,tx=(340+400*s)/2;
   document.querySelectorAll('#lp-pitch .hx-grass,#slp-pitch .hx-grass').forEach(g=>{
     if(g.dataset.done)return;g.dataset.done='1';
-    g.innerHTML='<rect width="340" height="525" rx="6" fill="#2E7D46"/><g transform="translate('+tx+',0) scale('+s+') rotate(90)">'+_dgBg('full')+'</g>';
+    const svg=g.closest('svg');g.innerHTML=_hxPitchArt(svg&&svg.id?svg.id:'hxp');
   });
+}
+// 1.2.150: the match pitch under floodlight. Same grass and line colours as
+// the Trainingsplaner (_dgBg), the same geometry as before (so every slot
+// stays where it was), but: ten mown stripes that meet the box lines and the
+// halfway line, light from the four masts, a soft dark edge, corner arcs.
+function _hxPitchArt(k){
+  const x0=18.24,x1=321.76,y0=32.8,y1=492.2,cx=170,cy=262.5,W=x1-x0;
+  let st='';for(let i=0;i<10;i++)if(i%2)st+=`<rect y="${i*52.5}" width="340" height="52.5"/>`;
+  const glow=(id,x,y,a)=>`<radialGradient id="${k}-${id}" cx="${x}" cy="${y}" r="1" gradientUnits="objectBoundingBox" gradientTransform="translate(${x} ${y}) scale(.95 .62) translate(${-x} ${-y})"><stop offset="0" stop-color="#FFF0C4" stop-opacity="${a}"/><stop offset=".55" stop-color="#FFF0C4" stop-opacity="${a/4}"/><stop offset="1" stop-color="#FFF0C4" stop-opacity="0"/></radialGradient>`;
+  const box=(top)=>{
+    const by=top?y0:y1-72.2,gy=top?y0:y1-24,goy=top?y0-7.4:y1,ar=top?105:420,sw=top?0:1;
+    return `<rect x="80.2" y="${by}" width="179.6" height="72.2"/><rect x="129" y="${gy}" width="82" height="24"/>
+      <rect x="153.6" y="${goy}" width="32.8" height="7.4"/><path d="M137.8,${ar} A40.2,40.2 0 0,${sw} 202.2,${ar}"/>`;
+  };
+  return `<defs>
+    <clipPath id="${k}-clip"><rect width="340" height="525" rx="10"/></clipPath>
+    ${glow('g1',0,0,.13)}${glow('g2',1,0,.13)}${glow('g3',0,1,.07)}${glow('g4',1,1,.07)}
+    <radialGradient id="${k}-vig" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#03170C" stop-opacity="0"/><stop offset="1" stop-color="#03170C" stop-opacity=".34"/></radialGradient>
+  </defs>
+  <g clip-path="url(#${k}-clip)">
+    <rect width="340" height="525" fill="#2E7D46"/>
+    <g class="hx-stripes" fill="#28703E">${st}</g>
+    <rect width="340" height="525" fill="url(#${k}-vig)"/>
+    <rect width="340" height="525" fill="url(#${k}-g1)"/><rect width="340" height="525" fill="url(#${k}-g2)"/>
+    <rect width="340" height="525" fill="url(#${k}-g3)"/><rect width="340" height="525" fill="url(#${k}-g4)"/>
+  </g>
+  <g fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5" stroke-linejoin="round">
+    <rect x="${x0}" y="${y0}" width="${W}" height="${y1-y0}"/><line x1="${x0}" y1="${cy}" x2="${x1}" y2="${cy}"/><circle cx="${cx}" cy="${cy}" r="40.2"/>
+    ${box(true)}${box(false)}
+    <path d="M${x0+4},${y0} A4,4 0 0,1 ${x0},${y0+4} M${x1-4},${y0} A4,4 0 0,0 ${x1},${y0+4} M${x0},${y1-4} A4,4 0 0,1 ${x0+4},${y1} M${x1-4},${y1} A4,4 0 0,1 ${x1},${y1-4}"/>
+  </g>
+  <g fill="rgba(255,255,255,.85)"><circle cx="${cx}" cy="${cy}" r="2"/><circle cx="${cx}" cy="81" r="1.8"/><circle cx="${cx}" cy="444" r="1.8"/></g>
+  <rect width="340" height="525" rx="10" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="1"/>`;
 }
 document.addEventListener('DOMContentLoaded',()=>{try{_hxFillPitches();}catch(e){}});
 function _hxToolOpen(){
@@ -40802,6 +40903,7 @@ function lpRender(){
     const pid=lpState.slots[slot.id];
     const player=lpResolvePlayer(pid);
     const isSel=lpState.openSlot===slot.id;
+    if(_hxp)return _lpTokHx(slot,player,isSel,R);
     const fillColor=player?'color-mix(in srgb, var(--surface-mid) 82%, transparent)':'#35814C';
     const strokeColor=isSel?'var(--ac)':player?'rgba(255,255,255,.65)':'rgba(255,255,255,.5)';
     const strokeW=isSel?'2.5':'1.8';
@@ -40911,6 +41013,41 @@ function lpRender(){
   try{_lvPaint();}catch(e){console.warn('[Varianten]',e);}
   try{if(lpState.sessIdx!=null)_lpGameCard();}catch(e){console.warn('[Spielkarte]',e);}
   try{_lpNotesSync();}catch(e){console.warn('[Hinweise]',e);}
+}
+
+// 1.2.150: a player is a token — club navy, white ring, the number in lamp
+// yellow — with the name on a dark tag, which reads over lines and stripes.
+// An empty position recedes: a smaller dark-glass ring with its name.
+function _lpTokHx(slot,player,isSel,R){
+  const e=escapeHtml,xy=_pitchXY(slot),id=slot.id;
+  const _un=lpUnavailState(lpState.slots[id]);
+  const _unC=_un==='F'?'#FF5A45':'#F39C12';
+  let body;
+  if(player){
+    const nm=lpFullName(player,11),nr=String(player.nr||'–');
+    const tag=(player.photo&&player.nr?nr+' ':'')+nm;
+    const w=Math.max(28,Math.round(tag.length*5.2+14));
+    const face=player.photo
+      ?`<clipPath id="lpc-${id}"><circle r="${R-2}"/></clipPath><image x="${-R+2}" y="${-R+2}" width="${(R-2)*2}" height="${(R-2)*2}" href="${e(player.photo)}" clip-path="url(#lpc-${id})" preserveAspectRatio="xMidYMid slice"/>`
+      :`<text class="lp-tk-nr" y="7.5" text-anchor="middle">${e(nr)}</text>`;
+    body=`<circle class="lp-tk-sh" r="${R}" cy="2.5"/><circle class="lp-tk" r="${R}"/>${face}
+      <rect class="lp-tk-tag" x="${-w/2}" y="${R+4}" width="${w}" height="15" rx="7.5"/>
+      <text class="lp-tk-nm" y="${R+15}" text-anchor="middle">${e(tag)}</text>`;
+  }else{
+    body=`<circle class="lp-tk-empty" r="${R-3}"/><text class="lp-tk-pos" y="4.5" text-anchor="middle">${e(slot.lbl)}</text>`;
+  }
+  const mark=_un?`<circle class="lp-tk-un" r="${R}" style="stroke:${_unC}"/>
+      <circle cx="${R-3}" cy="${-R+3}" r="7.5" style="fill:${_unC};stroke:#fff;stroke-width:1.2"/>
+      <text x="${R-3}" y="${-R+6.5}" text-anchor="middle" font-family="'Barlow',sans-serif" font-size="10" font-weight="700" fill="#fff">!</text>`:'';
+  const t=player?`${slot.lbl}: ${getDisplayName(player)}`:`${slot.lbl} – frei`;
+  return `<g class="lp-slot-g lp-tk-g${player?' filled':''}${isSel?' selected':''}${_un?' lp-unavail':''}"
+      ${_un?`data-unavail="${_un}"`:''}
+      data-slot="${id}" onclick="lpClickSlot(event,'${id}')"
+      transform="translate(${xy.x},${xy.y})" style="cursor:pointer;"
+      onpointerdown="lpPointerDown(event,'${id}')"
+      onpointerenter="lpPointerEnter(event,'${id}')"
+      oncontextmenu="fmtContextMenu(event,'lp','${id}')"
+      ${isSel?'filter="url(#glowGold)"':''}><title>${e(t)}</title>${body}${mark}${_lvRing(id,R)}</g>`;
 }
 
 function lpRenderPopup(slotId){
@@ -41241,11 +41378,25 @@ function lpRenderSubs(){
   if(circlesEl){
     const MAX_SUBS=lpMaxSubs();
     const subSlots=[];
+    const _hxS=typeof hxOn==='function'&&hxOn();
+    let _nSub=0;
     for(let i=0;i<MAX_SUBS;i++){
       const pi=lpState.subs[i];
       const p=lpResolvePlayer(pi);
       const isSel=lpState.openSlot==='sub_'+i;
       const _sun=lpUnavailState(pi);
+      if(p)_nSub++;
+      // 1.2.150: a seat — number and name in one line, an empty seat a quiet "+"
+      if(_hxS){
+        const e=escapeHtml;
+        subSlots.push(`<div class="lp-sub-circle lp-seat${p?' filled':''}${isSel?' selected':''}${_sun?' lp-unavail':''}" data-slot="sub_${i}" role="button" tabindex="0"
+          aria-label="${p?`Bank ${i+1}: ${e(getDisplayName(p))}`:`Bankplatz ${i+1} frei`}" title="${p?e(getDisplayName(p)):`Bankplatz ${i+1}`}"
+          onclick="lpClickSubSlot(event,${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();lpClickSubSlot(event,${i});}"
+          onpointerdown="lpPointerDown(event,'sub_${i}')" onpointerenter="lpPointerEnter(event,'sub_${i}')">${p
+            ?`<b class="lp-seat-nr">${e(String(p.nr||'–'))}</b><span class="lp-seat-nm">${e(lpFullName(p,12))}</span>`
+            :'<span class="lp-seat-add" aria-hidden="true">+</span>'}${_sun?`<span class="lp-unavail-dot" title="${_sun==='F'?'Abgesagt':'Entschuldigt'}" style="background:${_sun==='F'?'#ff5a45':'#f39c12'};">!</span>`:''}</div>`);
+        continue;
+      }
       subSlots.push(`<div class="lp-sub-circle${p?' filled':''}${isSel?' selected':''}${_sun?' lp-unavail':''}" data-slot="sub_${i}" onclick="lpClickSubSlot(event,${i})"
         onpointerdown="lpPointerDown(event,'sub_${i}')"
         onpointerenter="lpPointerEnter(event,'sub_${i}')"
@@ -41257,6 +41408,8 @@ function lpRenderSubs(){
       </div>`);
     }
     circlesEl.innerHTML=subSlots.join('');
+    const bh=document.querySelector('#lp-subs-col .lp-bank-h');
+    if(bh)bh.innerHTML=_hxS?`Bank <span class="lp-bank-n"><b>${_nSub}</b> / ${MAX_SUBS}</span>`:'Bank';
   }
 
   // Render full kader list - includes real players + guests; hide unavailable
@@ -41311,10 +41464,14 @@ function lpRenderSubs(){
       const inSub=lpState.subs.indexOf(id);
       if(inSlot){
         const slotInfo=(FORMATIONS[lpState.formation]||[]).find(s=>s.id===inSlot[0]);
-        status=`<span class="lp-st-xi" style="font-size:.6rem;color:#7dffa0;font-weight:700;">⚽ ${slotInfo?slotInfo.lbl:''}</span>`;
+        status=(typeof hxOn==='function'&&hxOn())
+          ?`<span class="lp-st-xi lp-stc" title="In der Startelf">${slotInfo?escapeHtml(slotInfo.lbl):'XI'}</span>`
+          :`<span class="lp-st-xi" style="font-size:.6rem;color:#7dffa0;font-weight:700;">⚽ ${slotInfo?slotInfo.lbl:''}</span>`;
         bg='rgba(39,174,96,.08)';
       } else if(inSub>=0){
-        status=`<span class="lp-st-sub" style="font-size:.6rem;color:var(--ac);font-weight:700;">🔄 SUB ${inSub+1}</span>`;
+        status=(typeof hxOn==='function'&&hxOn())
+          ?`<span class="lp-st-sub lp-stc" title="Bankplatz ${inSub+1}">Bank</span>`
+          :`<span class="lp-st-sub" style="font-size:.6rem;color:var(--ac);font-weight:700;">🔄 SUB ${inSub+1}</span>`;
         bg='color-mix(in srgb, var(--ac) 8%, transparent)';
       } else if(isGuest){
         status=`<span style="font-size:.6rem;color:#ff9080;font-weight:700;">👤 GAST</span>`;
@@ -41328,11 +41485,15 @@ function lpRenderSubs(){
         : '';
       if(_disc)bg='rgba(192,57,43,.12)';
       const nik=!isGuest&&!!sqSet&&!sqSet.has(id);
-      return _head(_ix)+`<div${nik?' class="lp-nik"':''} style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:${bg};border:1px solid ${_disc?'rgba(192,57,43,.45)':'rgba(255,255,255,.07)'};border-radius:7px;margin-bottom:3px;">
+      const _rc=[nik?'lp-nik':'',inSlot?'lp-r-xi':inSub>=0?'lp-r-sub':''].filter(Boolean).join(' ');
+      // 1.2.150: in the starting eleven on his own position the slot token says it all
+      const _xiL=inSlot?(((FORMATIONS[lpState.formation]||[]).find(s=>s.id===inSlot[0])||{}).lbl||''):'';
+      const _same=!!(_xiL&&p.pos&&typeof hxOn==='function'&&hxOn()&&_xiL.toLowerCase()===String(p.pos).toLowerCase());
+      return _head(_ix)+`<div${_rc?` class="${_rc}"`:''} style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:${bg};border:1px solid ${_disc?'rgba(192,57,43,.45)':'rgba(255,255,255,.07)'};border-radius:7px;margin-bottom:3px;">
         <span style="font-family:'Bebas Neue';color:var(--ac);font-size:.85rem;width:18px;text-align:center;">${p.nr||'–'}</span>
         <span style="font-size:.72rem;font-weight:600;color:#fff;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${getDisplayName(p)}</span>
         ${nik?'<span class="lp-nik-t">nicht im Kader</span>':''}${(!isGuest&&!inSlot&&inSub<0&&sessIdx!=null&&p.s&&(p.s[sessIdx]==null||p.s[sessIdx]===3))?'<span class="lp-open-t">offen</span>':''}${guestBadge}${discBadge}
-        <span class="lp-card-pos1" style="background:${bcol.split(';')[0]};${bcol.split(';')[1]};font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:7px;">${p.pos}</span>
+        ${_same?'':`<span class="lp-card-pos1" style="background:${bcol.split(';')[0]};${bcol.split(';')[1]};font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:7px;">${p.pos}</span>`}
         ${status}${isGuest?'':_dots(p)}
       </div>`;
     }).join('')+(()=>{
@@ -42207,7 +42368,8 @@ function slpRender(){
     const count=assigned.length,cover=_slpCover(slot);
     const isSel=slpState.openSlot===slot.id;
     const ringColor=count===0?'rgba(255,255,255,.3)':cover===0?'#E0912F':lpCircleColor(cover);
-    const fillColor=count===0?'#35814C':'color-mix(in srgb, var(--surface-mid) 85%, transparent)';
+    const _hxs=typeof hxOn==='function'&&hxOn();
+    const fillColor=count===0?(_hxs?'rgba(9,24,56,.38)':'#35814C'):(_hxs?'#0E2350':'color-mix(in srgb, var(--surface-mid) 85%, transparent)');
     const dashArr=count===0?'stroke-dasharray="4 3"':'';
     const gFilter=isSel?'filter="url(#glowGold)"':'';
 
@@ -42262,7 +42424,7 @@ function slpRender(){
       const topY=R+18-fs0+1;
       const bottomY=R+18+(totalLines-1)*LINE_H+3;
       const panelH=bottomY-topY+1;
-      backdropHtml=`<rect x="${panelLeft}" y="${topY}" width="${totalW}" height="${panelH}" fill="color-mix(in srgb, var(--planner-dark) 40%, transparent)" rx="4"/>`;
+      backdropHtml=`<rect x="${panelLeft}" y="${topY}" width="${totalW}" height="${panelH}" fill="${_hxs?'rgba(6,14,34,.74)':'color-mix(in srgb, var(--planner-dark) 40%, transparent)'}" rx="${_hxs?6:4}"/>`;
     }
     const nameLines=visible.map((p,i)=>{
       const nm=lpFullName(p,14);
@@ -42300,7 +42462,8 @@ function slpRender(){
 
     return `<g class="slp-slot-g slp-slot-group" data-slot-id="${slot.id}" onclick="slpClickSlot(event,'${slot.id}')" onpointerdown="fmtDragStart(event,'slp','${slot.id}')" oncontextmenu="fmtContextMenu(event,'slp','${slot.id}')" transform="translate(${_pitchXY(slot).x},${_pitchXY(slot).y})" style="cursor:${slpState.editing?'move':'pointer'};" ${gFilter}>
       <circle r="${isSel?R+2:R}" style="fill:${fillColor};stroke:${ringColor};stroke-width:${isSel?'2.5':'1.8'};" ${dashArr}/>
-      <text y="3" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="11" fill="${count>0?'#fff':'rgba(255,255,255,.85)'}" letter-spacing="1">${slot.lbl}</text>
+      ${_hxs?`<text class="slp-pos" y="4" text-anchor="middle" fill="${count>0?'#F2C230':'#fff'}">${slot.lbl}</text>`
+        :`<text y="3" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="11" fill="${count>0?'#fff':'rgba(255,255,255,.85)'}" letter-spacing="1">${slot.lbl}</text>`}
       ${backdropHtml}
       ${nameLines}
       ${overflowHtml}
