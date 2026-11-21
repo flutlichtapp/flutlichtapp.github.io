@@ -49,7 +49,9 @@ srv.listen(0,async()=>{const B='http://localhost:'+srv.address().port;
  await np.waitForLoadState();await np.waitForTimeout(2500);
  ok(/demo=1/.test(np.url())&&/preview=1/.test(np.url()),'Spieleransicht bleibt in der Demo');
  const ht=await np.evaluate(()=>document.body.innerText.replace(/\s+/g,' '));
- ok(/Finn/.test(ht)&&/Diese Woche/.test(ht)&&/Letztes Spiel/.test(ht),'Übersicht des Spielers mit letztem Spiel');
+ // 21.11. (Sa): the demo runs on the real date — on some days the player sees
+ // "Dein nächster Termin" instead of the week; both are right
+ ok(/Finn/.test(ht)&&/Diese Woche|Dein nächster Termin/.test(ht)&&/Letztes Spiel/.test(ht),'Übersicht des Spielers mit letztem Spiel');
  await np.setViewportSize({width:390,height:844});await np.waitForTimeout(300);
  if(out)await np.screenshot({path:out+'/demo_spieler.png'});
  const clicked=await np.evaluate(()=>{const a=[...document.querySelectorAll('#playerModeWrap a,#playerModeWrap button')].find(x=>/Meine Statistik/.test(x.innerText));if(!a)return false;a.click();return true;});
