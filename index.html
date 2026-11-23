@@ -5487,6 +5487,51 @@ body.design-heute.hxk-dk #lp-kader-list .lp-out-h{border-top-color:var(--hk-line
   body.design-heute #moLineup .lp-pmain{background:radial-gradient(60% 160px at 50% 0,rgba(255,220,140,.12),transparent 70%),linear-gradient(180deg,var(--lp-stage),var(--lp-stage2));}
   body.design-heute #moLineup .lp-pmain > :is(.lp-pitch-col,#lp-subs-col){background:transparent !important;}
 }
+/* ── 1.2.153 positions without "Bearbeiten" ── */
+#lp-slots .lp-tk-g:not(.filled),#slp-slots .slp-slot-g{cursor:grab;}
+#moLineup.lp-ro #lp-slots .lp-tk-g{cursor:pointer;}
+#lp-slots .fmt-dragging,#slp-slots .fmt-dragging{cursor:grabbing;}
+#lp-slots :is(.fmt-dragging,[data-drag]) :is(.lp-tk,.lp-tk-empty){stroke:#F2C230;stroke-width:3;stroke-dasharray:none;}
+#lp-slots .lp-tk-g.fmt-once :is(.lp-tk,.lp-tk-empty),#lp-slots .lp-tk-g[data-once] :is(.lp-tk,.lp-tk-empty){stroke:#F2C230;stroke-width:3;stroke-dasharray:4 3;}
+@media(prefers-reduced-motion:no-preference){#lp-slots .lp-tk-g:is(.fmt-once,[data-once]) :is(.lp-tk,.lp-tk-empty){animation:fmtOnce 1s ease-in-out infinite alternate;}}
+@keyframes fmtOnce{from{stroke-opacity:1}to{stroke-opacity:.35}}
+.fmt-pf{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);}
+.fmt-pf-h{font:600 .74rem 'Barlow',sans-serif;color:rgba(255,255,255,.7);margin-bottom:6px;}
+.fmt-pf-chips{display:flex;flex-wrap:wrap;gap:4px;}
+.fmt-chip{min-width:36px;height:28px;padding:0 7px;border-radius:7px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#fff;font:700 .74rem 'Barlow',sans-serif;cursor:pointer;}
+.fmt-chip.on{background:#F2C230;border-color:#F2C230;color:#0E2350;}
+.fmt-mv{margin-top:8px;width:100%;height:32px;border-radius:8px;border:1px dashed rgba(255,255,255,.35);background:transparent;color:#fff;font:600 .78rem 'Barlow',sans-serif;cursor:pointer;}
+body.design-heute .fmt-pf{border-top-color:var(--hx-line);}
+body.design-heute .fmt-pf-h{color:var(--hx-muted);}
+body.design-heute .fmt-chip{border-color:var(--hx-line);color:var(--hx-ink);background:var(--hx-card);}
+body.design-heute .fmt-chip.on{background:#0E2350;border-color:#0E2350;color:#F2C230;}
+body.design-heute .fmt-mv{border-color:#B9C5D8;color:var(--hx-ink);}
+body.design-heute .fmt-mv:hover,body.design-heute .fmt-chip:not(.on):hover{border-color:var(--hx-ink);}
+body.design-heute.hxk-dk .fmt-pf{border-top-color:var(--hk-line);}
+body.design-heute.hxk-dk .fmt-pf-h{color:var(--hk-muted);}
+body.design-heute.hxk-dk .fmt-chip{border-color:var(--hk-line);color:var(--hk-ink);background:var(--hk-card);}
+body.design-heute.hxk-dk .fmt-chip.on{background:#F2C230;border-color:#F2C230;color:#0E2350;}
+body.design-heute.hxk-dk .fmt-mv{border-color:var(--hk-line);color:var(--hk-ink);}
+.fmt-reset{white-space:nowrap;}
+@media(min-width:768px){body.design-heute :is(#lp-popup,#slp-popup){max-height:calc(100vh - 16px);overflow-y:auto;box-sizing:border-box;}}
+/* the reset under the schema, not beside it (the column is narrow) */
+body.design-heute .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns){flex-wrap:wrap !important;flex-shrink:1 !important;min-width:0;max-width:100%;}
+body.design-heute .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns) select{max-width:100%;min-width:0;}
+body.design-heute .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns) .fmt-reset{flex-basis:100%;}
+body.design-heute .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns) button.fmt-reset:not(.active){height:auto !important;min-height:0 !important;padding:2px 2px !important;border:none !important;background:transparent !important;box-shadow:none !important;justify-content:flex-start;text-align:left;font:600 .76rem 'Barlow',sans-serif !important;color:var(--hx-blue,#1659B8) !important;text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
+body.design-heute.hxk-dk .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns) button.fmt-reset:not(.active){color:#9DB8E8 !important;}
+@media(max-width:767px){body.design-heute :is(#lp-fmt-btns,#slp-fmt-btns) .fmt-reset{min-width:34px;padding:0 8px !important;font-size:1rem !important;}}
+/* Einstellungen → Verwaltung (1.2.153) */
+#moSettings .vw-blk{margin-top:18px;padding-top:14px;border-top:1px solid var(--hx-line,#DCE3EE);}
+#moSettings .vw-blk:first-of-type{margin-top:8px;}
+#moSettings .vw-h{margin:0 0 8px;font:700 .92rem 'Barlow',sans-serif;color:var(--hx-ink,#0E2350);}
+#moSettings .vw-tr{margin:-2px 0 10px 2px;font:500 .76rem 'Barlow',sans-serif;color:var(--hx-muted,#4E5D7C);}
+body.design-heute.hxk-dk #moSettings .vw-blk{border-top-color:var(--hk-line);}
+body.design-heute.hxk-dk #moSettings .vw-h{color:var(--hk-ink);}
+body.design-heute.hxk-dk #moSettings .vw-tr{color:var(--hk-muted);}
+#moSettings :is(#vw-host-teams,#vw-host-sync) label{text-transform:none;letter-spacing:0;font-size:.78rem;}
+#moSettings :is(#vw-host-teams,#vw-host-sync) .mob-btns{justify-content:flex-start;}
+#moSettings :is(#vw-host-teams,#vw-host-sync) .mob-btns .btn{flex:0 0 auto;width:auto;padding-left:18px;padding-right:18px;}
 /* 1.2.149 calmer: one yellow (Speichern); Meisterschaft/Testspiel neutral */
 body.design-heute .lp-kind-wrap .lp-fmt-btn.active{background:var(--hx-nav) !important;color:#fff !important;border-color:var(--hx-nav) !important;}
 body.design-heute.hxk-dk .lp-kind-wrap .lp-fmt-btn.active{background:color-mix(in srgb,var(--hk-ink) 18%,var(--hk-card)) !important;color:var(--hk-ink) !important;border-color:var(--hk-line) !important;}
@@ -8315,8 +8360,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.152'; // v1.2.152: Fixes – leere „Zu klären“-Kästen in der Spalte links (seit 1.2.151); Fenster (Administration u. a.) öffnen über offenem Spieltag/Saisonkader statt darunter
-const APP_VERSION_LABEL='1.2.152';
+const APP_VERSION='1.2.153'; // v1.2.153: ohne „Bearbeiten“ – Positionen ziehen, im Fenster der Position umbenennen und verschieben, „Zurücksetzen“; Administration → Einstellungen „Verwaltung“
+const APP_VERSION_LABEL='1.2.153';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -15657,6 +15702,7 @@ function _setVisible(sec){
   if(sec==='konto')return !!CU&&role!=='player';
   if(sec==='daten'||sec==='backup'||sec==='trash'||sec==='audit')return typeof isAdmin==='function'&&isAdmin();
   if(sec==='verein')return typeof isAdmin==='function'&&isAdmin();
+  if(sec==='verwaltung')return typeof isAdmin==='function'&&isAdmin()&&typeof _hxOn==='function'&&_hxOn();
   if(sec==='team')return typeof canEdit==='function'&&canEdit();
   if(sec==='trainer')return !!CU&&role!=='player';
   return true;
@@ -15760,6 +15806,38 @@ function settingsShow(sec){
   if(sec)_setLast=parent;
   const pane=document.getElementById('set-pane');if(pane)pane.scrollTop=0;
   if(sec==='trainer')try{trtRender();}catch(e){console.error('[Trainerteam]',e);}
+  if(sec==='verwaltung')try{_vwMount();_vwRender();}catch(e){console.error('[Verwaltung]',e);}
+}
+// 1.2.153: the parts of the old Administration window, moved in (same ids)
+let _vwMoved=null;
+function _vwMount(){
+  if(_vwMoved)return;
+  _vwMoved=[];
+  const mv=(el,to)=>{const t=document.getElementById(to);if(!el||!t)return;_vwMoved.push([el,el.parentNode,el.nextSibling]);t.appendChild(el);};
+  [['atab-teams','vw-host-teams'],['atab-wartung','vw-host-wartung'],['atab-firebase','vw-host-sync']].forEach(([f,t])=>{const p=document.getElementById(f);if(p)[...p.childNodes].forEach(n=>mv(n,t));});
+  const d=document.getElementById('atab-data');const blk=d&&d.querySelector(':scope > div');if(blk)mv(blk,'vw-host-reset');   // „Leerer Stand“; the backups are under Daten
+}
+function _vwUnmount(){
+  if(!_vwMoved)return;
+  _vwMoved.slice().reverse().forEach(([el,par,next])=>{try{par.insertBefore(el,next&&next.parentNode===par?next:null);}catch(e){}});
+  _vwMoved=null;
+}
+function _vwRender(){
+  try{renderAdminTeams();}catch(e){}
+  try{renderWartung();}catch(e){}
+  try{loadFbConfigFields();setFbStatus(typeof fbRef!=='undefined'&&fbRef?'connected':'offline');}catch(e){}
+}
+// Administration (menu, search, key A) → here; false = the old window (Klassisch, not admin)
+function _vwOpen(tab){
+  if(!(typeof _hxOn==='function'&&_hxOn()&&typeof isAdmin==='function'&&isAdmin())){_vwUnmount();return false;}
+  _vwMount();
+  const mo=document.getElementById('moAdmin');if(mo&&mo.classList.contains('open'))mo.classList.remove('open');
+  if(tab==='trainers'&&document.querySelector('#moSettings .set-sec.on[data-sec="verwaltung"]'))return true;   // the window's first tab: stay in Verwaltung
+  openSettings('verwaltung');
+  _vwRender();
+  const blk={teams:'vw-teams',wartung:'vw-wartung',firebase:'vw-sync',data:'vw-reset'}[tab];
+  if(blk)setTimeout(()=>{const e=document.getElementById(blk);if(e)e.scrollIntoView({block:'start'});},60);
+  return true;
 }
 function settingsBack(){
   const mob=document.querySelector('#moSettings .set-mob');
@@ -35062,6 +35140,7 @@ function updNr(pi,v){if(!canEdit())return;snap();cd().players[pi].nr=parseInt(v)
 //  ADMIN
 // ══════════════════════════════
 function switchAdminTab(t){
+  if(typeof _hxOn==='function'&&_hxOn()&&typeof isAdmin==='function'&&isAdmin()&&_vwOpen(t))return;   // 1.2.153
   ['trainers','teams','wartung','data','firebase'].forEach((n,i)=>{
     document.querySelectorAll('#moAdmin .tbtn')[i]?.classList.toggle('active',n===t);
     document.getElementById('atab-'+n)?.classList.toggle('active',n===t);
@@ -35088,12 +35167,13 @@ async function addTrainerGlobal(){
   _trAddedFlash(name);
 }
 function renderAdminTeams(){
+  const _trOf=t=>(G.trainers||[]).filter(x=>(x.teams||[]).includes(t)).map(x=>escapeHtml(x.name)).join(', ');
   document.getElementById('admin-teams-list').innerHTML=G.teamList.map(t=>`
     <div class="tr-row" style="gap:6px;">
       <input type="text" value="${t}" id="atnm_${t}" style="flex:1;padding:5px 8px;border:1.5px solid var(--gl);border-radius:6px;font-size:.82rem;font-family:'Barlow',sans-serif;outline:none;" onkeydown="if(event.key==='Enter')adminRenameTeam('${t}')"/>
       <button class="pl-btn pl-btn-e" onclick="adminRenameTeam('${t}')">✎</button>
       <button class="tr-del" onclick="adminDelTeam('${t}')">✕</button>
-    </div>`).join('');
+    </div><div class="vw-tr">Trainer: ${_trOf(t)||'–'}</div>`).join('');
 }
 function adminRenameTeam(old){
   if(!isAdmin())return;
@@ -35297,6 +35377,7 @@ function _markDuplicateCloses(){
 }
 document.addEventListener('DOMContentLoaded',()=>setTimeout(_markDuplicateCloses,120));
 function openM(id){
+  if(id==='moAdmin'&&typeof _vwOpen==='function'&&_vwOpen())return;   // 1.2.153: Einstellungen → Verwaltung
   // Guard entry is pushed HERE, synchronously inside the user's click.
   // Chromium marks history entries created without a user gesture as
   // "skippable" (its anti-back-trap intervention) — a timer-pushed entry is
@@ -35311,8 +35392,8 @@ function openM(id){
   try{
     const _tool=typeof _hxToolOpen==='function'&&_hxToolOpen();
     if(_tool&&_tool!==id){const z=parseInt(getComputedStyle(_moEl).zIndex,10)||0;
-      if(z<850){if(_moEl.dataset.zUp===undefined)_moEl.dataset.zUp=_moEl.style.zIndex||'';_moEl.style.zIndex='850';}}
-    else if(!_tool&&_moEl.dataset.zUp!==undefined){_moEl.style.zIndex=_moEl.dataset.zUp;delete _moEl.dataset.zUp;}
+      if(z<850){if(_moEl.dataset.zUp===undefined)_moEl.dataset.zUp=_moEl.style.zIndex||'';_moEl.style.setProperty('z-index','850','important');}}
+    else if(!_tool&&_moEl.dataset.zUp!==undefined){_moEl.style.removeProperty('z-index');if(_moEl.dataset.zUp)_moEl.style.zIndex=_moEl.dataset.zUp;delete _moEl.dataset.zUp;}
   }catch(e){}
   requestAnimationFrame(()=>{try{_syncCloseHeight(_moEl);}catch(e){}});
   // Mark plain ✕ close buttons so design "Heute" can draw them round
@@ -35375,7 +35456,7 @@ function closeM(id){
   }
   document.getElementById(id).classList.remove('open');
   document.getElementById(id)._moSnap=null;
-  {const _e=document.getElementById(id);if(_e.dataset.zUp!==undefined){_e.style.zIndex=_e.dataset.zUp;delete _e.dataset.zUp;}}
+  {const _e=document.getElementById(id);if(_e.dataset.zUp!==undefined){_e.style.removeProperty('z-index');if(_e.dataset.zUp)_e.style.zIndex=_e.dataset.zUp;delete _e.dataset.zUp;}}
   // Design "Heute": pages stay under dialogs — refresh the Kader page when a
   // dialog opened from it closes, and move the nav highlight when a page closes.
   if(typeof _hxOn==='function'&&_hxOn()){
@@ -37197,15 +37278,11 @@ function renderFmtBtns(targetId,currentFmt,onSelect){
       .map(f=>`<option value="${f}"${f===currentFmt?' selected':''}>${f}</option>`).join('');
     return `<optgroup label="${catName}">${opts}</optgroup>`;
   }).join('');
+  // 1.2.153: no "Bearbeiten" — a changed schema says so and can be reset
+  const _st=isSlp?(typeof slpState!=='undefined'?slpState:null):(typeof lpState!=='undefined'?lpState:null);
+  const _cust=_fmtIsCustom(_st);
   html+=`<select class="${cls} lp-fmt-sel" title="Formation wählen" onchange="if(this.value)${onSelect}(this.value);">${groups}</select>`;
-  // Edit button
-  const editFn=isSlp?'slpToggleEdit()':'lpToggleEdit()';
-  const editing=isSlp?(typeof slpState!=='undefined'&&slpState.editing===true):(typeof lpState!=='undefined'&&lpState.editing===true);
-  html+=`<button class="${cls}${editing?' active':''}" onclick="${editFn}" title="Formation bearbeiten">`
-    +(editing
-      ? '<span class="fb-long">\u2713 Fertig</span><span class="fb-short">\u2713</span>'
-      : '<span class="fb-long">\u270e Bearbeiten</span><span class="fb-short">\u270e</span>')
-    +'</button>';
+  if(_cust)html+=`<button type="button" class="${cls} fmt-reset" onclick="fmtReset('${isSlp?'slp':'lp'}')" title="Eigene Positionen zurücksetzen" aria-label="Positionen angepasst – zurücksetzen"><span class="fb-long">Positionen angepasst · zurücksetzen</span><span class="fb-short">↺</span></button>`;
   el.innerHTML=html;
 }
 
@@ -41153,7 +41230,7 @@ function _lpTokHx(slot,player,isSel,R){
       onpointerdown="lpPointerDown(event,'${id}')"
       onpointerenter="lpPointerEnter(event,'${id}')"
       oncontextmenu="fmtContextMenu(event,'lp','${id}')"
-      ${isSel?'filter="url(#glowGold)"':''}><title>${e(t)}</title>${body}${mark}${rule}${_lvRing(id,R)}</g>`;
+      ${isSel?'filter="url(#glowGold)"':''}${_fmtOnce&&_fmtOnce.pl==='lp'&&_fmtOnce.slotId===id?' data-once="1"':''}${window._fmtDragId==='lp:'+id?' data-drag="1"':''}><title>${e(t)}</title>${body}${mark}${rule}${_lvRing(id,R)}</g>`;
 }
 
 function lpRenderPopup(slotId){
@@ -41164,6 +41241,7 @@ function lpRenderPopup(slotId){
   if(!slot)return;
   const popup=document.getElementById('lp-popup');
   if(!popup||popup.style.display==='none')return;
+  try{_fmtFoot('lp',slotId);}catch(e){}
 
   const currentPid=lpState.slots[slotId];
   const usedIds=new Set(Object.values(lpState.slots).filter(v=>v!==undefined));
@@ -41244,6 +41322,7 @@ function lpRenderPopup(slotId){
 
 function lpClickSlot(e,slotId){
   e.stopPropagation();
+  if(_fmtClickBlocked())return;   // the circle was just moved
   if(_lvView){_lvRO();return;}
   if(lpState.editing)return; // edit mode: clicks don't open popup
   const popup=document.getElementById('lp-popup');
@@ -41335,7 +41414,9 @@ function lpPointerDown(e,slotId){
     return;
   }
   const p=_lpGetSlotPlayer(slotId);
-  if(!p)return;// empty slot
+  // 1.2.153: an empty position moves when dragged; "Position verschieben" makes the next drag move this circle
+  const _once=_fmtOnce&&_fmtOnce.pl==='lp'&&_fmtOnce.slotId===slotId;
+  if(_once||!p){_fmtArm(e,'lp',slotId,_once);return;}
   e.preventDefault();
   _lpDragSlot=slotId;_lpDragging=false;
   if(_lpDragTimeout)clearTimeout(_lpDragTimeout);
@@ -42593,7 +42674,7 @@ function slpRender(){
       overflowHtml=`<text x="0" y="${yPos}" text-anchor="middle" font-family="'Barlow',sans-serif" font-size="10" font-weight="700" fill="rgba(255,255,255,.85)">+${overflowCount} weitere</text>`;
     }
 
-    return `<g class="slp-slot-g slp-slot-group" data-slot-id="${slot.id}" onclick="slpClickSlot(event,'${slot.id}')" onpointerdown="fmtDragStart(event,'slp','${slot.id}')" oncontextmenu="fmtContextMenu(event,'slp','${slot.id}')" transform="translate(${_pitchXY(slot).x},${_pitchXY(slot).y})" style="cursor:${slpState.editing?'move':'pointer'};" ${gFilter}>
+    return `<g class="slp-slot-g slp-slot-group" data-slot-id="${slot.id}" onclick="slpClickSlot(event,'${slot.id}')" onpointerdown="_fmtArm(event,'slp','${slot.id}',_fmtOnce&&_fmtOnce.pl==='slp'&&_fmtOnce.slotId==='${slot.id}')" oncontextmenu="fmtContextMenu(event,'slp','${slot.id}')" transform="translate(${_pitchXY(slot).x},${_pitchXY(slot).y})" style="cursor:${slpState.editing?'move':'pointer'};" ${gFilter}>
       <circle r="${isSel?R+2:R}" style="fill:${fillColor};stroke:${ringColor};stroke-width:${isSel?'2.5':'1.8'};" ${dashArr}/>
       ${_hxs?`<text class="slp-pos" y="4" text-anchor="middle" fill="${count>0?'#F2C230':'#fff'}">${slot.lbl}</text>`
         :`<text y="3" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="11" fill="${count>0?'#fff':'rgba(255,255,255,.85)'}" letter-spacing="1">${slot.lbl}</text>`}
@@ -42654,8 +42735,11 @@ function fmtDragStart(e,planner,slotId){
 }
 function fmtDragMove(e){
   if(!_fmtDrag)return;
-  const {planner,slotId,rect,vb}=_fmtDrag;
-  const _u=_pitchUnmap((e.clientX-rect.left)/rect.width*vb.width,(e.clientY-rect.top)/rect.height*vb.height);
+  const {planner,slotId,rect,vb,svg}=_fmtDrag;
+  let _sx,_sy;
+  try{const m=svg&&svg.getScreenCTM();if(m){const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const l=pt.matrixTransform(m.inverse());_sx=l.x;_sy=l.y;}}catch(x){}
+  if(_sx===undefined){_sx=(e.clientX-rect.left)/rect.width*vb.width;_sy=(e.clientY-rect.top)/rect.height*vb.height;}
+  const _u=_pitchUnmap(_sx,_sy);
   const x=Math.max(15,Math.min(vb.width-15,_u.x));
   const y=Math.max(20,Math.min(vb.height-20,_u.y));
   const state=planner==='slp'?slpState:lpState;
@@ -42668,28 +42752,146 @@ function fmtDragMove(e){
 function fmtDragEnd(){
   if(_fmtDrag){
     document.removeEventListener('pointermove',fmtDragMove);
+    const pl=_fmtDrag.planner;_fmtDrag=null;window._fmtDragId=null;
+    document.querySelectorAll('.fmt-dragging').forEach(g=>g.classList.remove('fmt-dragging'));
+    _fmtBtns(pl);
+    if(pl==='slp')slpRender();else lpRender();
+    return;
   }
   _fmtDrag=null;
+}
+// ── 1.2.153: positions without a mode ───────────────────────────────────────
+function _fmtIsCustom(st){
+  return !!(st&&st.customSlots&&typeof st.customSlots==='object'&&Object.keys(st.customSlots).some(k=>st.customSlots[k]&&Object.keys(st.customSlots[k]).length));
+}
+function _fmtBtns(pl){
+  if(pl==='slp')renderFmtBtns('slp-fmt-btns',slpState.formation,'slpSetFormation');
+  else renderFmtBtns('lp-fmt-btns',lpState.formation,'lpSetFormation');
+}
+function _fmtMay(pl){
+  if(pl==='lp'&&typeof _lvView!=='undefined'&&_lvView)return false;   // another trainer's variant: look only
+  return typeof canEdit==='function'&&canEdit();
+}
+function fmtReset(pl){
+  if(!_fmtMay(pl)){if(pl==='lp'&&_lvView)_lvRO();return;}
+  const st=pl==='slp'?slpState:lpState;
+  st.customSlots=null;_fmtOnce=null;
+  _fmtBtns(pl);
+  if(pl==='slp'){slpRender();if(slpState.openSlot)slpRenderPopup(slpState.openSlot);}else lpRender();
+}
+var _fmtArmSt=null,_fmtNoClick=0,_fmtOnce=null,_fmtLastPtr='mouse';
+document.addEventListener('pointerdown',e=>{_fmtLastPtr=e.pointerType||'mouse';
+  // "Position verschieben" waits for a tap on the pitch (or a drag of that circle); a press beside the pitch ends it
+  if(_fmtOnce){const svg=document.getElementById(_fmtOnce.pl==='slp'?'slp-pitch':'lp-pitch');
+    if(!(svg&&e.target&&svg.contains(e.target)))_fmtOnceEnd();}
+},true);
+function _fmtOnceEnd(){
+  if(!_fmtOnce)return;const pl=_fmtOnce.pl;_fmtOnce=null;
+  document.querySelectorAll('.fmt-once').forEach(x=>x.classList.remove('fmt-once'));
+  if(pl==='slp')slpRender();else lpRender();
+}
+// "Position verschieben": a tap on the free pitch puts the circle there
+document.addEventListener('click',e=>{
+  if(!_fmtOnce)return;
+  const o=_fmtOnce,svg=document.getElementById(o.pl==='slp'?'slp-pitch':'lp-pitch');
+  if(!svg||!e.target||!svg.contains(e.target))return;
+  const g=e.target.closest('[data-slot],[data-slot-id]');
+  if(g){const id=g.getAttribute('data-slot')||g.getAttribute('data-slot-id');if(id===o.slotId){e.stopPropagation();e.preventDefault();_fmtOnceEnd();}return;}
+  e.stopPropagation();e.preventDefault();
+  if(!_fmtMay(o.pl)){_fmtOnceEnd();return;}
+  _fmtDrag={planner:o.pl,slotId:o.slotId,svg,rect:svg.getBoundingClientRect(),vb:svg.viewBox.baseVal};
+  fmtDragMove(e);
+  _fmtOnce=null;document.querySelectorAll('.fmt-once').forEach(x=>x.classList.remove('fmt-once'));
+  fmtDragEnd();
+},true);
+// a finger dragging a circle must not scroll the page
+document.addEventListener('touchmove',e=>{if(_fmtDrag)e.preventDefault();},{passive:false});
+function _fmtArm(e,pl,slotId,now){
+  if(!_fmtMay(pl))return false;
+  if(e.pointerType==='mouse'&&e.button!==0)return false;
+  if(e.pointerType==='touch')return false;   // a finger: tap the circle (window), "Position verschieben", tap the place
+  const touch=false;
+  _fmtArmSt={pl,slotId,x:e.clientX,y:e.clientY,touch,moved:false,t:null};
+  document.addEventListener('pointermove',_fmtArmMove);
+  document.addEventListener('pointerup',_fmtArmEnd);
+  document.addEventListener('pointercancel',_fmtArmEnd);
+  if(now)_fmtBegin();
+  else if(touch)_fmtArmSt.t=setTimeout(()=>{if(_fmtArmSt&&!_fmtDrag){_fmtBegin();try{navigator.vibrate&&navigator.vibrate(8);}catch(x){}}},350);
+  return true;
+}
+function _fmtArmMove(e){
+  const a=_fmtArmSt;if(!a)return;
+  const d=Math.hypot(e.clientX-a.x,e.clientY-a.y);
+  if(!_fmtDrag){
+    if(a.touch){if(d>8)_fmtArmEnd();return;}   // the finger moved before holding: a scroll
+    if(d>5){_fmtBegin();}else return;
+  }
+  if(d>3)a.moved=true;
+}
+function _fmtBegin(){
+  const a=_fmtArmSt;if(!a)return;
+  const svg=document.getElementById(a.pl==='slp'?'slp-pitch':'lp-pitch');if(!svg)return;
+  _fmtDrag={planner:a.pl,slotId:a.slotId,svg,rect:svg.getBoundingClientRect(),vb:svg.viewBox.baseVal};
+  document.addEventListener('pointermove',fmtDragMove);
+  if(a.pl==='slp'){if(slpState.openSlot)slpClosePopup();}else lpClosePopup();
+  const g=document.querySelector(a.pl==='slp'?`#slp-slots [data-slot-id="${a.slotId}"]`:`#lp-slots [data-slot="${a.slotId}"]`);
+  if(g)g.classList.add('fmt-dragging');
+  window._fmtDragId=a.pl+':'+a.slotId;
+}
+function _fmtArmEnd(){
+  document.removeEventListener('pointermove',_fmtArmMove);
+  document.removeEventListener('pointerup',_fmtArmEnd);
+  document.removeEventListener('pointercancel',_fmtArmEnd);
+  const a=_fmtArmSt;_fmtArmSt=null;
+  if(a&&a.t)clearTimeout(a.t);
+  if(_fmtDrag){
+    if(a&&a.moved){_fmtNoClick=Date.now();_fmtOnce=null;document.querySelectorAll('.fmt-once').forEach(x=>x.classList.remove('fmt-once'));}
+    fmtDragEnd();
+  }
+}
+function _fmtClickBlocked(){return Date.now()-_fmtNoClick<450;}
+// the window of a position: rename it, move it
+function fmtMoveOnce(pl,slotId){
+  if(!_fmtMay(pl))return;
+  if(pl==='slp')slpClosePopup();else lpClosePopup();
+  _fmtOnce={pl,slotId};
+  if(pl==='slp')slpRender();else lpRender();
+  const g=document.querySelector(pl==='slp'?`#slp-slots [data-slot-id="${slotId}"]`:`#lp-slots [data-slot="${slotId}"]`);
+  if(g)g.classList.add('fmt-once');
+  if(typeof showSaveFlash==='function')showSaveFlash('Neue Stelle antippen – oder den Kreis ziehen');
+}
+function _fmtFoot(pl,slotId){
+  const el=document.getElementById(pl+'-popup-fmt');if(!el)return;
+  const st=pl==='slp'?slpState:lpState;
+  const slot=fmtSlots(st.formation,st.customSlots).find(x=>x.id===slotId);
+  if(!slot||!_fmtMay(pl)){el.innerHTML='';el.hidden=true;return;}
+  el.hidden=false;
+  el.innerHTML='<div class="fmt-pf-h">Position ändern</div><div class="fmt-pf-chips">'
+    +POS_OPTIONS.map(p=>`<button type="button" class="fmt-chip${p===slot.lbl?' on':''}" onclick="fmtSetPos('${pl}','${slotId}','${p}')">${p}</button>`).join('')
+    +`</div><button type="button" class="fmt-mv" onclick="fmtMoveOnce('${pl}','${slotId}')">Position verschieben</button>`;
+  // the window grew: keep it inside the screen on the computer (the phone shows it as a sheet)
+  setTimeout(()=>{const pop=document.getElementById(pl+'-popup');if(!pop||pop.style.display==='none'||innerWidth<768)return;
+    const r=pop.getBoundingClientRect();if(r.bottom>innerHeight-8)pop.style.top=Math.max(8,innerHeight-8-r.height)+'px';},0);
 }
 
 // Right-click on slot in edit mode → show position picker
 const POS_OPTIONS=['TW','RV','LV','IV','6er','8er','10er','RF','LF','ST'];
 function fmtContextMenu(e,planner,slotId){
-  if(planner==='slp'&&!slpState.editing)return;
-  if(planner==='lp'&&!lpState.editing)return;
+  if(_fmtLastPtr==='touch'||_fmtArmSt||_fmtDrag||(typeof _lpDragging!=='undefined'&&_lpDragging)){e.preventDefault();return;}
+  if(!_fmtMay(planner))return;
   e.preventDefault();e.stopPropagation();
   // Remove any existing menu
   const old=document.getElementById('fmt-pos-menu');
   if(old)old.remove();
-  const fmt=planner==='slp'?slpState.formation:lpState.formation;
-  const slots=FORMATIONS[fmt];
-  if(!slots)return;
+  const _stc=planner==='slp'?slpState:lpState;
+  const slots=fmtSlots(_stc.formation,_stc.customSlots);
+  if(!slots||!slots.length)return;
   const slot=slots.find(s=>s.id===slotId);
   if(!slot)return;
   const menu=document.createElement('div');
   menu.id='fmt-pos-menu';
   menu.style.cssText='position:fixed;z-index:99999;background:color-mix(in srgb,var(--planner-mid) 50%,var(--planner-dark));border:1px solid rgba(255,255,255,.18);border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.55);padding:5px 0;min-width:120px;';
-  menu.innerHTML='<div style="padding:6px 12px;font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px;">Position wählen</div>'+
+  menu.innerHTML='<div style="padding:6px 12px;font-size:.6rem;font-weight:700;letter-spacing:0;color:rgba(255,255,255,.6);border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px;">Position wählen</div>'+
     POS_OPTIONS.map(p=>{
       const bcol=PB_COLORS[p]||'#ddd;color:#333';
       const isCur=p===slot.lbl;
@@ -42716,6 +42918,7 @@ function fmtContextMenu(e,planner,slotId){
   },10);
 }
 function fmtSetPos(planner,slotId,newPos){
+  if(!_fmtMay(planner))return;
   const state=planner==='slp'?slpState:lpState;
   if(!state.customSlots||typeof state.customSlots!=='object')state.customSlots={};
   if(!state.customSlots[slotId])state.customSlots[slotId]={};
@@ -42724,13 +42927,16 @@ function fmtSetPos(planner,slotId,newPos){
   // Close menu
   const menu=document.getElementById('fmt-pos-menu');
   if(menu)menu.remove();
-  // Re-render only (save happens on save button)
-  if(planner==='slp')slpRender();
-  else lpRender();
+  // Re-render only (save happens on save button); the open window shows the new name
+  _fmtBtns(planner);
+  if(planner==='slp'){slpRender();if(slpState.openSlot===slotId)slpRenderPopup(slotId);}
+  else{lpRender();const t=document.getElementById('lp-popup-title');const p=document.getElementById('lp-popup');
+    if(t&&p&&p.style.display!=='none'&&lpState.openSlot===slotId)t.textContent=newPos+' – Spieler wählen';}
 }
 
 function slpClickSlot(e,slotId){
   e.stopPropagation();
+  if(_fmtClickBlocked())return;   // the circle was just moved
   if(slpState.editing)return; // edit mode: clicks don't open popup
   if(slpState.openSlot===slotId){slpClosePopup();return;}
   if(typeof _navArm==='function')_navArm(); // inside the tap → back closes the picker first
@@ -42773,6 +42979,7 @@ function slpRenderPopup(slotId){
   
   const titleEl=document.getElementById('slp-popup-title');
   if(titleEl)titleEl.textContent=slot.lbl+' – Spieler zuweisen';
+  try{_fmtFoot('slp',slotId);}catch(e){}
   
   // Assigned players with their level (1.2.144: no order any more)
   const assignedEl=document.getElementById('slp-popup-assigned');
@@ -43457,6 +43664,7 @@ _pubCleanupSchedule();
     <div id="lp-popup-current"></div>
     <div class="slp-sb-label" style="font-size:.57rem;margin-bottom:5px;">Anderen Spieler wählen:</div>
     <div class="slp-player-picker" id="lp-popup-picker"></div>
+    <div class="fmt-pf" id="lp-popup-fmt" hidden></div>
     <button class="slp-popup-close" onclick="lpClosePopup()">Schließen</button>
   </div>
   <div class="lp-body">
@@ -43582,6 +43790,7 @@ _pubCleanupSchedule();
       <button type="button" class="set-nav-it" data-sec="verein" onclick="settingsShow('verein')"><span class="set-nav-ic">🛡</span><span class="set-nav-tx"><b>Verein</b><small>Name, Logo, Datenschutz</small></span></button>
       <button type="button" class="set-nav-it" data-sec="team" onclick="settingsShow('team')"><span class="set-nav-ic">👥</span><span class="set-nav-tx"><b>Mannschaft</b><small>Titelbild, Regeln, Anzeige der Spieler</small></span></button>
       <button type="button" class="set-nav-it" data-sec="trainer" onclick="settingsShow('trainer')"><span class="set-nav-ic">🎽</span><span class="set-nav-tx"><b>Trainerteam</b><small>Trainer, Zugang, Rechte</small></span></button>
+      <button type="button" class="set-nav-it" data-sec="verwaltung" onclick="settingsShow('verwaltung')"><span class="set-nav-ic">🛠</span><span class="set-nav-tx"><b>Verwaltung</b><small>Mannschaften, Wartung, Online-Sync</small></span></button>
       <button type="button" class="set-nav-it" data-sec="daten" onclick="settingsShow('daten')"><span class="set-nav-ic">💾</span><span class="set-nav-tx"><b>Daten</b><small>Backups, Papierkorb, Verlauf</small></span></button>
     </nav>
     <div class="set-pane" id="set-pane">
@@ -43733,6 +43942,15 @@ _pubCleanupSchedule();
       <button type="button" class="set-link" onclick="openBackupModal()"><span class="set-nav-ic">💾</span><span class="set-nav-tx"><b>Backups</b><small>Sicherung erstellen, laden oder wiederherstellen</small></span><span class="set-link-go">›</span></button>
       <button type="button" class="set-link" onclick="openTrash()"><span class="set-nav-ic">🗑</span><span class="set-nav-tx"><b>Papierkorb <span id="set-trash-count"></span></b><small>Gelöschte Spieler und Termine zurückholen</small></span><span class="set-link-go">›</span></button>
       <button type="button" class="set-link" onclick="openAuditLog()"><span class="set-nav-ic">📜</span><span class="set-nav-tx"><b>Verlauf</b><small>Wer hat wann was geändert</small></span><span class="set-link-go">›</span></button>
+    </section>
+
+    <section class="set-sec" data-sec="verwaltung">
+      <h4 class="set-sec-h">🛠 Verwaltung</h4>
+      <p class="set-sec-sub">Nur für Administratoren. Trainer verwaltest du unter Trainerteam, Backups unter Daten.</p>
+      <div class="vw-blk" id="vw-teams"><h5 class="vw-h">Mannschaften</h5><div id="vw-host-teams"></div></div>
+      <div class="vw-blk" id="vw-wartung"><h5 class="vw-h">Wartung</h5><div id="vw-host-wartung"></div></div>
+      <div class="vw-blk" id="vw-sync"><h5 class="vw-h">Online-Sync</h5><div id="vw-host-sync"></div></div>
+      <div class="vw-blk" id="vw-reset"><div id="vw-host-reset"></div></div>
     </section>
 
     <!-- Heute: Backups / Papierkorb / Verlauf open here as sub-pages of Daten.
@@ -44107,6 +44325,7 @@ _pubCleanupSchedule();
     <div class="slp-assigned" id="slp-popup-assigned"></div>
     <div class="slp-sb-label" style="font-size:.57rem;margin-bottom:5px;">Hinzufügen:</div>
     <div class="slp-player-picker" id="slp-popup-picker"></div>
+    <div class="fmt-pf" id="slp-popup-fmt" hidden></div>
     <button class="slp-popup-close" onclick="slpClosePopup()">Schließen</button>
   </div>
 </div>
