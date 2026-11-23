@@ -5,6 +5,8 @@
 // a tool is open now lies above it and gets its own z-index back when closed.
 // 1.2.153: in Heute „Administration“ opens Einstellungen → Verwaltung — that
 // page must lie above the tool as well (pages carry z-index 480 !important).
+// 1.2.154: a page closes the tool first (so the navigation marks it) — the
+// window check (Tastenkürzel) then runs with the tool opened again.
 // node tools/tests/t_ueber152.js [index.html]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
@@ -26,7 +28,8 @@ const onTop=(p,id)=>p.evaluate(id=>{const m=document.querySelector('#'+id+' .mob
   ok(await onTop(p,tgt),tag+'Administration ('+tgt+') liegt über dem offenen Werkzeug');
   await p.evaluate(t=>closeM(t),tgt);await p.waitForTimeout(200);
   const z=await p.evaluate(t=>{const m=document.getElementById(t);return {z:m.style.zIndex,flag:m.dataset.zUp!==undefined,tool:document.getElementById('moLineup').classList.contains('open')||document.getElementById('moSeasonLineup').classList.contains('open')};},tgt);
-  ok(z.z===''&&!z.flag&&z.tool,tag+'nach dem Schließen: eigene Ebene zurück, Werkzeug noch offen');
+  ok(z.z===''&&!z.flag&&(tgt==='moSettings'?!z.tool:z.tool),tag+'nach dem Schließen: eigene Ebene zurück'+(tgt==='moSettings'?' (Seite: Werkzeug wurde geschlossen)':', Werkzeug noch offen'));
+  if(!z.tool){if(tool==='saison'){await p.evaluate(()=>hxGo('team'));await p.waitForTimeout(300);await p.evaluate(()=>kaderGo('saison',1));}else await p.evaluate(()=>hxGo('lineup'));await p.waitForTimeout(700);}
   // a window with its own lower z-index (Tastenkürzel 610) as well
   await p.evaluate(()=>openM('moShortcuts'));await p.waitForTimeout(300);
   ok(await onTop(p,'moShortcuts'),tag+'auch „Tastenkürzel“ (eigene Ebene 610) liegt darüber');

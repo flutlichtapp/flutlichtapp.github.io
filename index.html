@@ -8360,8 +8360,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.153'; // v1.2.153: ohne „Bearbeiten“ – Positionen ziehen, im Fenster der Position umbenennen und verschieben, „Zurücksetzen“; Administration → Einstellungen „Verwaltung“
-const APP_VERSION_LABEL='1.2.153';
+const APP_VERSION='1.2.154'; // v1.2.154: Fix – „Administration“ bei offenem Spieltag/Saisonkader: Navigation zeigt „Einstellungen“ (das Werkzeug schließt wie bei jedem Wechsel; ebenso „Konto“ aus dem Menü)
+const APP_VERSION_LABEL='1.2.154';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -15783,6 +15783,10 @@ function _hxSettingsSub(key){
   return false;
 }
 function openSettings(sec){
+  if(typeof _hxOn==='function'&&_hxOn()&&typeof _hxToolOpen==='function'&&_hxToolOpen()&&typeof _hxCloseTools==='function'){
+    _hxCloseTools().then(ok=>{if(ok&&!_hxToolOpen())openSettings(sec);else if(typeof hxSyncNav==='function')hxSyncNav();});
+    return;
+  }
   _setFill();
   if(_setVisible('team'))try{renderFocList();}catch(e){}
   if(sec&&!_setVisible(sec))sec='';
@@ -15832,6 +15836,10 @@ function _vwOpen(tab){
   if(!(typeof _hxOn==='function'&&_hxOn()&&typeof isAdmin==='function'&&isAdmin())){_vwUnmount();return false;}
   _vwMount();
   const mo=document.getElementById('moAdmin');if(mo&&mo.classList.contains('open'))mo.classList.remove('open');
+  if(typeof _hxToolOpen==='function'&&_hxToolOpen()&&typeof _hxCloseTools==='function'){
+    _hxCloseTools().then(ok=>{if(ok&&!_hxToolOpen())_vwOpen(tab);else if(typeof hxSyncNav==='function')hxSyncNav();});
+    return true;
+  }
   if(tab==='trainers'&&document.querySelector('#moSettings .set-sec.on[data-sec="verwaltung"]'))return true;   // the window's first tab: stay in Verwaltung
   openSettings('verwaltung');
   _vwRender();
