@@ -5440,7 +5440,7 @@ body.design-heute #moLineup > :is(#lp-unavail-bar,#lp-disc-bar){margin:12px max(
   body.design-heute #moSeasonLineup:not(.slp-empty) .lp-ntop .slp-dhint{display:none !important;}
   body.design-heute .lp-ntop .lp-hint{font-style:normal !important;}
   /* the column's cards: one shape */
-  body.design-heute .lp-notes :is(.lp-unavail-bar,.lp-disc-bar){display:block !important;padding:10px 12px !important;}
+  body.design-heute .lp-notes :is(.lp-unavail-bar,.lp-disc-bar):has(.lp-todo-r){display:block !important;padding:10px 12px !important;}
   body.design-heute .lp-notes .lp-todo-first{margin-bottom:-10px;}
 }
 /* "Zu klären" rows (all widths, Heute) */
@@ -8315,8 +8315,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.151'; // v1.2.151: Spalte links geordnet (Aufstellung, Zu klären, Nicht dabei), Klartext statt „F“/„1×U“, Telefon: „Mehr“ schließt Saisonkader/Aufstellung, eine Fläche unter Feld und Bank
-const APP_VERSION_LABEL='1.2.151';
+const APP_VERSION='1.2.152'; // v1.2.152: Fixes – leere „Zu klären“-Kästen in der Spalte links (seit 1.2.151); Fenster (Administration u. a.) öffnen über offenem Spieltag/Saisonkader statt darunter
+const APP_VERSION_LABEL='1.2.152';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -35308,6 +35308,12 @@ function openM(id){
   _moEl._moSnap=null;   // what was in the fields is read again at the first touch
   _moTapOn(_moEl);
   _moEl.classList.add('open');
+  try{
+    const _tool=typeof _hxToolOpen==='function'&&_hxToolOpen();
+    if(_tool&&_tool!==id){const z=parseInt(getComputedStyle(_moEl).zIndex,10)||0;
+      if(z<850){if(_moEl.dataset.zUp===undefined)_moEl.dataset.zUp=_moEl.style.zIndex||'';_moEl.style.zIndex='850';}}
+    else if(!_tool&&_moEl.dataset.zUp!==undefined){_moEl.style.zIndex=_moEl.dataset.zUp;delete _moEl.dataset.zUp;}
+  }catch(e){}
   requestAnimationFrame(()=>{try{_syncCloseHeight(_moEl);}catch(e){}});
   // Mark plain ✕ close buttons so design "Heute" can draw them round
   // (no effect in Klassisch — only Heute rules use the class).
@@ -35369,6 +35375,7 @@ function closeM(id){
   }
   document.getElementById(id).classList.remove('open');
   document.getElementById(id)._moSnap=null;
+  {const _e=document.getElementById(id);if(_e.dataset.zUp!==undefined){_e.style.zIndex=_e.dataset.zUp;delete _e.dataset.zUp;}}
   // Design "Heute": pages stay under dialogs — refresh the Kader page when a
   // dialog opened from it closes, and move the nav highlight when a page closes.
   if(typeof _hxOn==='function'&&_hxOn()){

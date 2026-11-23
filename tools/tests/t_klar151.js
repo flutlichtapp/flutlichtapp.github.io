@@ -13,6 +13,8 @@
 //    the bench had two gradients (a seam). One surface now.
 //  • „на телефоне, если открыт Saisonkader, нельзя перейти на Spieltag“ — since
 //    1.2.143 the rows of „Mehr“ opened their page under an open tool.
+//  • 1.2.152: with nothing to clarify the column showed two empty orange boxes
+//    (Claude's mistake in 1.2.151; every check here had something to clarify).
 // node tools/tests/t_klar151.js [index.html]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
@@ -36,6 +38,9 @@ const center=p=>p.evaluate(()=>{const e=document.elementFromPoint(innerWidth/2,i
   const e0=await p.evaluate(()=>{const v=e=>!!(e&&e.getClientRects().length&&getComputedStyle(e).display!=='none');
     return {hint:v(document.getElementById('lp-hint')),hintT:document.getElementById('lp-hint').textContent,sec:document.querySelectorAll('#lp-kader-list .lp-sec-h').length,lines:document.querySelectorAll('#lp-kader-list .lp-line-h').length};});
   if(wide)ok(e0.hint&&e0.hintT==='Position antippen, dann Spieler wählen',tag+'leeres Feld: Hinweis „'+e0.hintT+'“');
+  // 1.2.152: nothing to clarify → no box at all (1.2.151 showed two empty orange boxes in the column)
+  const eb=await p.evaluate(()=>[...document.querySelectorAll('#lp-unavail-bar,#lp-disc-bar')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0;}).length);
+  ok(eb===0,tag+'leeres Feld: kein leerer „Zu klären“-Kasten ('+eb+')');
   ok(e0.sec===0&&e0.lines===4,tag+'leeres Feld: Liste nach Linien wie bisher');
   const f=await p.evaluate(`(${fill.toString()})()`);await p.waitForTimeout(150);
   // ── the column
