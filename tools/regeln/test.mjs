@@ -26,7 +26,7 @@ ok(rr.ok, 'правила загружены (' + rr.status + ')' + (rr.ok ? '' 
 if (!rr.ok) process.exit(1);
 
 const now = Date.now(), DAY = 864e5;
-const inv = (o) => Object.assign({ role: 'trainer', name: 'Jimmy', trainerId: 't2', t: now, exp: now + 7 * DAY, by: 'uAdmin', byName: 'Artem' }, o);
+const inv = (o) => Object.assign({ role: 'trainer', name: 'Kai', trainerId: 't2', t: now, exp: now + 7 * DAY, by: 'uAdmin', byName: 'Artem' }, o);
 // seed: an admin (as the bootstrap job would make it), a trainer member, invites
 await req('PUT', '/', {
   fcf_data: { version: 20, teamList: ['U19'], seasonList: ['2026/27'], db: { 'U19__2026__SL__27': { players: { __arr: 1, v: [] } } } },
@@ -50,8 +50,8 @@ await req('PUT', '/', {
   fcf_media: { photos: { m1: 'data:image/png;base64,AAAA' }, rev: { m1: now } },
   __backups: { 0: { ts: now, data: { version: 20 } } },
   __backups_meta: { lastAutoDay: 'Wed Oct 28 2026' },
-  __presence: { s1: { name: 'Jimmy', lastSeen: now } },
-  __trainerActivity: { jimmy: { name: 'Jimmy', lastSeen: now } },
+  __presence: { s1: { name: 'Kai', lastSeen: now } },
+  __trainerActivity: { kai: { name: 'Kai', lastSeen: now } },
   fcf_plans: { U19: { meta: { seeded: true } } }
 }, 'owner');
 
@@ -205,7 +205,7 @@ for (const n of ['fcf_data', 'fcf_media', '__backups', '__backups_meta', '__pres
 }
 await can('админу читать fcf_data', req('GET', 'fcf_data', undefined, 'uAdmin'));
 await can('тренеру читать список тренеров (вход)', req('GET', 'fcf_data/version', undefined, 'uTrainer'));
-await can('тренеру записать в fcf_data', req('PATCH', 'fcf_data', { _lastSaveBy: 'Jimmy', _lastSaveTs: now }, 'uTrainer'));
+await can('тренеру записать в fcf_data', req('PATCH', 'fcf_data', { _lastSaveBy: 'Kai', _lastSaveTs: now }, 'uTrainer'));
 await cannot('без входа записать в fcf_data', req('PATCH', 'fcf_data', { _lastSaveBy: 'X' }));
 await cannot('чужому аккаунту записать в fcf_data', req('PATCH', 'fcf_data', { _lastSaveBy: 'X' }, 'uStranger'));
 await cannot('без входа удалить копии', req('DELETE', '__backups'));
@@ -213,7 +213,7 @@ await can('тренеру записать копию', req('PUT', '__backups/1'
 await cannot('без входа записать фото', req('PUT', 'fcf_media/photos/m2', 'data:image/png;base64,BBBB'));
 await can('тренеру записать фото', req('PUT', 'fcf_media/photos/m2', 'data:image/png;base64,BBBB', 'uTrainer'));
 await cannot('без входа записать присутствие', req('PUT', '__presence/s2', { name: 'X', lastSeen: now }));
-await can('тренеру записать присутствие', req('PUT', '__presence/s2', { name: 'Jimmy', lastSeen: now }, 'uTrainer'));
+await can('тренеру записать присутствие', req('PUT', '__presence/s2', { name: 'Kai', lastSeen: now }, 'uTrainer'));
 await cannot('без входа включить напоминания команды', req('PUT', 'fcf_push/config/U19/rpe', true));
 await can('тренеру включить напоминания команды', req('PUT', 'fcf_push/config/U19/rpe', true, 'uTrainer'));
 await can('игроку записать своё устройство (без входа)', req('PUT', 'fcf_push/subs/p0123/d1', { e: 'https://push.example/x', k: { p256dh: 'a', auth: 'b' }, t: now }));

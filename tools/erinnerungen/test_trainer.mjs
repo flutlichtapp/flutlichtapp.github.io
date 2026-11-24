@@ -44,11 +44,11 @@ function world(edit) {
   const names = ['Max Müller', 'Ali Kaya', 'Tom Berg', 'Jonas Weber', 'Luca Rossi', 'Finn Schulz', 'Noah Becker'];
   const players = names.map((n, i) => ({ name: n, nr: i + 1, confirmToken: 'tok' + i, birthdate: '2008-0' + (1 + i) + '-1' + i,
     s: sess.map((s, j) => j < sess.findIndex(z => z.date === 'Do 15.10') ? 1 : 3) }));
-  const W = { sess, players, trainers: [{ name: 'Artem', teams: ['U19'] }, { name: 'Jimmy', teams: ['U19'] }, { name: 'Udo', teams: ['U17'] }],
+  const W = { sess, players, trainers: [{ name: 'Artem', teams: ['U19'] }, { name: 'Kai', teams: ['U19'] }, { name: 'Udo', teams: ['U17'] }],
     ua: { Artem: { rollCall: { enabled: false }, push: { late: true, lineup: true } } }, messages: [], meta: null, status: null,
     subs: {
       [trainerOwner('Artem')]: { a: dev('artem', { tp: 1, trainer: 'Artem' }) },
-      [trainerOwner('Jimmy')]: { a: dev('jimmy', { tp: 1, trainer: 'Jimmy' }) },
+      [trainerOwner('Kai')]: { a: dev('kai', { tp: 1, trainer: 'Kai' }) },
       [trainerOwner('Mallory')]: { a: dev('mallory', { tp: 1, trainer: 'Mallory' }) },       // not a trainer
       [trainerOwner('Udo')]: { a: dev('udo', { tp: 1, trainer: 'Udo' }) },                   // trainer of another team
       tFAKE00000000000000000000: { a: dev('fake', { tp: 1, trainer: 'Artem' }) },              // record not where it belongs
@@ -76,7 +76,7 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   let c = await run(db, at(21, 17, 52));
   ok(!B(c).length, 'evening before: not before 18:00');
   c = await run(db, at(21, 18, 7));
-  ok(B(c).map(x => x.to).sort().join(',') === 'artem,jimmy', 'evening before: both trainers of the team, nobody else: ' + B(c).map(x => x.to).sort().join(','));
+  ok(B(c).map(x => x.to).sort().join(',') === 'artem,kai', 'evening before: both trainers of the team, nobody else: ' + B(c).map(x => x.to).sort().join(','));
   const p = B(c)[0].p;
   ok(p.title === 'Morgen Geburtstag 🎂' && p.body === 'Ali Kaya wird 18. Morgen Training um 18:30.', 'text: ' + p.title + ' / ' + p.body);
   ok(p.url === 'https://flutlichtapp.de/?go=player&gi=1&gt=U19&gs=2026%2F27', 'link opens his profile: ' + p.url);
@@ -85,14 +85,14 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   c = await run(db, at(22, 7, 52));
   ok(!B(c).length, 'the day: nothing before 8:00');
   c = await run(db, at(22, 8, 7));
-  ok(B(c).map(x => x.to).sort().join(',') === 'artem,jimmy' && B(c)[0].p.title === 'Heute Geburtstag 🎉' && B(c)[0].p.body === 'Ali Kaya wird heute 18.', 'the day itself: ' + B(c).map(x => x.p.body).join(' | '));
+  ok(B(c).map(x => x.to).sort().join(',') === 'artem,kai' && B(c)[0].p.title === 'Heute Geburtstag 🎉' && B(c)[0].p.body === 'Ali Kaya wird heute 18.', 'the day itself: ' + B(c).map(x => x.p.body).join(' | '));
   c = await run(db, at(22, 8, 22));
   ok(!B(c).length, 'the day: once');
 }
 {
-  const { db } = world(W => { W.players[1].birthdate = '2008-10-21'; W.players[2].birthdate = '09.10.2009'.replace('09.10', '21.10'); W.ua.Jimmy = { push: { bday: false } }; });
+  const { db } = world(W => { W.players[1].birthdate = '2008-10-21'; W.players[2].birthdate = '09.10.2009'.replace('09.10', '21.10'); W.ua.Kai = { push: { bday: false } }; });
   const c = await run(db, at(21, 8, 7));
-  ok(B(c).map(x => x.to).sort().join(',') === 'artem' && B(c)[0].p.body === 'Ali Kaya (18) und Tom Berg (17) haben heute Geburtstag.', 'two at once, Jimmy switched birthdays off: ' + B(c).map(x => x.to).sort().join(',') + ' ' + (B(c)[0] || { p: {} }).p.body);
+  ok(B(c).map(x => x.to).sort().join(',') === 'artem' && B(c)[0].p.body === 'Ali Kaya (18) und Tom Berg (17) haben heute Geburtstag.', 'two at once, Kai switched birthdays off: ' + B(c).map(x => x.to).sort().join(',') + ' ' + (B(c)[0] || { p: {} }).p.body);
 }
 // ── roll call missing: training Tue 20.10 ──
 {
@@ -101,7 +101,7 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   ok(!T(c).filter(x => /^att/.test(x.p.tag)).length, 'roll call: not before 9:00');
   c = await run(db, at(21, 9, 7));
   const a = T(c).filter(x => /^att/.test(x.p.tag));
-  ok(a.map(x => x.to).sort().join() === 'artem,jimmy' && a[0].p.title === 'Anwesenheit fehlt'
+  ok(a.map(x => x.to).sort().join() === 'artem,kai' && a[0].p.title === 'Anwesenheit fehlt'
     && a[0].p.body === 'Training Di 20.10: noch nicht eingetragen. Ohne Eintrag zählen Karte und Statistik der Spieler nicht.', 'roll call missing: ' + (a[0] || { p: {} }).p.body);
   ok(a[0].p.url.includes('go=rc&gi=' + si('Di 20.10') + '&gt=U19'), 'link opens the roll call: ' + a[0].p.url);
   c = await run(db, at(21, 9, 22));
@@ -131,7 +131,7 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   c = await run(db, at(21, 19, 15));
   let l = T(c).filter(x => /^late/.test(x.p.tag));
   ok(l.map(x => x.to).join() === 'artem' && l[0].p.title === 'Absage: Training morgen 18:30' && l[0].p.body === 'Tom Berg hat abgesagt. Jetzt 4 dabei.',
-    'Tom cancels: only Artem (Jimmy left it off), excused Finn and Noah (no before) not: ' + l.map(x => x.to + ' ' + x.p.body).join(' | '));
+    'Tom cancels: only Artem (Kai left it off), excused Finn and Noah (no before) not: ' + l.map(x => x.to + ' ' + x.p.body).join(' | '));
   ok(l[0].p.url.includes('go=sess&gi=' + i), 'link opens the session');
   c = await run(db, at(21, 19, 30));
   ok(!T(c).filter(x => /^late/.test(x.p.tag)).length, 'once');
@@ -178,7 +178,7 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   ok(!R(c).length, 'Belastung: not before an hour after the end (20:52)');
   c = await run(db, at(22, 21, 7));
   const r = R(c);
-  ok(r.map(x => x.to).sort().join() === 'artem,jimmy', 'Belastung: both trainers: ' + r.map(x => x.to).join());
+  ok(r.map(x => x.to).sort().join() === 'artem,kai', 'Belastung: both trainers: ' + r.map(x => x.to).join());
   ok(r[0] && r[0].p.title === 'Belastung: 1 von 5 bewertet' && r[0].p.body === 'Training heute 18:30 – Erinnerung in die WhatsApp-Gruppe schicken? Der Text ist fertig.',
     'Belastung text: ' + (r[0] || { p: {} }).p.title + ' / ' + (r[0] || { p: {} }).p.body);
   ok(r[0] && r[0].p.url === 'https://flutlichtapp.de/?go=rpe&gi=' + si('Do 22.10') + '&gt=U19&gs=2026%2F27', 'Belastung link opens the overview: ' + (r[0] || { p: {} }).p.url);
@@ -192,12 +192,12 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   ({ db } = setup());
   c = await run(db, at(22, 21, 52));
   ok(!R(c).length, 'Belastung: the first round only at 21:52 (pause) – too late, nothing');
-  ({ db } = setup((W, i) => { W.sess[i].rpeGrp = { t: at(22, 20, 40), by: 'Jimmy' }; }));
+  ({ db } = setup((W, i) => { W.sess[i].rpeGrp = { t: at(22, 20, 40), by: 'Kai' }; }));
   c = await run(db, at(22, 21, 7));
   ok(!R(c).length, 'Belastung: a trainer already reminded the group – nothing');
-  ({ db } = setup((W, i) => { W.players[3].trial = '2026-10-01'; W.players[4].s[i] = 5; W.players[2].s[i] = 2; W.ua.Jimmy = { push: { rpeask: false } }; }));
+  ({ db } = setup((W, i) => { W.players[3].trial = '2026-10-01'; W.players[4].s[i] = 5; W.players[2].s[i] = 2; W.ua.Kai = { push: { rpeask: false } }; }));
   c = await run(db, at(22, 21, 7));
-  ok(R(c).map(x => x.to).join() === 'artem' && R(c)[0].p.title === 'Belastung: 1 von 3 bewertet', 'Probetraining counts, N and E do not, Jimmy switched it off: ' + R(c).map(x => x.to + ' ' + x.p.title).join());
+  ok(R(c).map(x => x.to).join() === 'artem' && R(c)[0].p.title === 'Belastung: 1 von 3 bewertet', 'Probetraining counts, N and E do not, Kai switched it off: ' + R(c).map(x => x.to + ' ' + x.p.title).join());
   ({ db } = world(W => { const i = W.sess.findIndex(s => s.date === 'So 25.10'); W.players.forEach(p => { p.s[i] = 1; }); }));
   c = await run(db, at(25, 15, 37));
   ok(!R(c).length, 'match: nothing right after the game (15:37) – the next morning instead');
@@ -220,13 +220,13 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
 {
   const n = at(21, 12, 0);
   const { db } = world(W => { W.messages = [
-    { id: 'msg_1', from: 'Jimmy', to: '*', text: 'Halle ist morgen zu.', ts: n - 10 * 60e3 },
+    { id: 'msg_1', from: 'Kai', to: '*', text: 'Halle ist morgen zu.', ts: n - 10 * 60e3 },
     { id: 'msg_2', from: 'Artem', to: '*', text: 'Ok', ts: n - 5 * 60e3 },
     { id: 'msg_3', from: 'Udo', to: 'Artem', text: 'Hast du Hütchen?', ts: n - 60e3 },
-    { id: 'msg_old', from: 'Jimmy', to: '*', text: 'alt', ts: n - 30 * 3600e3 }]; });
+    { id: 'msg_old', from: 'Kai', to: '*', text: 'alt', ts: n - 30 * 3600e3 }]; });
   let c = await run(db, at(21, 12, 7));
   const m = T(c).filter(x => /^msg/.test(x.p.tag)).map(x => x.to + ':' + x.p.title + ':' + x.p.body).sort();
-  ok(m.join(' | ') === 'artem:Nachricht von Jimmy:Halle ist morgen zu. | artem:Nachricht von Udo:Hast du Hütchen? | jimmy:Nachricht von Artem:Ok', 'messages: to all / to one, not your own, not old: ' + m.join(' | '));
+  ok(m.join(' | ') === 'artem:Nachricht von Kai:Halle ist morgen zu. | artem:Nachricht von Udo:Hast du Hütchen? | kai:Nachricht von Artem:Ok', 'messages: to all / to one, not your own, not old: ' + m.join(' | '));
   ok(T(c).find(x => x.p.tag === 'msg-msg_1').p.url === 'https://flutlichtapp.de/?go=msg&gid=msg_1', 'link opens the message');
   c = await run(db, at(21, 12, 22));
   ok(!T(c).filter(x => /^msg/.test(x.p.tag)).length, 'once');
@@ -238,7 +238,7 @@ ok(JSON.stringify(kindsOf(null)) === JSON.stringify(TKINDS) && kindsOf({ bday: f
   const { db } = world(W => { W.meta = { t: at(18, 6, 3), day: 20261018 }; W.status = { t: at(21, 10, 7), day: 20261021, sent: 2 }; });
   const c = await run(db, at(21, 13, 22));
   const t = T(c).filter(x => /^tech/.test(x.p.tag)).map(x => x.to + ':' + x.p.title).sort();
-  ok(t.join(' | ') === 'artem:Erinnerungen hatten Pause | artem:Sicherung läuft nicht | jimmy:Erinnerungen hatten Pause | jimmy:Sicherung läuft nicht', 'backup 3 days old, rounds paused 3 h: ' + t.join(' | '));
+  ok(t.join(' | ') === 'artem:Erinnerungen hatten Pause | artem:Sicherung läuft nicht | kai:Erinnerungen hatten Pause | kai:Sicherung läuft nicht', 'backup 3 days old, rounds paused 3 h: ' + t.join(' | '));
   ok(T(c).find(x => x.p.tag === 'tech-safe').p.body === 'Die letzte geschützte Tageskopie ist 3 Tage alt. Auf GitHub unter Actions → Sicherung nachsehen.', 'backup text');
   ok(T(c).find(x => x.p.tag === 'tech-safe').p.url === 'https://flutlichtapp.de/?go=backup', 'link opens the backups');
   const c2 = await run(db, at(21, 13, 37));

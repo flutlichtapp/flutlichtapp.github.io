@@ -9,13 +9,13 @@
 // node tools/tests/t_ansehen155.js [index.html]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
-// the head coach saves a lineup (and Jimmy keeps a different draft variant)
+// the head coach saves a lineup (and Kai keeps a different draft variant)
 const prep=()=>{hxGo('lineup');};
 const save=()=>{const sl=fmtSlots(lpState.formation,lpState.customSlots);const P=cd().players;const used=new Set([1,10]);lpState.slots={};
   sl.forEach(s=>{const i=P.findIndex((p,i)=>!used.has(i)&&p.pos===s.pos[0]);if(i>=0){used.add(i);lpState.slots[s.id]=i;}});
   lpState.subs=[P.findIndex((p,i)=>!used.has(i))];lpRender();lpSave();
   const key=_mlKey(UI.currentTeam,UI.currentSeason,lpState.sessIdx);const ml=G.matchLineups[key];
-  ml.vars=ml.vars||{};ml.vars['t_jimmy']={...JSON.parse(JSON.stringify(ml)),slots:{},subs:[],by:'Jimmy',savedAt:Date.now()};delete ml.vars['t_jimmy'].vars;
+  ml.vars=ml.vars||{};ml.vars['t_kai']={...JSON.parse(JSON.stringify(ml)),slots:{},subs:[],by:'Kai',savedAt:Date.now()};delete ml.vars['t_kai'].vars;
   closeLineupPlanner();return {n:Object.keys(ml.slots).length};};
 const asViewer=pub=>{const D=cd(),si=findNextMatchIdx();
   if(pub)D.sessions[si].squad={p:D.players.filter((x,i)=>i!==1&&i!==10).map(x=>x.name),t:Date.now()-3600e3,meet:'12:00',where:'',by:'Admin'};
@@ -43,7 +43,7 @@ const look=()=>{const el=document.getElementById('moLineup');const vis=e=>!!(e&&
   ok(r.hidden.length===0,tag+'keine Knöpfe zum Ändern'+(r.hidden.length?': '+r.hidden.join(' '):''));
   ok(r.links&&r.sel,tag+'Gegner/Matchplan da, Schema nur lesbar');
   if(pub){
-    ok(!r.wait&&r.filled===sv.n&&r.seats===1,tag+'die geltende Aufstellung ('+r.filled+' auf dem Feld, 1 Bank) – nicht Jimmys leerer Entwurf');
+    ok(!r.wait&&r.filled===sv.n&&r.seats===1,tag+'die geltende Aufstellung ('+r.filled+' auf dem Feld, 1 Bank) – nicht Kais leerer Entwurf');
     ok(/Kader · 13 Spieler/.test(r.sq),tag+'Karte: „Kader · 13 Spieler …“');
   }else{
     ok(r.wait&&r.filled===0&&r.seats===0,tag+'Kader noch offen: keine Aufstellung zu sehen');
