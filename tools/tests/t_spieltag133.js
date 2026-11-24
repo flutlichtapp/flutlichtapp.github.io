@@ -73,11 +73,12 @@ const J=JSON.stringify;
   ok(r.id==='20261121-1'&&!r.old&&r.go==='hxSpieltag()','Neuigkeit „Spieltag: Aufstellung und Kader auf einem Blatt“ ersetzt die vom 18.11.');
   ok(!errs.length,'keine Fehler'+(errs.length?': '+errs[0]:''));await c.close();}
 
- // ── "Nur ansehen": the Tafel, nothing to change
+ // ── "Nur ansehen": Spieltag to look at (1.2.155; before: the Tafel), nothing to change
  {const {p,c,errs}=await open(b,{cu:{name:'Gast',role:'viewer',teams:['U19']}});
   await p.evaluate(()=>{localStorage.setItem('fcf_st_tab','aufstellung');hxGo('lineup');});await p.waitForTimeout(500);
   let r=await st(p);
-  ok(r.page==='spieltag'&&!r.head.length&&!r.tool&&(await p.evaluate(()=>document.getElementById('tmgr-h').textContent.trim()))==='Spieltag','„Nur ansehen“: Spieltag zeigt die Tafel, Titel „Spieltag“, ohne Reiter');
+  // 1.2.155: „Nur ansehen“ sees the Spieltag page (read only) instead of the Tafel — t_ansehen155
+  ok(await p.evaluate(()=>{const el=document.getElementById('moLineup');return el.classList.contains('open')&&el.classList.contains('lp-viewer')&&!document.getElementById('moTeamMgr').classList.contains('open');}),'„Nur ansehen“: Spieltag zeigt das Feld nur zum Ansehen (seit 1.2.155, vorher die Tafel)');
   await p.evaluate(()=>hxGo('team'));await p.waitForTimeout(400);
   r=await st(p);
   ok(J(r.pills)===J(['Spieler','Ziele','Videos']),'„Nur ansehen“: Kader ohne „Saisonkader“');

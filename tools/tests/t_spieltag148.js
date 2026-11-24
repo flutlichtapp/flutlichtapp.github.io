@@ -3,7 +3,8 @@
 // first and pick the squad from it. Game card: squad state, „Kader festlegen“
 // (who is on the pitch and the bench, saved or not), Gegner, Matchplan; on the
 // phone also per line. Players beside the pitch by line with "x von y" and the
-// last five sessions. No second "Kader" — the Tafel stays for "Nur ansehen".
+// last five sessions. No second "Kader" — the Tafel stays for "Nur ansehen"
+// (1.2.155: no more — „Nur ansehen“ sees the Spieltag page, read only).
 // node tools/tests/t_spieltag148.js [index.html]
 const {chromium}=require('playwright');const {NOW,setupTrainer,HTML}=require('./fx.js');
 let fails=0;const ok=(c,m)=>{console.log((c?'ok  ':'FAIL')+' '+m);if(!c)fails++;};
@@ -66,12 +67,14 @@ const card=p=>p.evaluate(()=>{const g=document.getElementById('lp-gsq');return {
     ok(await p.evaluate(()=>document.getElementById('lp-htitle').innerText.trim()==='Aufstellung'),tag+'aus einer Spielkarte: Titel „Aufstellung“');
   }
   ok(!errs.length,tag+'keine Fehler'+(errs.length?': '+errs[0]:''));await c.close();}
- // "Nur ansehen": the Tafel, titled Spieltag
+ // "Nur ansehen": the Spieltag page, read only (1.2.155; before: the Tafel)
  {const c=await b.newContext({viewport:{width:1536,height:864}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   await p.clock.install({time:NOW});await p.goto('file://'+HTML);await p.waitForTimeout(600);
   await p.evaluate(`(${setupTrainer.toString()})({})`);
   await p.evaluate(()=>{CU={name:'Gast',role:'viewer',teams:['U19'],loginAt:Date.now()};hxGo('lineup');});await p.waitForTimeout(800);
   const v=await p.evaluate(()=>({t:document.getElementById('tmgr-h').textContent.trim(),lp:document.getElementById('moLineup').classList.contains('open'),cards:document.querySelectorAll('#kbBoard .kb-card').length,acts:document.querySelectorAll('#kbBoard .kb-acts button').length}));
-  ok(v.t==='Spieltag'&&!v.lp&&v.cards>0&&!v.acts,'„Nur ansehen“: Tafel mit Titel „Spieltag“, ohne Knöpfe');
+  // 1.2.155: the Spieltag page, read only (t_ansehen155) — the Tafel only says „no match ahead“
+  const v2=await p.evaluate(()=>({lp:document.getElementById('moLineup').classList.contains('open'),ro:document.getElementById('moLineup').classList.contains('lp-viewer'),save:!!document.querySelector('#moLineup .lp-gsave').getClientRects().length}));
+  ok(v2.lp&&v2.ro&&!v2.save,'„Nur ansehen“: Spieltag zum Ansehen, ohne Knöpfe (seit 1.2.155, vorher die Tafel)');
   ok(!errs.length,'„Nur ansehen“: keine Fehler'+(errs.length?': '+errs[0]:''));await c.close();}
  await b.close();console.log(fails?fails+' FAILED':'all passed');process.exit(fails?1:0);})();

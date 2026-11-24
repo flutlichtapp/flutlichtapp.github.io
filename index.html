@@ -5532,6 +5532,21 @@ body.design-heute.hxk-dk #moSettings .vw-tr{color:var(--hk-muted);}
 #moSettings :is(#vw-host-teams,#vw-host-sync) label{text-transform:none;letter-spacing:0;font-size:.78rem;}
 #moSettings :is(#vw-host-teams,#vw-host-sync) .mob-btns{justify-content:flex-start;}
 #moSettings :is(#vw-host-teams,#vw-host-sync) .mob-btns .btn{flex:0 0 auto;width:auto;padding-left:18px;padding-right:18px;}
+/* ── 1.2.155 „Nur ansehen“: Spieltag to look at ── */
+#moLineup .lp-wait-n{display:none;}
+#moLineup.lp-viewer :is(.lp-gsave,#lp-gsqbtn,#lp-fromslp,.lp-kind-wrap,#lp-hint,#lp-var-bar,#lp-unavail-bar,#lp-disc-bar,#lp-ers-bar,#lp-sq-bar,.fmt-reset){display:none !important;}
+#moLineup.lp-viewer [onclick="lpClearAll()"]{display:none !important;}
+#moLineup.lp-viewer #lp-fmt-btns select.lp-fmt-sel{pointer-events:none;opacity:1;background-image:none !important;-webkit-appearance:none;appearance:none;padding-right:12px !important;}
+#moLineup.lp-viewer #lp-slots .lp-tk-g{cursor:default;}
+#moLineup.lp-viewer #lp-slots .lp-tk-g.filled{cursor:pointer;}
+#moLineup.lp-viewer .lp-seat:not(.filled){cursor:default;}
+#moLineup.lp-viewer .lp-seat-add{visibility:hidden;}
+#moLineup.lp-viewer .lp-seat.filled{cursor:pointer;}
+@media(min-width:1280px){#moLineup.lp-viewer.lp-wait .lp-ntop .lp-wait-n{display:block;margin:2px 0 0;font:500 .8rem/1.4 'Barlow',sans-serif;color:var(--hx-muted,#4E5D7C);}}
+#moLineup.lp-viewer.lp-wait .lp-pitch-col{position:relative;}
+#moLineup.lp-viewer.lp-wait .lp-pitch-col::after{content:"Aufstellung folgt, sobald der Kader veröffentlicht ist";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:min(78%,300px);padding:12px 16px;border-radius:12px;background:rgba(6,14,34,.82);color:#fff;font:600 .9rem/1.35 'Barlow',sans-serif;text-align:center;pointer-events:none;}
+#moLineup.lp-viewer.lp-wait #lp-slots{opacity:.55;}
+body.design-heute.hxk-dk #moLineup.lp-viewer.lp-wait .lp-wait-n{color:var(--hk-muted);}
 /* 1.2.149 calmer: one yellow (Speichern); Meisterschaft/Testspiel neutral */
 body.design-heute .lp-kind-wrap .lp-fmt-btn.active{background:var(--hx-nav) !important;color:#fff !important;border-color:var(--hx-nav) !important;}
 body.design-heute.hxk-dk .lp-kind-wrap .lp-fmt-btn.active{background:color-mix(in srgb,var(--hk-ink) 18%,var(--hk-card)) !important;color:var(--hk-ink) !important;border-color:var(--hk-line) !important;}
@@ -8360,8 +8375,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.154'; // v1.2.154: Fix – „Administration“ bei offenem Spieltag/Saisonkader: Navigation zeigt „Einstellungen“ (das Werkzeug schließt wie bei jedem Wechsel; ebenso „Konto“ aus dem Menü)
-const APP_VERSION_LABEL='1.2.154';
+const APP_VERSION='1.2.155'; // v1.2.155: „Nur ansehen“ sieht Spieltag wie die Trainer, nur zum Ansehen – die Aufstellung erst, wenn der Kader veröffentlicht ist
+const APP_VERSION_LABEL='1.2.155';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -30827,9 +30842,10 @@ function hxOpenLineup(){hxSpieltag();}
 const ST_LS='fcf_st_tab';
 function _stTab(){let t='';try{t=localStorage.getItem(ST_LS)||'';}catch(e){}return t==='aufstellung'?'aufstellung':'kader';}
 function hxSpieltag(){
-  const ed=typeof canEdit==='function'&&canEdit();
   // 1.2.148: one page — the pitch with the squad step in it
-  if(ed&&findNextMatchIdx()>=0){openNextMatchLineup();document.getElementById('moLineup')?.classList.add('hx-vianav');hxSyncNav();return;}
+  // 1.2.155: for „Nur ansehen“ too (read only); the board only says „no match ahead“
+  const mi=findNextMatchIdx();
+  if(mi>=0&&typeof openLineupPlanner==='function'){openLineupPlanner(mi);document.getElementById('moLineup')?.classList.add('hx-vianav');hxSyncNav();return;}
   openSpieltagKader();
 }
 function openSpieltagKader(si){
@@ -32243,7 +32259,7 @@ function _lpErsBar(){
   el.innerHTML='<span class="lp-ers-h">Ersatz laut Saisonkader</span>'+g.map(x=>`<span class="lp-ers-g"><b>${e(x.lbl)}</b><span>${x.gone.map(nm).join(', ')} nicht dabei${x.sub.length?' →':' – im Plan kein Ersatz'}</span>${x.sub.map(y=>`<button type="button" class="lp-ers-pick" onclick="lpErsPick('${x.slot}',${y.pi})" title="${e(x.lbl)}: ${e(getDisplayName(P[y.pi]))} einsetzen">${nm(y.pi)} <small>${e(SLP_LV[y.l])}${y.w?' · spielt '+e(y.w):''}</small></button>`).join('')}</span>`).join('');
 }
 function lpErsPick(slotId,pi){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   if(!(typeof canEdit==='function'&&canEdit()))return;
   lpAssignToSlot(slotId,pi);
 }
@@ -37289,8 +37305,9 @@ function renderFmtBtns(targetId,currentFmt,onSelect){
   // 1.2.153: no "Bearbeiten" — a changed schema says so and can be reset
   const _st=isSlp?(typeof slpState!=='undefined'?slpState:null):(typeof lpState!=='undefined'?lpState:null);
   const _cust=_fmtIsCustom(_st);
-  html+=`<select class="${cls} lp-fmt-sel" title="Formation wählen" onchange="if(this.value)${onSelect}(this.value);">${groups}</select>`;
-  if(_cust)html+=`<button type="button" class="${cls} fmt-reset" onclick="fmtReset('${isSlp?'slp':'lp'}')" title="Eigene Positionen zurücksetzen" aria-label="Positionen angepasst – zurücksetzen"><span class="fb-long">Positionen angepasst · zurücksetzen</span><span class="fb-short">↺</span></button>`;
+  const _ro=!isSlp&&typeof _lpViewerMode!=='undefined'&&_lpViewerMode;
+  html+=`<select class="${cls} lp-fmt-sel" title="${_ro?'Schema':'Formation wählen'}"${_ro?' disabled':''} onchange="if(this.value)${onSelect}(this.value);">${groups}</select>`;
+  if(_cust&&!_ro)html+=`<button type="button" class="${cls} fmt-reset" onclick="fmtReset('${isSlp?'slp':'lp'}')" title="Eigene Positionen zurücksetzen" aria-label="Positionen angepasst – zurücksetzen"><span class="fb-long">Positionen angepasst · zurücksetzen</span><span class="fb-short">↺</span></button>`;
   el.innerHTML=html;
 }
 
@@ -37388,7 +37405,7 @@ function lpUnavailState(playerRef){
 }
 // One tap frees the position so an available player can take it
 function lpClearUnavail(where,key){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   // _lpSetSlotPlayer handles both pitch slots and bench positions (sub_N),
   // so it is the one path that keeps the state consistent.
   if(where==='slot')_lpSetSlotPlayer(key,null);
@@ -37410,7 +37427,7 @@ function lpUnavailInLineup(){
   return out;
 }
 function lpSetMatchKind(kind){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   if(kind!=='test'&&kind!=='meisterschaft')return;
   if(lpState.matchKind===kind)return;
   lpState.matchKind=kind;
@@ -40626,6 +40643,7 @@ function openLineupPlanner(sessIdx){
     }
     lpSyncKindBtns();
   }
+  _lpViewerApply();
   _lpOpenSnap=_lpSnapshot();
   el.classList.remove('hx-vianav');   // set again by the side navigation when it opened this
   el.classList.add('open');
@@ -40657,6 +40675,35 @@ function openLineupPlanner(sessIdx){
 
 // Snapshot taken when the planner opens; compared on close.
 let _lpOpenSnap=null;
+// ── 1.2.155: „Nur ansehen“ ──────────────────────────────────────────────────
+var _lpViewerMode=false,_lpWait=false;
+function _lpViewerApply(){
+  const el=document.getElementById('moLineup');
+  _lpViewerMode=!(typeof canEdit==='function'&&canEdit());
+  _lpWait=false;
+  if(_lpViewerMode&&lpState.sessIdx!=null){
+    const D=cd(),s=D&&D.sessions&&D.sessions[lpState.sessIdx];
+    if(!s||s.type!=='match')_lpWait=false;
+    else _lpWait=!(_sqOf(s)||_sqStarted(s,UI.currentSeason));
+    // the lineup that counts — never one of the trainers' own draft variants
+    if(!_lpWait){const ml=G.matchLineups&&G.matchLineups[_mlKey(UI.currentTeam,UI.currentSeason,lpState.sessIdx)];
+      if(ml){lpState.formation=ml.formation||lpState.formation;lpState.slots={...(ml.slots||{})};lpState.subs=[...(ml.subs||[])];lpState.guests=[...(ml.guests||[])];lpState.customSlots=ml.customSlots?{...ml.customSlots}:null;lpState.matchKind=ml.matchKind||'meisterschaft';}}
+    if(_lpWait){lpState.slots={};lpState.subs=[];lpState.guests=[];lpState.customSlots=null;}
+  }
+  if(el){el.classList.toggle('lp-viewer',_lpViewerMode);el.classList.toggle('lp-wait',_lpViewerMode&&_lpWait);}
+  _lpViewSigAt=_lpViewerMode?_lpViewSig():'';
+}
+// what a viewer sees changes only with the lineup that counts or the Kader: reopen then, not on every sync
+var _lpViewSigAt='';
+function _lpViewSig(){
+  try{const D=cd(),s=D.sessions[lpState.sessIdx];const ml=G.matchLineups&&G.matchLineups[_mlKey(UI.currentTeam,UI.currentSeason,lpState.sessIdx)];
+    const m=ml?{f:ml.formation,s:ml.slots,b:ml.subs,g:ml.guests,c:ml.customSlots}:null;
+    return JSON.stringify([m,!!(s&&_sqOf(s)),!!(s&&_sqStarted(s,UI.currentSeason))]);}catch(e){return '';}
+}
+// a tap on a player: his profile (as on the old board); elsewhere nothing
+function _lpViewerTap(pid){
+  if(typeof pid==='number'&&cd().players[pid]&&typeof openPlayerStats==='function')openPlayerStats(pid);
+}
 function _lpSnapshot(){
   try{
     const o=_lvView?_lvView.mine:lpState;
@@ -40731,6 +40778,7 @@ function _lvLoad(o){
   renderFmtBtns('lp-fmt-btns',lpState.formation,'lpSetFormation');
 }
 function _lvRO(){
+  if(_lpViewerMode){if(typeof showSaveFlash==='function')showSaveFlash('Nur ansehen – die Aufstellung machen die Trainer');return true;}
   if(!_lvView)return false;
   if(typeof showSaveFlash==='function')showSaveFlash('Nur ansehen – zum Ändern „In meine übernehmen“');
   return true;
@@ -40957,6 +41005,8 @@ function lvFix(k){
 function _lvRemote(){
   const el=document.getElementById('moLineup');
   if(!el||!el.classList.contains('open')||_lvKey()===null)return;
+  if(_lpViewerMode&&lpState.sessIdx!=null){if(_lpViewSig()!==_lpViewSigAt){const nav=el.classList.contains('hx-vianav');const sc=el.querySelector('.lp-body');const top=sc?sc.scrollTop:0;
+      openLineupPlanner(lpState.sessIdx);if(nav)el.classList.add('hx-vianav');if(sc)sc.scrollTop=top;}return;}
   if(_lvView){
     const v=_lvVars(_lvMl())[_lvView.k];
     if(!v){lvBack();return;}
@@ -40966,7 +41016,7 @@ function _lvRemote(){
 }
 
 function lpSetFormation(f){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   const oldSlots=FORMATIONS[lpState.formation]||[];
   const oldAssign={...lpState.slots};
   lpState.formation=f;
@@ -41331,7 +41381,8 @@ function lpRenderPopup(slotId){
 function lpClickSlot(e,slotId){
   e.stopPropagation();
   if(_fmtClickBlocked())return;   // the circle was just moved
-  if(_lvView){_lvRO();return;}
+  if(_lpViewerMode){_lpViewerTap(lpState.slots[slotId]);return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   if(lpState.editing)return; // edit mode: clicks don't open popup
   const popup=document.getElementById('lp-popup');
   if(!popup)return;
@@ -41370,7 +41421,7 @@ function lpClickSlot(e,slotId){
 }
 
 function lpAssignToSlot(slotId,pi){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   Object.keys(lpState.slots).forEach(k=>{if(lpState.slots[k]===pi)delete lpState.slots[k];});
   lpState.subs=lpState.subs.filter(s=>s!==pi);
   lpState.slots[slotId]=pi;
@@ -41378,7 +41429,7 @@ function lpAssignToSlot(slotId,pi){
 }
 
 function lpRemoveFromSlot(slotId){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   const pid=lpState.slots[slotId];
   delete lpState.slots[slotId];
   if(typeof pid==='string')lpRemoveGuest(pid);
@@ -41396,6 +41447,7 @@ function _lpGetSlotPlayer(slotId){
   return lpResolvePlayer(lpState.slots[slotId]);
 }
 function _lpSetSlotPlayer(slotId,pid){
+  if(_lpViewerMode)return;
   if(slotId.startsWith('sub_')){
     const idx=+slotId.slice(4);
     if(pid===null||pid===undefined){
@@ -41415,7 +41467,7 @@ function _lpSetSlotPlayer(slotId,pid){
 }
 
 function lpPointerDown(e,slotId){
-  if(_lvView)return;   // the click says why
+  if(_lvView||_lpViewerMode)return;   // the click says why
   // Formation edit mode → drag slot, not player
   if(lpState.editing){
     fmtDragStart(e,'lp',slotId);
@@ -41737,7 +41789,8 @@ function lpRenderSubs(){
 
 function lpClickSubSlot(e,subIdx){
   e.stopPropagation();
-  if(_lvView){_lvRO();return;}
+  if(_lpViewerMode){_lpViewerTap(lpState.subs[subIdx]);return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   const slotKey='sub_'+subIdx;
   if(lpState.openSlot===slotKey){lpClosePopup();return;}
   lpState.openSlot=slotKey;
@@ -41815,7 +41868,7 @@ function lpRenderSubPopup(subIdx){
 
 
 function lpAddGuest(slotId){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   const inp=document.getElementById('lp-guest-input');
   if(!inp)return;
   const name=inp.value.trim();
@@ -41851,7 +41904,7 @@ function lpResolvePlayer(idxOrRef){
   return players[idxOrRef]||null;
 }
 function lpRemoveGuest(ref){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   if(!ref||typeof ref!=='string'||!ref.startsWith('g_'))return;
   if(!Array.isArray(lpState.guests))return;
   // Check if still in use
@@ -41862,7 +41915,7 @@ function lpRemoveGuest(ref){
 }
 
 function lpAssignToSub(subIdx,pi){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   // Remove from any slot
   Object.keys(lpState.slots).forEach(k=>{if(lpState.slots[k]===pi)delete lpState.slots[k];});
   // Remove from other sub positions
@@ -41888,7 +41941,7 @@ function lpAssignToSub(subIdx,pi){
 }
 
 function lpRemoveSubAt(subIdx){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   const pid=lpState.subs[subIdx];
   lpState.subs.splice(subIdx,1);
   if(typeof pid==='string')lpRemoveGuest(pid);
@@ -41897,14 +41950,14 @@ function lpRemoveSubAt(subIdx){
 
 
 function lpClearAll(){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   if(!confirm('Alle Positionen leeren?'))return;
   lpState.slots={};lpState.subs=[];lpState.selectedSlot=null;lpState.selectedBench=null;lpClosePopup();
   lpRender();
 }
 
 function lpSave(){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   // DRIFT-SAFE SAVE: if sessions were reordered (another trainer deleted/added
   // a session while planner was open), lpState.sessIdx may point to wrong
   // session. Re-resolve by stored date+type.
@@ -42722,7 +42775,7 @@ function slpToggleEdit(){
   slpRender();
 }
 function lpToggleEdit(){
-  if(_lvView){_lvRO();return;}
+  if(_lvView||_lpViewerMode){_lvRO();return;}
   lpState.editing=!lpState.editing;
   lpClosePopup&&lpClosePopup();
   renderFmtBtns('lp-fmt-btns',lpState.formation,'lpSetFormation');
@@ -43686,6 +43739,7 @@ _pubCleanupSchedule();
     </div>
     <div class="lp-spacer"></div>
     <div class="lp-hint" id="lp-hint">Position antippen, dann Spieler wählen</div>
+    <div class="lp-wait-n" id="lp-wait-n">Die Aufstellung siehst du, sobald der Kader veröffentlicht ist.</div>
     </div><i hidden data-home="lp-ptools"></i>
     <div class="lp-pmain">
     <aside class="lp-notes" id="lp-notes" aria-label="Hinweise zur Aufstellung">
