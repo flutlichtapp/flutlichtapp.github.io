@@ -2852,6 +2852,14 @@ body.player-mode .fl .hub-res .hub-txt span.hub-res-me{color:var(--fl-lamp-hi);f
 body.player-mode .fl .hub-news{display:flex;gap:12px;align-items:flex-start;margin:0 0 4px;padding:13px 14px;border-radius:16px;background:var(--fl-surface);border:1px solid var(--fl-line);border-left:3px solid var(--fl-lamp);}
 body.player-mode .fl .hub-news .hub-ic{font-size:20px;}
 body.player-mode .fl .hub-news .hub-txt span{color:var(--fl-ink);opacity:.9;font-size:14px;line-height:1.45;}
+/* 1.2.157 Geburtstag */
+body.player-mode .fl .fl-bday{display:flex;align-items:center;gap:14px;margin:0 0 6px;padding:16px;border-radius:16px;
+  background:radial-gradient(120% 140% at 0 0,rgba(242,194,48,.22),rgba(242,194,48,.06) 55%,transparent 80%),var(--fl-surface);
+  border:1px solid rgba(242,194,48,.5);color:var(--fl-ink);}
+body.player-mode .fl .fl-bday .fl-tile{width:46px;height:46px;border-radius:13px;font-size:24px;background:var(--fl-lamp);color:#0E2350;box-shadow:0 0 18px rgba(242,194,48,.45);}
+body.player-mode .fl .fl-bday .hub-txt{display:flex;flex-direction:column;gap:3px;min-width:0;}
+body.player-mode .fl .fl-bday .hub-txt b{font-family:var(--fl-num);font-weight:800;font-size:25px;line-height:1.02;letter-spacing:.2px;color:var(--fl-lamp-hi);}
+body.player-mode .fl .fl-bday .hub-txt span{font-size:14px;color:var(--fl-ink2);}
 body.player-mode .fl .hub-push{display:flex;gap:12px;margin:12px 0 0;padding:13px 14px;border-radius:16px;background:var(--fl-surface);border:1px solid var(--fl-line);max-width:none;width:auto;}
 body.player-mode .fl .hub-push .hub-ic{font-size:20px;}
 body.player-mode .hub-switch{color:var(--fl-muted);font-size:13px;}
@@ -8375,8 +8383,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.156'; // v1.2.156: Rechte – „Mannschaft verwalten“ aus: Aufstellung, Kader und Anwesenheit wie jeder Trainer, nur die Einstellungen der Mannschaft zum Ansehen
-const APP_VERSION_LABEL='1.2.156';
+const APP_VERSION='1.2.157'; // v1.2.157: Geburtstag – der Spieler sieht an seinem Tag in seiner Übersicht „Alles Gute zum Geburtstag“ vom Trainerteam; in seinem Ausschnitt nur Tag und Monat, ohne Jahr
+const APP_VERSION_LABEL='1.2.157';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -17482,6 +17490,9 @@ function _pvBuildSync(team,season){
     if(_pGone(p)){gone.push(p.confirmToken);return;}
     const me={};
     PV_ME.forEach(f=>{if(p[f]!==undefined)me[f]=JSON.parse(JSON.stringify(p[f]));});
+    // 1.2.157: day and month of his own birthday ("MM-DD", no year) for the
+    // greeting on his overview — the birthdate itself stays out (PV_ME)
+    {const b=_pvBd(p.birthdate);if(b)me.bdm=b.slice(5);}
     {const sw=_somWinsOf(team,p.name);if(sw.length)me.somW=sw;}
     const squad={};
     sessions.forEach((s,si)=>{const q=_sqOf(s);if(q)squad[si]={in:q.p.includes(p.name),meet:q.meet||'',where:q.where||'',t:q.t};});
@@ -23266,6 +23277,7 @@ function renderHub(){
   wrap.innerHTML=`<div class="hub fl">
     <div class="fl-bar"><span class="fl-brand"><span class="fl-lamps" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>Flutlicht</span><span class="fl-team">${club}</span></div>
     <div class="fl-who">${av}<div class="fl-who-t"><div class="hub-name">${e(nm)}</div><div class="hub-sub">${meta}</div></div></div>
+    ${_hubBdayHtml(p,nm)}
     ${_hubPushCard(true)}
     ${_newsHtml('hub')}
     ${_pmPauseHtml(p)}
@@ -23885,8 +23897,33 @@ const FL_IC=(()=>{
     pitch:sv('<rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M12 4.5v15"/><circle cx="12" cy="12" r="2.6"/>'),
     play:sv('<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10.2 9.2l4.6 2.8-4.6 2.8z" fill="currentColor"/>'),
     link:sv('<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>'),
+    cake:sv('<path d="M20 21v-7.5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2V21"/><path d="M4 16.2c1.3 1 2.7 1 4 0s2.7-1 4 0 2.7 1 4 0 2.7-1 4 0"/><path d="M2.5 21h19M8 8v3.5M12 8v3.5M16 8v3.5M8 4.5h.01M12 4.5h.01M16 4.5h.01"/>'),
   };
 })();
+// ── 1.2.157: Geburtstag (Artem 24.11.: «да») ──
+// On his birthday the player sees a greeting from the coaches at the top of
+// his own overview. Only he: his slice carries day and month of his own
+// birthday (me.bdm), nobody else's. The trainers' preview of his view uses
+// the full record (birthdate).
+function _bdMD(p){
+  if(!p)return '';
+  if(typeof p.bdm==='string'&&/^\d{2}-\d{2}$/.test(p.bdm))return p.bdm;
+  const b=_pvBd(p.birthdate);return b?b.slice(5):'';
+}
+function _bdIsToday(p,now){
+  const md=_bdMD(p);if(!md)return false;
+  const d=now||new Date();
+  const t=String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  if(md===t)return true;
+  // 29 February: in the other years on the 28th
+  const y=d.getFullYear(),leap=(y%4===0&&y%100!==0)||y%400===0;
+  return md==='02-29'&&!leap&&t==='02-28';
+}
+function _hubBdayHtml(p,nm){
+  if(!_bdIsToday(p))return '';
+  return `<div class="fl-bday" role="status"><span class="fl-tile go" aria-hidden="true">${FL_IC.cake}</span>`
+    +`<span class="hub-txt"><b>Alles Gute zum Geburtstag, ${escapeHtml(nm)}!</b><span>\u2013 dein Trainerteam</span></span></div>`;
+}
 // "heute" · "morgen" · "am Donnerstag"
 function _flDayWord(s){
   const k=dispToSortKey(s.date),t=todaySK();
