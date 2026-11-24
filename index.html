@@ -8375,8 +8375,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.155'; // v1.2.155: „Nur ansehen“ sieht Spieltag wie die Trainer, nur zum Ansehen – die Aufstellung erst, wenn der Kader veröffentlicht ist
-const APP_VERSION_LABEL='1.2.155';
+const APP_VERSION='1.2.156'; // v1.2.156: Rechte – „Mannschaft verwalten“ aus: Aufstellung, Kader und Anwesenheit wie jeder Trainer, nur die Einstellungen der Mannschaft zum Ansehen
+const APP_VERSION_LABEL='1.2.156';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -11852,7 +11852,7 @@ function _tpRightsHtml(gi){
   const t=G.trainers&&G.trainers[gi];if(!t)return '';
   const e=escapeHtml,first=String(t.name||'').split(' ')[0]||'Er',on=t.plan===true,mg=t.mgr===true;
   const msub=mg?e(first)+' ändert die Einstellungen der Mannschaft: Zu- und Absagen, Spielerstatus, Ziele, Treffpunkt, Karten, Titelbild, Schwerpunkte.'
-    :e(first)+' sieht die Einstellungen der Mannschaft nur an.';
+    :e(first)+' macht Aufstellung, Kader und Anwesenheit wie jeder Trainer. Die Einstellungen der Mannschaft (Zu- und Absagen, Spielerstatus, Ziele, Treffpunkt, Karten, Titelbild, Schwerpunkte) sieht er nur an.';
   const sub=on?e(first)+' erstellt und ändert Trainingspläne, Übungen, Vorlagen und den Standardablauf.'
     :(TPL_VIEW_ALL?'Ohne Freigabe öffnet '+e(first)+' Pläne nur zum Ansehen: Ablauf, Gruppen, Auf dem Platz, Drucken.'
       :'Ohne Freigabe sieht '+e(first)+' den Trainingsplaner nicht.');
