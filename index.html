@@ -8383,8 +8383,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.157'; // v1.2.157: Geburtstag – der Spieler sieht an seinem Tag in seiner Übersicht „Alles Gute zum Geburtstag“ vom Trainerteam; in seinem Ausschnitt nur Tag und Monat, ohne Jahr
-const APP_VERSION_LABEL='1.2.157';
+const APP_VERSION='1.2.158'; // v1.2.158: Anwesenheit auf dem Handy – je Termin nur, wer an dem Tag zur Mannschaft gehört (nicht mehr dabei, Pause, noch nicht dabei: nicht in der Liste), wie die Zählung darüber und die Tabelle am PC; „ehemalig“/„Pause“/„Probe“ am Namen
+const APP_VERSION_LABEL='1.2.158';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -16002,8 +16002,14 @@ function renderMobileAtt(){
   // guess about, so those options must not exist here either.
   const rollCall=(typeof _isSessRollCallTime==='function')?_isSessRollCallTime(si):past;
   const editable=canEdit&&canEdit();
-  // Sort: by attendance status, then by number
-  const ordered=D.players.map((p,pi)=>({p,pi})).filter(o=>o.p);
+  // Who belongs to the team on that day (1.2.158, Artem 25.11.: "на моб
+  // версии отображаются игроки в посещаемости, которых уже нет"): the same
+  // rule as the count above it (_hxCounts) and the table on the PC — not
+  // after "nicht mehr dabei", not in a pause, not before he joined. Earlier
+  // sessions keep him (his history stays). A paused player who came anyway
+  // is marked in "Erfassen" ("Ist da"), as on the PC.
+  const ss=sessions[si];
+  const ordered=D.players.map((p,pi)=>({p,pi})).filter(o=>o.p&&(!ss||_sessAfterJoin(o.p,ss,UI.currentSeason)));
   if(!ordered.length){
     list.innerHTML='<div class="ma-empty">Keine Spieler in der Mannschaft</div>';
     return;
@@ -16045,7 +16051,7 @@ function renderMobileAtt(){
         ${avm}
         <div class="ma-card-txt">
         <div class="ma-card-name">${showName}</div>
-        <div class="ma-card-meta"><span class="ma-card-nr">#${nr}</span>${pos?'<span class="ma-card-pos">'+pos+'</span>':''}</div>
+        <div class="ma-card-meta"><span class="ma-card-nr">#${nr}</span>${pos?'<span class="ma-card-pos">'+pos+'</span>':''}${typeof _pChip==='function'?_pChip(p):''}</div>
         </div>
       </div>
       <div class="ma-card-actions">${btnsHtml}</div>
