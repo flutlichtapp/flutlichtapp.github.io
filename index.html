@@ -3759,6 +3759,8 @@ body.design-heute.hxk-dk .ss-comm-act[title="L\00f6schen"]{color:#FF9C90 !import
 .ps-app-st.never,.ps-app-st.old{color:var(--hx-muted,var(--gm));}
 .ps-app-st svg{flex:none;color:#1F8F4E;}
 .ps-app-send{flex:none;}
+.ps-app-nobd{margin:8px 0 0;font-size:.8rem;line-height:1.4;color:#A85F12;}
+body.hxk-dk .ps-app-nobd{color:#F0B45C;}
 /* Link an die Mannschaft */
 .app-sh-p{font-size:.84rem;line-height:1.5;color:var(--hx-ink,var(--gd));margin:0 0 10px;}
 .mob textarea.app-sh-text,.app-sh-text{display:block;width:100%;box-sizing:border-box;font-family:'Barlow',sans-serif;font-size:.84rem;line-height:1.45;
@@ -8383,8 +8385,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.158'; // v1.2.158: Anwesenheit auf dem Handy – je Termin nur, wer an dem Tag zur Mannschaft gehört (nicht mehr dabei, Pause, noch nicht dabei: nicht in der Liste), wie die Zählung darüber und die Tabelle am PC; „ehemalig“/„Pause“/„Probe“ am Namen
-const APP_VERSION_LABEL='1.2.158';
+const APP_VERSION='1.2.159'; // v1.2.159: Im Blick – „kann sich nicht anmelden – Geburtsdatum fehlt“ (in der Mannschaft, ohne Geburtsdatum, Flutlicht nie geöffnet); im Profil „Nicht im Gruppen-Link – Geburtsdatum fehlt“
+const APP_VERSION_LABEL='1.2.159';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -16577,7 +16579,7 @@ function renderPlayerApp(p,pi){
   box.innerHTML=`<div class="ps-app-row">
       <span class="ps-app-st ${si.state}">${si.app?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>':''}${escapeHtml(si.state==='never'?si.text:si.text)}${p.push&&p.push.t?' · 🔔 Erinnerungen an':''}</span>
       <button class="tp-qbtn ps-app-send" onclick="psSendAppLink(${pi})">${hasPhone?'Link per WhatsApp':'Link kopieren'}</button>
-    </div>`;
+    </div>${_pNoBd(p)?'<p class="ps-app-nobd">Nicht im Gruppen-Link \u2013 Geburtsdatum fehlt. Eintragen oder ihm seinen Link schicken.</p>':''}`;
 }
 function _appLinkText(link,first){
   return 'Hi '+(first||'')+'! Das ist dein pers\u00f6nlicher Link zur Team-App Flutlicht:\n'+link
@@ -20892,6 +20894,24 @@ function _pmMarkSeen(){
 function _seenDays(t){
   const d=new Date(t),n=new Date();
   return Math.round((new Date(n.getFullYear(),n.getMonth(),n.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/86400000);
+}
+// 1.2.159 (Artem 26.11.: the players without a phone number have no
+// birthdate either): without a birthdate he is not in the group link's list
+// (_pvBuild: picks only with bd), so unless he got his own link he cannot
+// get in at all — no answers, no ratings, no Kader. Trainers only.
+function _pNoBd(p){return !!p&&!_pvBd(p.birthdate);}
+function _pCantLogin(p){
+  if(!_pNoBd(p))return false;
+  const st=_pState(p);if(st.k!=='active')return false;      // not gone, not on trial, not in a pause
+  return !(p.seen&&typeof p.seen==='object'&&+p.seen.t);    // never opened Flutlicht
+}
+// From Im Blick: his profile, at the birthdate field
+function bdMissOpen(pi){
+  if(typeof navPush==='function')navPush({id:'main'});
+  openPlayerStats(pi,{edit:true});
+  setTimeout(()=>{const i=document.getElementById('pe-birthdate');if(!i)return;
+    try{i.scrollIntoView({block:'center'});}catch(e){}
+    if(window.matchMedia&&matchMedia('(pointer:fine)').matches)try{i.focus({preventScroll:true});}catch(e){}},150);
 }
 function playerSeenInfo(p){
   const s=(p&&p.seen&&typeof p.seen==='object')?p.seen:null;
@@ -31380,6 +31400,15 @@ function hxRender(){
       if(n>=3&&!a)flags.push({lv:2,dot:'#7C8AA3',who:nm(p),what:'seit '+R.weg+' Wochen bei keinem Termin – Pause oder nicht mehr dabei?',on:`pstOpen(${pi},'ask')`});
     });
   }catch(e){console.error('[Status]',e);}
+  // Kann sich nicht anmelden (1.2.159): in the team, no birthdate, never
+  // opened — not in the group link's list. One or two by name, more in one row.
+  try{
+    if(canEdit()){
+      const nb=D.players.map((p,pi)=>({p,pi})).filter(({p})=>_pCantLogin(p));
+      if(nb.length&&nb.length<=2)nb.forEach(({p,pi})=>flags.push({lv:2,dot:'#7C8AA3',who:nm(p),what:'kann sich nicht anmelden \u2013 Geburtsdatum fehlt',on:`bdMissOpen(${pi})`}));
+      else if(nb.length)flags.push({lv:2,dot:'#7C8AA3',who:'Anmeldung',what:nb.length+' Spieler k\u00f6nnen sich nicht anmelden \u2013 Geburtsdatum fehlt',on:`bdMissOpen(${nb[0].pi})`});
+    }
+  }catch(e){console.error('[Geburtsdatum]',e);}
   try{
     dbComputeBirthdays({players:D.players}).filter(x=>x.days<=7&&!_pGone(x.p)).forEach(x=>flags.push({lv:4,due:Date.now()+x.days*864e5,dot:'#F2C230',who:nm(x.p),what:(x.days===0?'hat heute Geburtstag':'Geburtstag am '+x.date)+' ('+x.turns+')',on:`openPlayerFromMain(${x.pi})`}));
   }catch(e){}
