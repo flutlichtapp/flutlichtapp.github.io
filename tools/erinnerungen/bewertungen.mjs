@@ -10,6 +10,8 @@ import { decode, sortKey, berlin, metaKey } from './lib.mjs';
 
 const hasTel = p => String((p && p.phone) || '').replace(/\D/g, '').length >= 6;
 const opened = p => !!(+(p && p.seen && p.seen.t));
+// ohne Geburtsdatum steht er nicht in der Liste des Gruppen-Links (nur über den persönlichen Link)
+const hasBd = p => /(\d{4})-(\d{2})-(\d{2})|(\d{1,2})\.(\d{1,2})\.(\d{4})/.test(String((p && p.birthdate) || ''));
 
 export function summary(blk, season, now, n = 8) {
   const S = (blk && blk.sessions) || [], P = ((blk && blk.players) || []).filter(Boolean);
@@ -37,9 +39,10 @@ export function summary(blk, season, now, n = 8) {
 
 export function usage(blk, now) {
   const D = 864e5, P = ((blk && blk.players) || []).filter(p => p && !p.gone && !p.trial && !(p.probe && !p.joinDate));
-  const u = { n: P.length, ever: 0, d7: 0, d14: 0, app: 0, app14: 0, never: 0, tel: 0, noTel: 0, noTelNever: 0 };
+  const u = { n: P.length, ever: 0, d7: 0, d14: 0, app: 0, app14: 0, never: 0, tel: 0, noTel: 0, noTelNever: 0, noBd: 0, noBdNever: 0 };
   for (const p of P) {
     if (hasTel(p)) u.tel++; else { u.noTel++; if (!opened(p)) u.noTelNever++; }
+    if (!hasBd(p)) { u.noBd++; if (!opened(p)) u.noBdNever++; }
     const t = +(p.seen && p.seen.t) || 0, a = +(p.seen && p.seen.a) || 0;
     if (t) u.ever++; else u.never++;
     if (t && now - t < 7 * D) u.d7++;
@@ -94,7 +97,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     // App-Nutzung der Spieler (1.2.110): nur Zahlen
     const u = usage(blk, now);
     console.log(`::notice title=Einsatz ${team}::` + einsatz(blk, season, now).join(' || '));
-    console.log(`::notice title=Nutzung ${team}::Spieler ${u.n}: je geöffnet ${u.ever}, letzte 7 Tage ${u.d7}, letzte 14 Tage ${u.d14}, als App installiert (je) ${u.app}, als App letzte 14 Tage ${u.app14}, nie geöffnet ${u.never}, mit Telefon ${u.tel}, ohne Telefon ${u.noTel} (davon nie geöffnet ${u.noTelNever})`);
+    console.log(`::notice title=Nutzung ${team}::Spieler ${u.n}: je geöffnet ${u.ever}, letzte 7 Tage ${u.d7}, letzte 14 Tage ${u.d14}, als App installiert (je) ${u.app}, als App letzte 14 Tage ${u.app14}, nie geöffnet ${u.never}, mit Telefon ${u.tel}, ohne Telefon ${u.noTel} (davon nie geöffnet ${u.noTelNever}), ohne Geburtsdatum ${u.noBd} (davon nie geöffnet ${u.noBdNever})`);
   }
   // Push: Dienste der Geräte von Spielern (Apple = iPhone/iPad, Google = Android/Chrome)
   const subs = (await admin.database().ref('fcf_push/subs').get()).val() || {};
