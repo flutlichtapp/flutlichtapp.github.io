@@ -5527,6 +5527,10 @@ body.design-heute.hxk-dk .fmt-mv{border-color:var(--hk-line);color:var(--hk-ink)
 /* the reset under the schema, not beside it (the column is narrow) */
 body.design-heute .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns){flex-wrap:wrap !important;flex-shrink:1 !important;min-width:0;max-width:100%;}
 body.design-heute .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns) select{max-width:100%;min-width:0;}
+/* 1.2.162 (Artem 26.11.: „рядом с 4-2-3-1 пустое место“): in the column the
+   schema takes the whole width, like Meisterschaft | Testspiel under it */
+body.design-heute .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns){width:100%;flex:1 1 100%;}
+body.design-heute .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns) select{flex:1 1 auto;width:100%;}
 body.design-heute .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns) .fmt-reset{flex-basis:100%;}
 body.design-heute .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns) button.fmt-reset:not(.active){height:auto !important;min-height:0 !important;padding:2px 2px !important;border:none !important;background:transparent !important;box-shadow:none !important;justify-content:flex-start;text-align:left;font:600 .76rem 'Barlow',sans-serif !important;color:var(--hx-blue,#1659B8) !important;text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
 body.design-heute.hxk-dk .lp-ntop :is(#lp-fmt-btns,#slp-fmt-btns) button.fmt-reset:not(.active){color:#9DB8E8 !important;}
@@ -8385,8 +8389,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.161'; // v1.2.161: noch nicht spielberechtigt – im Spieltag (Meisterschaft) nicht verfügbar wie gesperrt (im Testspiel schon); Statistik/Spielzeit zählt Spiele, in denen er nicht spielen durfte (gesperrt, nicht spielberechtigt), nicht als „hätte spielen können“
-const APP_VERSION_LABEL='1.2.161';
+const APP_VERSION='1.2.162'; // v1.2.162: leere Aufstellung ist keine Variante (Speichern entfernt die eigene, gilt nie); Formation in der Spalte über die ganze Breite; Online: jeder Bereich hat einen Namen (Übersicht, Anwesenheit, Kader, Statistik …, Anwesenheit erfassen, Spielbericht)
+const APP_VERSION_LABEL='1.2.162';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -18679,12 +18683,14 @@ function sbOpen(si){
   document.getElementById('sb-date').textContent=s.date+(s.label?' · '+s.label:'');
   document.getElementById('sb-sub').textContent=[s.time||'',s.homeAway==='home'?'Heimspiel':'Auswärtsspiel'].filter(Boolean).join(' · ');
   ov.classList.add('open');
+  if(typeof setPresenceContext==='function')setPresenceContext('\u{1F4DD} Spielbericht '+s.date);
   sbRender();
   setTimeout(()=>{const x=ov.querySelector('.sb-score button');if(x)try{x.focus({preventScroll:true});}catch(e){}},60);
 }
 function sbClose(){
   const ov=document.getElementById('sbOverlay');if(ov)ov.classList.remove('open');
   const si=_sbSi;_sbSi=null;
+  if(typeof _hxPresence==='function')_hxPresence(true);
   if(typeof render==='function')render();
   {const mo=document.getElementById('moSession2');
    if(si!=null&&mo&&mo.classList.contains('open')&&currentSI===si){try{renderSessReport(si);buildSessAtt(si);}catch(e){}}}
@@ -28208,6 +28214,7 @@ function rcOpen(si){
   const ov=document.getElementById('rcOverlay');
   if(!ov)return;
   ov.classList.add('open');
+  if(typeof setPresenceContext==='function')setPresenceContext('\u2705 Anwesenheit erfassen '+(s.date||''));
   document.getElementById('rc-date').textContent=s.date||'';
   {const k=document.getElementById('rc-kind');if(k)k.textContent=s.type==='match'?'Spiel':'Training';}
   document.getElementById('rc-sub').textContent=
@@ -28220,6 +28227,7 @@ function rcClose(){
   const ov=document.getElementById('rcOverlay');
   if(ov)ov.classList.remove('open');
   _rcSi=null;
+  if(typeof _hxPresence==='function')_hxPresence(true);
   // Refresh whatever is behind us
   if(typeof render==='function')render();
   if(typeof buildSessAtt==='function'&&typeof _currentSessIdx!=='undefined'&&_currentSessIdx!=null){try{buildSessAtt(_currentSessIdx);}catch(e){}}
@@ -30888,12 +30896,34 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(el)new MutationObserver(()=>{if(typeof hxSyncNav==='function')hxSyncNav();}).observe(el,{attributes:true,attributeFilter:['class']});
   });
 });
+// 1.2.162 (Artem 26.11.: „в онлайн-активности админ видит раздел, в котором
+// тренер находится... но не всегда“): only a few dialogs and tools named
+// themselves; the pages never did. Now every page does; a tool or a dialog
+// that names itself (Aufstellung, Saisonkader, a player, a session, …) keeps
+// its name while open, and closing it gives the page's back.
+const HX_PRES={home:'\u{1F3E0} \u00dcbersicht',table:'\u{1F4CB} Anwesenheit',cal:'\u{1F4C5} Kalender',team:'\u{1F465} Kader',lineup:'\u26BD Spieltag',stats:'\u{1F4CA} Statistik',week:'\u{1F4F0} Wochenbericht',settings:'\u2699\uFE0F Einstellungen'};
+function _hxCur(){
+  const ov=document.getElementById('homeOverlay');
+  const pg=_hxOpenPage();
+  const tool=_hxToolOpen(),tm=document.getElementById('moTeamMgr');
+  return tool==='moSeasonLineup'?'team':tool==='moLineup'?'lineup':pg?((pg.k==='team'&&tm&&tm.dataset.mode==='spieltag')?'lineup':pg.k):(ov&&ov.classList.contains('open'))?'home':'table';
+}
+function _hxPresence(force){
+  try{
+    if(typeof setPresenceContext!=='function'||!_hxOn())return;
+    if(_hxToolOpen())return;
+    if(!force&&['moSession2','moPlayer'].some(id=>{const el=document.getElementById(id);return el&&el.classList.contains('open');}))return;
+    const t=HX_PRES[_hxCur()]||'';
+    if(t!==_presenceContext)setPresenceContext(t);
+  }catch(e){}
+}
 function hxSyncNav(){
   const ov=document.getElementById('homeOverlay');
   const pg=_hxOpenPage();
   // Saisonkader belongs to Kader, the Tafel page in Spieltag mode to Spieltag (1.2.133)
   const tool=_hxToolOpen(),tm=document.getElementById('moTeamMgr');
   const cur=tool==='moSeasonLineup'?'team':tool==='moLineup'?'lineup':pg?((pg.k==='team'&&tm&&tm.dataset.mode==='spieltag')?'lineup':pg.k):(ov&&ov.classList.contains('open'))?'home':'table';
+  setTimeout(()=>_hxPresence(),0);
   document.querySelectorAll('#hxNav .hx-item[data-hx]').forEach(b=>{
     const on=b.dataset.hx===cur;
     b.classList.toggle('on',on);
@@ -35570,7 +35600,8 @@ function closeM(id){
   }
   // Reset presence context when closing main editing modals
   if(['moSession2','moLineup','moSeasonLineup','moPlayer','moCalendar'].includes(id)){
-    if(typeof setPresenceContext==='function')setPresenceContext('');
+    if(typeof _hxOn==='function'&&_hxOn()&&typeof _hxPresence==='function')_hxPresence(true);
+    else if(typeof setPresenceContext==='function')setPresenceContext('');
   }
 }
 // ── Tapping beside a dialog closes it (1.2.43) ──
@@ -40882,8 +40913,12 @@ function _lvGen(n){return /[sßxz]$/i.test(n)?n+'’':n+'s';}
 function _lvKey(){return (lpState.sessIdx===null||lpState.sessIdx===undefined)?null:_mlKey(UI.currentTeam,UI.currentSeason,lpState.sessIdx);}
 function _lvMl(){const k=_lvKey();return (k&&G&&G.matchLineups&&G.matchLineups[k])||null;}
 function _lvVars(ml){return (ml&&ml.vars&&typeof ml.vars==='object')?ml.vars:{};}
-function _lvSrc(ml){const v=_lvVars(ml);return (ml&&ml.src&&v[ml.src])?ml.src:null;}
-function _lvOthers(ml){const me=_lvMe(),v=_lvVars(ml);return Object.keys(v).filter(k=>v[k]&&typeof v[k]==='object'&&!(me&&k===me.k)).sort((a,b)=>(v[b].savedAt||0)-(v[a].savedAt||0));}
+// 1.2.162 (Artem 26.11.: „у другого тренера пишет состав, будто он сохранен у
+// меня, даже если он пустой“): a lineup without a player is no variant — not
+// shown to the others, never the one that counts (also for older data)
+function _lvFull(o){return !!o&&(Object.values(o.slots||{}).some(v=>v!=null&&v!=='')||(o.subs||[]).some(v=>v!=null&&v!==''));}
+function _lvSrc(ml){const v=_lvVars(ml);return (ml&&ml.src&&v[ml.src]&&_lvFull(v[ml.src]))?ml.src:null;}
+function _lvOthers(ml){const me=_lvMe(),v=_lvVars(ml);return Object.keys(v).filter(k=>v[k]&&typeof v[k]==='object'&&!(me&&k===me.k)&&_lvFull(v[k])).sort((a,b)=>(v[b].savedAt||0)-(v[a].savedAt||0));}
 function _lvOf(o){
   return {formation:o.formation||'4-2-3-1',slots:{...(o.slots||{})},subs:[...(o.subs||[])],guests:[...(o.guests||[])],
     customSlots:o.customSlots?{...o.customSlots}:null,matchKind:o.matchKind||'meisterschaft'};
@@ -42116,8 +42151,26 @@ function lpSave(){
       savedAt:Date.now()
     };
     let ml=G.matchLineups[key];
-    if(!ml||typeof ml!=='object')ml=G.matchLineups[key]={};
     const me=_lvMe();
+    // 1.2.162: nobody placed → no variant. One's own goes; if it counted, the
+    // latest other one counts now (or none); an empty record goes entirely.
+    if(me&&!_lvFull(body)){
+      const had=!!(ml&&ml.vars&&ml.vars[me.k]&&_lvFull(ml.vars[me.k]));
+      if(ml&&typeof ml==='object'){
+        if(ml.vars&&ml.vars[me.k])delete ml.vars[me.k];
+        if(ml.src===me.k||!_lvSrc(ml)){
+          const nx=_lvOthers(ml)[0];
+          if(nx)Object.assign(ml,_lvOf(ml.vars[nx]),{savedAt:ml.vars[nx].savedAt||Date.now(),src:nx});
+          else{ml.slots={};ml.subs=[];ml.guests=[];delete ml.src;}
+        }
+        if(!_lvFull(ml)&&!Object.keys(_lvVars(ml)).some(k=>_lvFull(ml.vars[k])))delete G.matchLineups[key];
+      }
+      saveG();_lpOpenSnap=_lpSnapshot();lpRenderSaves();
+      showSaveFlash(had?'\u2713 Aufstellung geleert':'Noch niemand gesetzt \u2013 nichts gespeichert');
+      try{_sqRefresh(lpState.sessIdx);}catch(e){}
+      return;
+    }
+    if(!ml||typeof ml!=='object')ml=G.matchLineups[key]={};
     if(me){
       if(!ml.vars||typeof ml.vars!=='object')ml.vars={};
       ml.vars[me.k]=Object.assign({},body,{by:me.by});
