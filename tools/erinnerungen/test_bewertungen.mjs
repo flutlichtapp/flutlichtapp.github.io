@@ -1,5 +1,5 @@
 // node test_bewertungen.mjs — Zahlen der Übersicht „Bewertungen“ (erfundene Daten)
-import { summary, usage } from './bewertungen.mjs';
+import { summary, usage, pushTrainer } from './bewertungen.mjs';
 let fails = 0; const ok = (c, m) => { console.log((c ? 'ok  ' : 'FAIL') + ' ' + m); if (!c) fails++; };
 const now = Date.UTC(2026, 10, 26, 12);
 const S = [{ date: '20.11.', type: 'training', start: '18:30' }, { date: '24.11.', type: 'training', start: '18:30' }];
@@ -19,4 +19,9 @@ ok(r[1].here === 5 && r[1].tel === 3 && r[1].app === 3 && r[1].rated === 3, '24.
 const u = usage({ players: P }, now);
 ok(u.noBd === 2 && u.noBdNever === 1, 'ohne Geburtsdatum 2 (davon nie geöffnet 1) – C und D');
 ok(u.n === 6 && u.tel === 3 && u.noTel === 3 && u.noTelNever === 1, 'Nutzung: 6 Spieler, mit Telefon 3, ohne 3 (davon nie geöffnet 1) – ' + JSON.stringify(u));
+const subs = { tAAA: { a: { e: 'https://fcm.googleapis.com/x', dev: 'android', t: now - 864e5 }, b: { e: 'https://fcm.googleapis.com/y', dev: 'android', t: now - 12 * 864e5 }, c: { e: 'https://wns2-par02p.notify.windows.com/z', dev: 'other', t: now - 2 * 864e5 } },
+  pBBB: { a: { e: 'https://web.push.apple.com/q', dev: 'ios', t: now } } };
+const pt = pushTrainer(subs, now);
+ok(pt.length === 1 && /^Trainer 1: 3 Geräte – Android \(Google\), zuletzt erneuert 25\.11\.; Computer \(Microsoft\), zuletzt erneuert 24\.11\.; Android \(Google\), zuletzt erneuert 14\.11\. – seit 12 Tagen nicht$/.test(pt[0]), 'Push Trainer: ' + pt[0]);
+ok(!/BBB|AAA|fcm\.googleapis\.com\/x/.test(pt.join()), 'keine Kennungen, keine Adressen');
 console.log(fails ? fails + ' failed' : 'all passed'); process.exit(fails ? 1 : 0);

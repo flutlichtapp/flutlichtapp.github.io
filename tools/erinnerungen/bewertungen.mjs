@@ -77,6 +77,24 @@ export function einsatz(blk, season, now) {
   });
 }
 
+const svcOf = e => { const h = (String(e || '').match(/^https:\/\/([^/]+)/) || [])[1] || '?';
+  return /apple/.test(h) ? 'Apple' : /google|fcm/.test(h) ? 'Google' : /mozilla/.test(h) ? 'Mozilla' : /windows|wns/.test(h) ? 'Microsoft' : 'andere'; };
+export function pushTrainer(subs, now) {
+  const out = []; let n = 0;
+  for (const [o, devs] of Object.entries(subs || {})) {
+    if (o[0] !== 't') continue;
+    const list = Object.values(devs || {}).filter(d => d && d.e).sort((a, b) => (b.t || 0) - (a.t || 0)).map(d => {
+      const ty = d.dev === 'ios' ? 'iPhone' : d.dev === 'android' ? 'Android' : 'Computer';
+      const b = d.t ? berlin(d.t) : null, dd = b ? String(b.day).slice(6, 8) + '.' + String(b.day).slice(4, 6) + '.' : '?';
+      const days = d.t ? Math.floor((now - d.t) / 864e5) : null;
+      return ty + ' (' + svcOf(d.e) + '), zuletzt erneuert ' + dd + (days != null && days > 8 ? ' – seit ' + days + ' Tagen nicht' : '');
+    });
+    if (!list.length) continue;
+    out.push('Trainer ' + (++n) + ': ' + list.length + (list.length === 1 ? ' Gerät' : ' Geräte') + ' – ' + list.join('; '));
+  }
+  return out;
+}
+
 const line = r => `${String(r.day).slice(6, 8)}.${String(r.day).slice(4, 6)}. ${r.type}: anwesend ${r.here} (mit Telefon ${r.tel}, App je geöffnet ${r.app}), bewertet ${r.rated}`
   + ` (selber Tag ${r.same}, später ${r.later}), nicht dabei ${r.nd}` + (r.votes === null ? '' : `, Stimmen ${r.votes}`);
 
@@ -112,5 +130,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
   }
   console.log('::notice title=Push Spieler::' + (Object.entries(svc).map(([k, c]) => k + ' ' + c).join(', ') || 'keine'));
+  // Push der Trainer (26.11.2026, Artem: „у меня только телефон и ноутбук“ —
+  // ein Trainer, drei Geräte): je Trainer ohne Namen jedes Gerät mit Art,
+  // Dienst und wann die App es zuletzt erneuert hat (beim Start, höchstens
+  // einmal pro Woche) — ein Gerät, das seit Wochen nicht erneuert wurde, ist
+  // z. B. die alte Adresse vor dem Umzug (16.11.).
+  console.log('::notice title=Push Trainer::' + (pushTrainer(subs, Date.now()).join(' || ') || 'keine'));
   process.exit(0);
 }
