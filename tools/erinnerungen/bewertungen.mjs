@@ -1,8 +1,15 @@
 // Flutlicht · Übersicht der Bewertungen (nur lesen; ins Protokoll nur Zahlen).
 // Je Team die letzten Termine: anwesend, bewertet (am selben Tag / später),
 // "nicht dabei", Stimmen für den Spieler des Spiels. Keine Namen, keine Werte.
+// Seit 26.11.2026 (Artem: „ты учел, что там есть несколько человек без номера
+// телефона?“): von den Anwesenden auch, wie viele eine Telefonnummer haben
+// und wie viele die App je geöffnet haben — nur wer sie geöffnet hat, kann
+// bewerten.
 //   node bewertungen.mjs        (FIREBASE_SERVICE_ACCOUNT im Umfeld)
 import { decode, sortKey, berlin, metaKey } from './lib.mjs';
+
+const hasTel = p => String((p && p.phone) || '').replace(/\D/g, '').length >= 6;
+const opened = p => !!(+(p && p.seen && p.seen.t));
 
 export function summary(blk, season, now, n = 8) {
   const S = (blk && blk.sessions) || [], P = ((blk && blk.players) || []).filter(Boolean);
@@ -13,9 +20,9 @@ export function summary(blk, season, now, n = 8) {
     const day = sortKey(s.date, season);
     if (!day || day >= today) return;
     const k = metaKey(s);
-    let here = 0, rated = 0, same = 0, later = 0, nd = 0;
+    let here = 0, tel = 0, app = 0, rated = 0, same = 0, later = 0, nd = 0;
     for (const p of P) {
-      if (Array.isArray(p.s) && p.s[si] === 1) here++;
+      if (Array.isArray(p.s) && p.s[si] === 1) { here++; if (hasTel(p)) tel++; if (opened(p)) app++; }
       const m = p.rpeMeta && k ? p.rpeMeta[k] : null;
       if (Array.isArray(p.rpe) && typeof p.rpe[si] === 'number') {
         rated++;
@@ -23,15 +30,16 @@ export function summary(blk, season, now, n = 8) {
       } else if (m && m.nd) nd++;
     }
     const votes = s.type === 'match' ? Object.values((s.mvp && s.mvp.c) || {}).reduce((a, v) => a + (+v || 0), 0) : null;
-    rows.push({ day, type: s.type === 'match' ? 'Spiel' : 'Training', here, rated, same, later, nd, votes });
+    rows.push({ day, type: s.type === 'match' ? 'Spiel' : 'Training', here, tel, app, rated, same, later, nd, votes });
   });
   return rows.sort((a, b) => a.day - b.day).slice(-n);
 }
 
 export function usage(blk, now) {
   const D = 864e5, P = ((blk && blk.players) || []).filter(p => p && !p.gone && !p.trial && !(p.probe && !p.joinDate));
-  const u = { n: P.length, ever: 0, d7: 0, d14: 0, app: 0, app14: 0, never: 0 };
+  const u = { n: P.length, ever: 0, d7: 0, d14: 0, app: 0, app14: 0, never: 0, tel: 0, noTel: 0, noTelNever: 0 };
   for (const p of P) {
+    if (hasTel(p)) u.tel++; else { u.noTel++; if (!opened(p)) u.noTelNever++; }
     const t = +(p.seen && p.seen.t) || 0, a = +(p.seen && p.seen.a) || 0;
     if (t) u.ever++; else u.never++;
     if (t && now - t < 7 * D) u.d7++;
@@ -66,7 +74,7 @@ export function einsatz(blk, season, now) {
   });
 }
 
-const line = r => `${String(r.day).slice(6, 8)}.${String(r.day).slice(4, 6)}. ${r.type}: anwesend ${r.here}, bewertet ${r.rated}`
+const line = r => `${String(r.day).slice(6, 8)}.${String(r.day).slice(4, 6)}. ${r.type}: anwesend ${r.here} (mit Telefon ${r.tel}, App je geöffnet ${r.app}), bewertet ${r.rated}`
   + ` (selber Tag ${r.same}, später ${r.later}), nicht dabei ${r.nd}` + (r.votes === null ? '' : `, Stimmen ${r.votes}`);
 
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -86,7 +94,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     // App-Nutzung der Spieler (1.2.110): nur Zahlen
     const u = usage(blk, now);
     console.log(`::notice title=Einsatz ${team}::` + einsatz(blk, season, now).join(' || '));
-    console.log(`::notice title=Nutzung ${team}::Spieler ${u.n}: je geöffnet ${u.ever}, letzte 7 Tage ${u.d7}, letzte 14 Tage ${u.d14}, als App installiert (je) ${u.app}, als App letzte 14 Tage ${u.app14}, nie geöffnet ${u.never}`);
+    console.log(`::notice title=Nutzung ${team}::Spieler ${u.n}: je geöffnet ${u.ever}, letzte 7 Tage ${u.d7}, letzte 14 Tage ${u.d14}, als App installiert (je) ${u.app}, als App letzte 14 Tage ${u.app14}, nie geöffnet ${u.never}, mit Telefon ${u.tel}, ohne Telefon ${u.noTel} (davon nie geöffnet ${u.noTelNever})`);
   }
   // Push: Dienste der Geräte von Spielern (Apple = iPhone/iPad, Google = Android/Chrome)
   const subs = (await admin.database().ref('fcf_push/subs').get()).val() || {};
