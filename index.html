@@ -8385,8 +8385,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.160'; // v1.2.160: Spieltag – gesperrte Spieler (Sperre laut Spielbericht) gelten als nicht verfügbar: „Aus dem Saisonkader“ und „Aufstellung aus Zusagen“ setzen sie nicht, Auswahl ohne sie, „Nicht dabei · Gesperrt bis …“, „Zu klären“ wenn er schon steht, Ersatz laut Saisonkader
-const APP_VERSION_LABEL='1.2.160';
+const APP_VERSION='1.2.161'; // v1.2.161: noch nicht spielberechtigt – im Spieltag (Meisterschaft) nicht verfügbar wie gesperrt (im Testspiel schon); Statistik/Spielzeit zählt Spiele, in denen er nicht spielen durfte (gesperrt, nicht spielberechtigt), nicht als „hätte spielen können“
+const APP_VERSION_LABEL='1.2.161';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -17999,7 +17999,7 @@ function rpePlayedMin(s,p,si){
 // and not picked (N), or named in the report. Share = his minutes ÷ the
 // minutes of those matches. Trainers only: players do not see minutes
 // (decided 23.10.). The team of today only (no Probetraining, nobody gone).
-function computePlayTime(block,season){
+function computePlayTime(block,season,team){
   const S=(block&&block.sessions)||[],P=(block&&block.players)||[];
   const reps=[];
   const dayMs=k=>{const y=Math.floor(k/10000),m=Math.floor(k/100)%100,d=k%100;return new Date(y,m-1,d).getTime();};
@@ -18022,6 +18022,13 @@ function computePlayTime(block,season){
       // N counts when it was his own "yes", or he trained that week (1.2.135)
       const nkAv=v===5&&(!(Array.isArray(p.ay)&&p.ay[x.si]===1)||x.wk.some(i=>p.s&&p.s[i]===1));
       if(!inRep&&v!==1&&!nkAv)return;          // not available: absent, excused, no entry, an automatic N
+      // 1.2.161 (Artem 26.11.: „в Statistik тоже пишет, что он мог играть“):
+      // suspended, or not yet spielberechtigt for an official match — he was
+      // there, but could not play; unless he did (then it counts as played)
+      if(!inRep){
+        try{if(sbBanAt(p,x.si,block,season))return;}catch(e){}
+        if(p.noSb&&!playerSb(p,x.k)&&_mKindOf(x.si,team,season)!=='test')return;
+      }
       const m=inRep?(+x.min[p.name]||0):0;
       poss+=x.dur;mins+=m;
       if(x.st.has(p.name))starts++;else if(m>0)subs++;else if(v===5)nk++;else bench++;
@@ -18039,7 +18046,7 @@ function _ptParts(r){
   return [r.starts?r.starts+'× Startelf':'',r.subs?r.subs+'× eingewechselt':'',r.bench?r.bench+'× ohne Einsatz':'',r.nk?r.nk+'× nicht im Kader':''].filter(Boolean).join(', ');
 }
 function dbRenderPlayTimeCard(data){
-  const t=computePlayTime(data.block,data.season),e=escapeHtml;
+  const t=computePlayTime(data.block,data.season,data.team),e=escapeHtml;
   const cur=data.team===UI.currentTeam&&data.season===UI.currentSeason;
   let h='<div class="db-section db-pt"><div class="db-h">Spielzeit'
     +(t.n?'<span class="db-h-sub">aus '+t.n+' Spielbericht'+(t.n===1?'':'en')+' \u00b7 wer am wenigsten spielt, steht oben</span>':'')+'</div>';
@@ -32213,7 +32220,7 @@ function _lpSlpCtx(){
   const rollNow=typeof _isSessRollCallTime==='function'&&_isSessRollCallTime(si);
   const okV=rollNow?[1]:[4,1];
   const q=(!rollNow&&!_sqStarted(s,season))?_sqOf(s):null;
-  const ban=pi=>!!_lpBanAt(pi,si);   // 1.2.160
+  const ban=pi=>!!_lpBanAt(pi,si)||_lpNoSb(pi,si);   // 1.2.160, 1.2.161
   const can=pi=>{const p=P[pi];return !!p&&join(p,s)&&!ban(pi)&&(q?(q.p.includes(p.name)&&![0,2,5].includes(p.s&&p.s[si])):okV.includes(p.s&&p.s[si]));};
   const out=pi=>{const p=P[pi];if(!p||!join(p,s))return true;if(ban(pi))return true;if([0,2,5].includes(p.s&&p.s[si]))return true;return !!(q&&!q.p.includes(p.name));};
   // trainings of the last 4 weeks before the match
@@ -32346,7 +32353,7 @@ function kbLineup(){
   // Published squad (1.2.132): the lineup comes from it — whoever is in it and
   // has not declined since; otherwise from everyone available
   const q=(!rollNow&&!_sqStarted(s,season))?_sqOf(s):null;
-  const avail=D.players.map((p,pi)=>({p,pi})).filter(x=>x.p&&join(x.p,s)&&!(typeof sbBanAt==='function'&&sbBanAt(x.p,si,D,season))&&(q
+  const avail=D.players.map((p,pi)=>({p,pi})).filter(x=>x.p&&join(x.p,s)&&!(typeof sbBanAt==='function'&&sbBanAt(x.p,si,D,season))&&!_lpNoSb(x.pi,si)&&(q
     ?(q.p.includes(x.p.name)&&![0,2,5].includes(x.p.s&&x.p.s[si]))
     :okV.includes(x.p.s&&x.p.s[si])));
   if(!avail.length){alert(q?'Im Kader ist niemand mehr dabei.':(_ywFor(s)==='verfügbar'?'Für dieses Spiel ist noch niemand verfügbar.':'Für dieses Spiel hat noch niemand zugesagt.'));return;}
@@ -37479,6 +37486,24 @@ function _lpBanAt(pi,si){
   try{return sbBanAt(p,si,D,UI.currentSeason);}catch(e){return null;}
 }
 function _lpBanTxt(pi,si){const b=_lpBanAt(pi,si);return b?sbBanText(b,cd()):'';}
+// 1.2.161 (Artem 26.11.: „ставит на официальные игры игроков, которые еще не
+// Spielberechtigt“): not yet spielberechtigt on the day of an official match
+// — unavailable like a suspension. In a Testspiel the club decides: there he
+// is available (the ⚠ stays). The kind of match is the planner's switch, for
+// another match the one saved with its lineup (default Meisterschaft).
+function _mKindOf(si,team,season){
+  if(lpState&&lpState.sessIdx===si&&lpState.matchKind)return lpState.matchKind;
+  const ml=G&&G.matchLineups&&G.matchLineups[_mlKey(team||UI.currentTeam,season||UI.currentSeason,si)];
+  return (ml&&ml.matchKind)||'meisterschaft';
+}
+function _lpNoSb(pi,si){
+  if(typeof pi!=='number')return false;
+  const D=cd();si=(si===undefined)?lpState.sessIdx:si;
+  const p=D&&D.players&&D.players[pi],s=p&&si!=null&&D.sessions?D.sessions[si]:null;
+  if(!s||s.type!=='match'||!p.noSb||_mKindOf(si)==='test')return false;
+  return !playerSb(p,_dbSortKey(s.date,UI.currentSeason));
+}
+function _lpNoSbTxt(pi){const p=cd().players[pi],d=_sbAbDisp(p);return d?'erst ab '+d+' spielberechtigt':'noch nicht spielberechtigt';}
 function lpUnavailState(playerRef){
   const si=lpState.sessIdx;
   if(si===null||si===undefined)return null;
@@ -37487,6 +37512,7 @@ function lpUnavailState(playerRef){
   const p=D&&D.players&&D.players[playerRef];
   if(!p)return null;
   if(_lpBanAt(playerRef,si))return 'G';          // gesperrt (1.2.160)
+  if(_lpNoSb(playerRef,si))return 'S';           // nicht spielberechtigt (1.2.161)
   if(!Array.isArray(p.s))return null;
   const st=p.s[si];
   if(st===0)return 'F';
@@ -41239,7 +41265,7 @@ function lpRender(){
     }
 
     const _un=lpUnavailState(lpState.slots[slot.id]);
-    const _unC=(_un==='F'||_un==='G')?'#ff5a45':'#f39c12';
+    const _unC=(_un==='F'||_un==='G'||_un==='S')?'#ff5a45':'#f39c12';
     const _unMark=_un?`<circle r="${R}" style="fill:none;stroke:${_unC};stroke-width:3;stroke-dasharray:none;opacity:.95"/>
         <circle cx="${R-3}" cy="${-R+3}" r="7.5" style="fill:${_unC};stroke:#fff;stroke-width:1.2;stroke-dasharray:none"/>
         <text x="${R-3}" y="${-R+6.5}" text-anchor="middle" font-family="'Barlow',sans-serif" font-size="10" font-weight="700" fill="#fff">!</text>`:'';
@@ -41299,12 +41325,12 @@ function lpRender(){
     else{
       warnEl.style.display='flex';
       if(typeof hxOn==='function'&&hxOn()){
-        warnEl.innerHTML='<p class="lp-todo-h">Zu klären <b></b></p>'+un.map(u=>`<div class="lp-todo-r ${u.state==='E'?'warn':'bad'}"><span class="lp-todo-t"><b>${escapeHtml(u.name)}</b> ${u.state==='G'?'ist '+escapeHtml(_lpBanTxt(u.ref)):u.state==='F'?'hat abgesagt':'ist entschuldigt'}, steht aber ${u.where==='slot'?'auf dem Feld':'auf der Bank'}.</span>`
+        warnEl.innerHTML='<p class="lp-todo-h">Zu klären <b></b></p>'+un.map(u=>`<div class="lp-todo-r ${u.state==='E'?'warn':'bad'}"><span class="lp-todo-t"><b>${escapeHtml(u.name)}</b> ${u.state==='S'?'ist '+escapeHtml(_lpNoSbTxt(u.ref)):u.state==='G'?'ist '+escapeHtml(_lpBanTxt(u.ref)):u.state==='F'?'hat abgesagt':'ist entschuldigt'}, steht aber ${u.where==='slot'?'auf dem Feld':'auf der Bank'}.</span>`
           +`<button type="button" class="lp-un-chip lp-todo-b" onclick="lpClearUnavail('${u.where}','${u.where==='slot'?u.slot:u.idx}')">${u.where==='slot'?'Vom Feld nehmen':'Von der Bank nehmen'}</button></div>`).join('');
       }else
       warnEl.innerHTML='<span class="lp-un-h">\u26a0\ufe0f Nicht verf\u00fcgbar:</span>'
         +un.map(u=>`<button class="lp-un-chip" onclick="lpClearUnavail('${u.where}','${u.where==='slot'?u.slot:u.idx}')"
-             title="${u.state==='G'?'Gesperrt':u.state==='F'?'Abgesagt':'Entschuldigt'} \u2014 Platz freir\u00e4umen">
+             title="${u.state==='S'?'Nicht spielberechtigt':u.state==='G'?'Gesperrt':u.state==='F'?'Abgesagt':'Entschuldigt'} \u2014 Platz freir\u00e4umen">
              ${escapeHtml(u.name)} <b>${u.state}</b> \u2715</button>`).join('');
     }
   }
@@ -41315,7 +41341,7 @@ function lpRender(){
   const isUnavailStat=(pi)=>{
     if(_lpOff(players[pi],sessIdxStat))return true;
     if(sessIdxStat===null||sessIdxStat===undefined)return false;
-    if(_lpBanAt(pi,sessIdxStat))return true;
+    if(_lpBanAt(pi,sessIdxStat)||_lpNoSb(pi,sessIdxStat))return true;
     const pp=players[pi];if(!pp||!pp.s)return false;
     const st=pp.s[sessIdxStat];return st===0||st===2;
   };
@@ -41352,7 +41378,7 @@ function _lpTokHx(slot,player,isSel,R){
   const e=escapeHtml,xy=_pitchXY(slot),id=slot.id;
   const _un=lpUnavailState(lpState.slots[id]);
   const _dc=player&&!_un?_lpDiscOn(lpState.slots[id]):null;
-  const _unC=(_un==='F'||_un==='G')?'#FF5A45':'#F39C12';
+  const _unC=(_un==='F'||_un==='G'||_un==='S')?'#FF5A45':'#F39C12';
   let body;
   if(player){
     const nm=lpFullName(player,11),nr=String(player.nr||'–');
@@ -41423,7 +41449,7 @@ function lpRenderPopup(slotId){
   const isUnavailable=(pi)=>{
     if(D2&&_lpOff(D2.players[pi],sessIdx))return true;
     if(sessIdx===null||sessIdx===undefined||!D2)return false;
-    if(_lpBanAt(pi,sessIdx))return true;
+    if(_lpBanAt(pi,sessIdx)||_lpNoSb(pi,sessIdx))return true;
     const p2=D2.players[pi];if(!p2||!p2.s)return false;
     const st=p2.s[sessIdx];
     return st===0||st===2; // Fehlend or Entschuldigt
@@ -41733,7 +41759,7 @@ function lpRenderSubs(){
           onclick="lpClickSubSlot(event,${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();lpClickSubSlot(event,${i});}"
           onpointerdown="lpPointerDown(event,'sub_${i}')" onpointerenter="lpPointerEnter(event,'sub_${i}')">${p
             ?`<b class="lp-seat-nr">${e(String(p.nr||'–'))}</b><span class="lp-seat-nm">${e(lpFullName(p,12))}</span>`
-            :'<span class="lp-seat-add" aria-hidden="true">+</span>'}${p&&!_sun&&_lpDiscOn(pi)?`<span class="lp-rule-dot" title="Trainingsregel: ${e(_lpDiscOn(pi).reason)}">!</span>`:''}${_sun?`<span class="lp-unavail-dot" title="${_sun==='G'?'Gesperrt':_sun==='F'?'Abgesagt':'Entschuldigt'}" style="background:${(_sun==='F'||_sun==='G')?'#ff5a45':'#f39c12'};">!</span>`:''}</div>`);
+            :'<span class="lp-seat-add" aria-hidden="true">+</span>'}${p&&!_sun&&_lpDiscOn(pi)?`<span class="lp-rule-dot" title="Trainingsregel: ${e(_lpDiscOn(pi).reason)}">!</span>`:''}${_sun?`<span class="lp-unavail-dot" title="${_sun==='S'?'Nicht spielberechtigt':_sun==='G'?'Gesperrt':_sun==='F'?'Abgesagt':'Entschuldigt'}" style="background:${(_sun==='F'||_sun==='G'||_sun==='S')?'#ff5a45':'#f39c12'};">!</span>`:''}</div>`);
         continue;
       }
       subSlots.push(`<div class="lp-sub-circle${p?' filled':''}${isSel?' selected':''}${_sun?' lp-unavail':''}" data-slot="sub_${i}" onclick="lpClickSubSlot(event,${i})"
@@ -41743,7 +41769,7 @@ function lpRenderSubs(){
         ${p?`<div style="font-size:.62rem;font-weight:700;color:#fff;line-height:1;">${lpFullName(p,9)}</div>
               <div style="font-family:'Bebas Neue';color:var(--ac);font-size:.85rem;line-height:1.1;">${p.nr||'–'}</div>`
             :`<div style="font-size:.55rem;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:1px;">SUB ${i+1}</div>`}
-        ${_sun?`<span class="lp-unavail-dot" title="${_sun==='G'?'Gesperrt':_sun==='F'?'Abgesagt':'Entschuldigt'}" style="background:${(_sun==='F'||_sun==='G')?'#ff5a45':'#f39c12'};">!</span>`:''}
+        ${_sun?`<span class="lp-unavail-dot" title="${_sun==='S'?'Nicht spielberechtigt':_sun==='G'?'Gesperrt':_sun==='F'?'Abgesagt':'Entschuldigt'}" style="background:${(_sun==='F'||_sun==='G'||_sun==='S')?'#ff5a45':'#f39c12'};">!</span>`:''}
       </div>`);
     }
     circlesEl.innerHTML=subSlots.join('');
@@ -41759,7 +41785,7 @@ function lpRenderSubs(){
     const isUnavail=(pi)=>{
       if(_lpOff(players[pi],sessIdx))return true;
       if(sessIdx===null||sessIdx===undefined)return false;
-      if(_lpBanAt(pi,sessIdx))return true;
+      if(_lpBanAt(pi,sessIdx)||_lpNoSb(pi,sessIdx))return true;
       const pp=players[pi];if(!pp||!pp.s)return false;
       const st=pp.s[sessIdx];return st===0||st===2;
     };
@@ -41851,7 +41877,7 @@ function lpRenderSubs(){
       if(_disc)bg='rgba(192,57,43,.12)';
       const nik=!isGuest&&!!sqSet&&!sqSet.has(id);
       const _rc=[nik?'lp-nik':'',inSlot?'lp-r-xi':inSub>=0?'lp-r-sub':'',off?'lp-r-off':''].filter(Boolean).join(' ');
-      const _offT=off?(u=>u==='G'?'Gesperrt':u==='E'?'Entschuldigt':u==='F'?'Abgesagt':'Nicht dabei')(lpUnavailState(id)):'';
+      const _offT=off?(u=>u==='S'?'Nicht spielberechtigt':u==='G'?'Gesperrt':u==='E'?'Entschuldigt':u==='F'?'Abgesagt':'Nicht dabei')(lpUnavailState(id)):'';
       // 1.2.150: in the starting eleven on his own position the slot token says it all
       const _xiL=inSlot?(((FORMATIONS[lpState.formation]||[]).find(s=>s.id===inSlot[0])||{}).lbl||''):'';
       const _same=!!(_xiL&&p.pos&&typeof hxOn==='function'&&hxOn()&&_xiL.toLowerCase()===String(p.pos).toLowerCase());
@@ -41868,11 +41894,12 @@ function lpRenderSubs(){
       const _ob=document.getElementById('lp-out-box');
       const _html=(()=>{
       if(sessIdx==null)return '';
-      const out=[...players.keys()].filter(i=>players[i]&&!_lpOff(players[i],sessIdx)&&(_lpBanAt(i,sessIdx)||(players[i].s&&(players[i].s[sessIdx]===0||players[i].s[sessIdx]===2))));
+      const out=[...players.keys()].filter(i=>players[i]&&!_lpOff(players[i],sessIdx)&&(_lpBanAt(i,sessIdx)||_lpNoSb(i,sessIdx)||(players[i].s&&(players[i].s[sessIdx]===0||players[i].s[sessIdx]===2))));
       if(!out.length)return '';
       return '<h4 class="lp-out-h">Nicht dabei</h4>'+out.map(i=>{const q=players[i];const b=_lpBanAt(i,sessIdx);const no=!b&&q.s[sessIdx]===0;
-        const st=b?'Gesperrt bis '+_skDM(b.until||_dbSortKey(cd().sessions[sessIdx].date,UI.currentSeason)):no?'Abgesagt':'Entschuldigt';
-        return `<p class="lp-out"><span class="lp-out-nr">${q.nr||'–'}</span><span class="lp-out-nm">${escapeHtml(getDisplayName(q))}</span><span class="lp-out-st ${b||no?'bad':'warn'}"${b?` title="${escapeHtml(sbBanText(b,cd()))}"`:''}>${escapeHtml(st)}</span></p>`;}).join('');
+        const nsb=!b&&_lpNoSb(i,sessIdx),sbd=nsb?_sbAbDisp(q):'';
+        const st=b?'Gesperrt bis '+_skDM(b.until||_dbSortKey(cd().sessions[sessIdx].date,UI.currentSeason)):nsb?(sbd?'Spielberechtigt ab '+sbd:'Nicht spielberechtigt'):no?'Abgesagt':'Entschuldigt';
+        return `<p class="lp-out"><span class="lp-out-nr">${q.nr||'–'}</span><span class="lp-out-nm">${escapeHtml(getDisplayName(q))}</span><span class="lp-out-st ${b||nsb||no?'bad':'warn'}"${b?` title="${escapeHtml(sbBanText(b,cd()))}"`:''}>${escapeHtml(st)}</span></p>`;}).join('');
       })();
       const _w=_notesWide();
       if(_ob)_ob.innerHTML=_w?_html:'';
