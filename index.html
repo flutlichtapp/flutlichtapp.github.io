@@ -8389,8 +8389,8 @@ const SK='fcf_v14',VIEW_SK='fcf_view14',AUTH_SK='fcf_auth14';
 // What trainers should know goes to APP_NEWS below. There is no technical
 // changelog in the app any more (1.2.68): the news are the history trainers
 // read; every release is described in the commit and in the project docs.
-const APP_VERSION='1.2.162'; // v1.2.162: leere Aufstellung ist keine Variante (Speichern entfernt die eigene, gilt nie); Formation in der Spalte über die ganze Breite; Online: jeder Bereich hat einen Namen (Übersicht, Anwesenheit, Kader, Statistik …, Anwesenheit erfassen, Spielbericht)
-const APP_VERSION_LABEL='1.2.162';
+const APP_VERSION='1.2.163'; // v1.2.163: Kader-Fenster – wer am Spieltag nicht spielen darf (gesperrt, in der Meisterschaft nicht spielberechtigt), ist ohne Aufstellung nicht vorausgewählt und steht in einer eigenen Gruppe „Dürfen nicht spielen“ statt unter „Verfügbar“
+const APP_VERSION_LABEL='1.2.163';
 // Bump APP_RELEASE_TS on each deploy. Compared via Firebase to detect stale clients
 // On every deploy, bump this so other clients detect the new version
 // and show "update available" banner. Use a numeric timestamp for monotonic ordering.
@@ -19654,6 +19654,9 @@ function _sqMeetDefault(s){
   const off=_meetMin(away?'a':'h');
   return {meet:ko==null?'':_sqHM(ko-off),where:away?(r.aw||''):String(s.location||'').trim()};
 }
+// May not play that day: suspended (Spielbericht), or not yet spielberechtigt
+// in an official match — the same rule as on the pitch (1.2.160, 1.2.161).
+function _sqBlocked(pi,si){try{return !!(_lpBanAt(pi,si)||_lpNoSb(pi,si));}catch(e){return false;}}
 function squadOpen(si,addLu){
   if(!(typeof canEdit==='function'&&canEdit()))return;
   const D=cd(),s=D&&D.sessions&&D.sessions[si],season=UI.currentSeason;
@@ -19669,7 +19672,8 @@ function squadOpen(si,addLu){
     (D.players||[]).forEach((p,pi)=>{if(p&&q.p.includes(p.name))sel.add(pi);});
     if(addLu)(lu||[]).forEach(pi=>sel.add(pi));   // "Kader anpassen": add, never drop
   }
-  else (lu||(D.players||[]).map((p,pi)=>(p&&join(p)&&_sqSt(p,si)===4)?pi:-1).filter(pi=>pi>=0)).forEach(pi=>sel.add(pi));
+  // without a lineup: everyone who said yes — but nobody who may not play (1.2.163)
+  else (lu||(D.players||[]).map((p,pi)=>(p&&join(p)&&_sqSt(p,si)===4&&!_sqBlocked(pi,si))?pi:-1).filter(pi=>pi>=0)).forEach(pi=>sel.add(pi));
   // outPush (1.2.94): those confirmed and not picked get "Diesmal bist du
   // nicht dabei" on the phone only when ticked — off by default, every time.
   // The list goes to the WhatsApp group anyway; a second "not in" to the same
@@ -19699,11 +19703,15 @@ function _sqRenderList(){
   const row=x=>`<label class="sqd-row"><input type="checkbox" data-pi="${x.pi}"${_SQ.sel.has(x.pi)?' checked':''} onchange="sqToggle(${x.pi},this.checked)">`
     +`<span class="sqd-nr">${e(String(x.p.nr||'–'))}</span><span class="sqd-nm">${e(nm(x.p))}${sbF(x)}</span><span class="sqd-pos">${e(x.p.pos||'')}</span></label>`;
   const grp=(title,list,sub)=>list.length?`<div class="sqd-g"><div class="sqd-gh">${title} <b>${list.length}</b>${sub?`<span>${sub}</span>`:''}</div>${list.map(row).join('')}</div>`:'';
-  const yes=all.filter(x=>_sqSt(x.p,si)===4||_sqSt(x.p,si)===1),open=all.filter(x=>_sqSt(x.p,si)===3),no=all.filter(x=>[0,2].includes(_sqSt(x.p,si)));
+  // 1.2.163: who may not play is no "Verfügbar" — an own group, still to tick
+  // on purpose (the warning below then asks "trotzdem im Kader?")
+  const blkF=x=>_sqBlocked(x.pi,si);
+  const yes=all.filter(x=>(_sqSt(x.p,si)===4||_sqSt(x.p,si)===1)&&!blkF(x)),open=all.filter(x=>_sqSt(x.p,si)===3&&!blkF(x)),no=all.filter(x=>[0,2].includes(_sqSt(x.p,si)));
+  const blk=all.filter(x=>![0,2].includes(_sqSt(x.p,si))&&blkF(x));
   // Declined or excused players are not offered: they said they cannot come.
   // Selected earlier and declined since: still listed so the trainer sees it.
   const noSel=no.filter(x=>_SQ.sel.has(x.pi));
-  let h=(_sqAvail()?grp('Verfügbar',yes,'haben nicht abgesagt'):grp('Zugesagt',yes))+grp('Ohne Antwort',open,'nur wenn sicher')+grp('Abgesagt, aber im Kader',noSel,'abwählen?');
+  let h=(_sqAvail()?grp('Verfügbar',yes,'haben nicht abgesagt'):grp('Zugesagt',yes))+grp('Ohne Antwort',open,'nur wenn sicher')+grp('Dürfen nicht spielen',blk,'gesperrt oder nicht spielberechtigt')+grp('Abgesagt, aber im Kader',noSel,'abwählen?');
   const rest=no.filter(x=>!_SQ.sel.has(x.pi));
   if(rest.length)h+=`<div class="sqd-no">Abgesagt oder entschuldigt: ${e(rest.map(x=>nm(x.p)).join(', '))}</div>`;
   document.getElementById('sqList').innerHTML=h||'<div class="rs-empty">Noch keine Spieler.</div>';
@@ -19758,7 +19766,8 @@ function _sqRenderSum(){
   const outs=(D.players||[]).filter((p,pi)=>p&&join(p)&&!_SQ.sel.has(pi)&&_sqSt(p,si)===4);
   // Second time in a row confirmed and left out: worth a word in person
   const prev=_sqPrevOut(D,si,season);
-  const twice=outs.filter(p=>prev.has(p.name)).map(nm);
+  const blkO=p=>_sqBlocked(D.players.indexOf(p),si),blkN=outs.filter(blkO).length;
+  const twice=outs.filter(p=>prev.has(p.name)&&!blkO(p)).map(nm);
   // Picked although the profile says he may not play that day
   const sbk=_dbSortKey(s.date,season);
   const nsb=ins.filter(p=>!playerSb(p,sbk)).map(nm);
@@ -19787,7 +19796,8 @@ function _sqRenderSum(){
   const push=told.filter(p=>p.push&&p.push.t).length,tot=told.length;
   const box=(cls,t,b)=>`<div class="sqd-msg ${cls}"><b>${e(t)}</b><span>${e(b)}</span></div>`;
   let h=`<div class="rs-g"><div class="rs-gh"><span class="rs-n">${ins.length}</span><span>im Kader</span></div>${box('in',m.inT,m.inB)}</div>`;
-  if(outs.length)h+=`<div class="rs-g"><div class="rs-gh"><span class="rs-n">${outs.length}</span><span>${_sqAvail()?'verfügbar':'zugesagt'}, nicht im Kader</span></div>`
+  const outFree=outs.length-blkN,blkT=blkN?(blkN===1?'darf':'dürfen')+' nicht spielen':'';
+  if(outs.length)h+=`<div class="rs-g"><div class="rs-gh"><span class="rs-n">${outFree||blkN}</span><span>${outFree?(_sqAvail()?'verfügbar':'zugesagt')+', nicht im Kader'+(blkN?' · '+blkN+' '+blkT:''):blkT}</span></div>`
     +`<label class="rs-chk sqd-op"><input type="checkbox" id="sqOutPush"${_SQ.outPush?' checked':''} onchange="sqOutPushSet(this.checked)"><span>Auch ihnen aufs Handy schicken`
     +`${_SQ.outPush?'':'<small>Sonst sehen sie es nur in der App und im WhatsApp-Text.</small>'}</span></label>`
     +`${_SQ.outPush?box('out',m.outT,m.outB):''}</div>`;
